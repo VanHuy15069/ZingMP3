@@ -1,0 +1,12 @@
+import express from 'express';
+import * as topicController from '../controller/topicController';
+import * as middleware from '../middleware/authMiddleware';
+import * as upload from '../middleware/uploadFile';
+const topicRouter = express.Router();
+topicRouter.post('/create', middleware.authMiddleware, upload.uploadImage, topicController.createTopic);
+topicRouter.patch('/update/:id', middleware.authMiddleware, upload.uploadImage, topicController.updateTopic);
+topicRouter.get('/get-all', topicController.getAllTopic);
+topicRouter.delete('/delete', middleware.authMiddleware, topicController.deleteManyTopics);
+topicRouter.patch('/update-trash', middleware.authMiddleware, topicController.updateTrashTopics);
+topicRouter.get('/get-detail/:id', topicController.getDetailTopic);
+export default topicRouter;

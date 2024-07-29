@@ -1,0 +1,13 @@
+import express from 'express';
+import * as albumController from '../controller/albumController';
+import * as middleware from '../middleware/authMiddleware';
+import * as upload from '../middleware/uploadFile';
+const albumRouter = express.Router();
+albumRouter.post('/create/:id', middleware.authSingerMiddleware, upload.uploadImage, albumController.createAlbum);
+albumRouter.patch('/update/:id', albumController.updateAlbum);
+albumRouter.get('/get-detail/:id', albumController.getDetailAlbum);
+albumRouter.get('/get-all/:id', albumController.getAllAlbumSinger);
+albumRouter.get('/get-all', middleware.authMiddleware, albumController.getAllAlbum);
+albumRouter.patch('/update-trash', albumController.updateTrashAlbums);
+albumRouter.delete('/delete', albumController.deleteManyAlbums);
+export default albumRouter;

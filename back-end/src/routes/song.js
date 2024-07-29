@@ -1,0 +1,13 @@
+import express from 'express';
+import * as songController from '../controller/songController';
+import * as middleware from '../middleware/authMiddleware';
+import * as upload from '../middleware/uploadFile';
+const songRouter = express.Router();
+songRouter.post('/create', upload.uploadManyFiles, songController.createSong);
+songRouter.get('/get-detail/:id', songController.getDetailSong);
+songRouter.get('/get-all', songController.getAllSong);
+songRouter.patch('/update/:id', upload.uploadManyFiles, songController.updateSong);
+songRouter.patch('/update-trash', middleware.authManySingerMiddleware, songController.updateTrashSong);
+songRouter.delete('/delete', middleware.authMiddleware, songController.deleteManySong);
+songRouter.patch('/count/:id', songController.updateViewSong);
+export default songRouter;

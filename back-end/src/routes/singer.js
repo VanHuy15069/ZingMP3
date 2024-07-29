@@ -1,0 +1,14 @@
+import express from 'express';
+import * as singerController from '../controller/singerController';
+import * as middleware from '../middleware/authMiddleware';
+import * as upload from '../middleware/uploadFile';
+const singerRouter = express.Router();
+singerRouter.post('/create', middleware.authMiddleware, upload.uploadImage, singerController.createSinger);
+singerRouter.post('/login', singerController.loginSinger);
+singerRouter.patch('/update/:id', middleware.authSingerMiddleware, upload.uploadImage, singerController.updateSinger);
+singerRouter.delete('/delete', middleware.authMiddleware, singerController.deleteManySinger);
+singerRouter.get('/detail/:id', singerController.getDetailUser);
+singerRouter.get('/get-all', middleware.authMiddleware, singerController.getAllSinger);
+singerRouter.patch('/update-private', middleware.authMiddleware, singerController.updatePrivateSinger);
+singerRouter.get('/get-single/:id', singerController.getSingleSong);
+export default singerRouter;

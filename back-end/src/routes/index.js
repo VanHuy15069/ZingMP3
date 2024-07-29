@@ -1,0 +1,24 @@
+import express from 'express';
+import userRouter from './user';
+import singerRouter from './singer';
+import nationRouter from './nation';
+import topicRouter from './topic';
+import categoryRouter from './category';
+import songRouter from './song';
+import albumRouter from './album';
+import playlistRouter from './playlist';
+import contactRouter from './contact';
+const router = express.Router();
+const initRouters = (app) => {
+  app.use('/api/user', userRouter);
+  app.use('/api/singer', singerRouter);
+  app.use('/api/nation', nationRouter);
+  app.use('/api/topic', topicRouter);
+  app.use('/api/category', categoryRouter);
+  app.use('/api/song', songRouter);
+  app.use('/api/album', albumRouter);
+  app.use('/api/playlist', playlistRouter);
+  app.use('/api/contact', contactRouter);
+  return app.use('/', router);
+};
+export default initRouters;
