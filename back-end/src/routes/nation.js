@@ -9,4 +9,5 @@ nationRouter.delete('/delete', middleware.authMiddleware, nationController.delet
 nationRouter.get('/get-all', nationController.getAllNation);
 nationRouter.patch('/update-trash', middleware.authMiddleware, nationController.updateTrashNations);
 nationRouter.get('/get-detail/:id', nationController.getDetailNation);
+nationRouter.get('/get-songs', nationController.getSongsOfNation);
 export default nationRouter;

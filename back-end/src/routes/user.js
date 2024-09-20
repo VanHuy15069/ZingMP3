@@ -16,4 +16,8 @@ userRouter.patch('/restore-users', middleware.authMiddleware, userController.res
 userRouter.delete('/delete-users', middleware.authMiddleware, userController.deleteManyUser);
 userRouter.post('/follow/:id', middleware.authUserMiddleware, userController.userFollow);
 userRouter.post('/favorite/:id', middleware.authUserMiddleware, userController.userFavorite);
+userRouter.post('/refresh-token', userController.refreshToken);
+userRouter.post('/favorite-album/:id', middleware.authUserMiddleware, userController.userFavoriteAlbum);
+userRouter.get('/check-follow', userController.checkUserFollow);
+userRouter.get('/get-singer-follow/:id', middleware.authUserMiddleware, userController.getAllSingerFollow);
 export default userRouter;

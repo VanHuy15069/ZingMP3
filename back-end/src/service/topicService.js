@@ -1,7 +1,7 @@
 import path from 'path';
-import db from '../models';
+import db, { Sequelize } from '../models';
 import fs from 'fs';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 
 export const createTopicService = (name, image) =>
   new Promise(async (resolve, reject) => {
@@ -55,13 +55,33 @@ export const updateTopicService = (name, image, id) =>
     }
   });
 
-export const getAllTopicService = (limit = 10, offset = 0, trash = 0) =>
+export const getAllTopicService = (limit, offset, trash = 0) =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
       const topics = await db.Topic.findAndCountAll({
         where: { trash: trash },
-        limit: Number(limit),
-        offset: Number(offset) * Number(limit),
+        ...obj,
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+          },
+        ],
+        distinct: true,
+        order: [
+          ['createdAt', 'DESC'],
+          [
+            {
+              model: db.Song,
+              as: 'songInfo',
+            },
+            'views',
+            'DESC',
+          ],
+        ],
       });
       resolve({
         status: 'SUCCESS',
@@ -89,7 +109,7 @@ export const deleteManyTopicService = (topicIds) =>
           topicId: { [Op.in]: topicIds },
         },
       });
-      if (songs) {
+      if (songs.length > 0) {
         const arrSongIds = [];
         for (const item of songs) {
           if (!arrSongIds.includes(item.id)) {
@@ -97,6 +117,16 @@ export const deleteManyTopicService = (topicIds) =>
           }
         }
         await db.SingerSong.destroy({
+          where: {
+            songId: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.Favorite.destroy({
+          where: {
+            songId: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.PLaylist.destroy({
           where: {
             songId: { [Op.in]: arrSongIds },
           },
@@ -157,22 +187,123 @@ export const updateTrashTopicService = (topicIds, trash = 0) =>
     }
   });
 
-export const getDetailTopicService = (id, limit = 10, offset = 0) =>
+export const getDetailTopicService = (id, limit = 10, name = 'createdAt', sort = 'DESC') =>
   new Promise(async (resolve, reject) => {
     try {
       const topic = await db.Topic.findByPk(id, {
-        limit: limit,
-        offset: Number(limit) * Number(offset),
         include: [
           {
             model: db.Song,
             as: 'songInfo',
+            limit: Number(limit),
+            order: [[name, sort]],
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+              {
+                model: db.Album,
+                as: 'albumInfo',
+              },
+            ],
+          },
+        ],
+      });
+      const songs = await db.Song.findAll({
+        where: { topicId: id },
+        attributes: ['id', 'albumId', [Sequelize.fn('SUM', Sequelize.col('views')), 'sum']],
+        group: ['albumId'],
+        order: [['sum', 'DESC']],
+        limit: 5,
+        include: [
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+        ],
+      });
+      const hotAlbums = songs.filter((album) => album.albumId !== null);
+      const listIds = hotAlbums.map((item) => item.albumId);
+      const album = await db.Album.findAll({
+        where: {
+          id: { [Op.in]: listIds },
+        },
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      const listSingers = [];
+      for (const singer of topic.songInfo) {
+        listSingers.push(...singer.singerInfo);
+      }
+      const singerIds = [...new Set(listSingers.map((item) => item.id))];
+      const singers = await db.Singer.findAll({
+        where: {
+          id: { [Op.in]: singerIds },
+        },
+        limit: 5,
+        attributes: ['id', 'name'],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: topic,
+        album: album,
+        singers: singers,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getSongByTopicNameService = (topicName, limit = 10, name = 'createdAt', sort = 'DESC') =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const topic = await db.Topic.findOne({ where: { name: topicName } });
+      if (!topic) {
+        resolve({
+          status: 'Error',
+          msg: 'This topic is not defined',
+        });
+      }
+      const songs = await db.Song.findAll({
+        where: { topicId: topic.id },
+        limit: Number(limit),
+        order: [[name, sort]],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
           },
         ],
       });
       resolve({
         status: 'SUCCESS',
-        data: topic,
+        data: songs,
       });
     } catch (error) {
       reject(error);

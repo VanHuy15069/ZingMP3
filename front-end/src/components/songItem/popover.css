@@ -1,0 +1,10 @@
+.ant-popover .ant-popover-inner {
+  background-color: transparent;
+  color: #fff;
+  padding: 0;
+}
+
+.ant-popover {
+  --antd-arrow-background-color: #34224f;
+  z-index: 10;
+}

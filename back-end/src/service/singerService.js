@@ -1,10 +1,10 @@
 import path from 'path';
 import db, { Sequelize, sequelize } from '../models';
 import fs from 'fs';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import bcryptjs from 'bcryptjs';
 import * as jwt from './jwtService';
-
+import { clearFile } from '../middleware/uploadFile';
 const hashPassword = (password) => bcryptjs.hashSync(password, bcryptjs.genSaltSync(10));
 
 export const createSingerService = (name, image, desc, username, password) =>
@@ -12,14 +12,15 @@ export const createSingerService = (name, image, desc, username, password) =>
     try {
       const [singer, created] = await db.Singer.findOrCreate({
         where: {
-          [Op.or]: [{ username: username || '' }, { name: name }],
+          ...(username && password && { username: username, name: name }),
+          ...(name && !username && { name: name }),
         },
         defaults: {
-          username: username,
-          password: password || null,
+          username: username || null,
+          password: password ? hashPassword(password) : null,
           name: name,
           image: image,
-          desc: desc,
+          desc: desc || null,
         },
       });
       if (!created) {
@@ -67,10 +68,12 @@ export const loginSingerService = (singerLogin) =>
           }
           const accessToken = jwt.renderAccessToken({
             id: checkSinger.id,
+            isAdmin: false,
             isSinger: true,
           });
           const refreshToken = jwt.renderRefreshToken({
             id: checkSinger.id,
+            isAdmin: false,
             isSinger: true,
           });
           resolve({
@@ -85,7 +88,7 @@ export const loginSingerService = (singerLogin) =>
     }
   });
 
-export const updateSingerService = (name, image, desc, id) =>
+export const updateSingerService = (name, image, desc, id, status) =>
   new Promise(async (resolve, reject) => {
     try {
       const singer = await db.Singer.findByPk(id);
@@ -99,7 +102,7 @@ export const updateSingerService = (name, image, desc, id) =>
         const clearImg = path.resolve(__dirname, '..', '', `public/${singer.image}`);
         fs.unlinkSync(clearImg);
       }
-      await singer.update({ name: name, image: image, desc: desc });
+      await singer.update({ name: name, image: image, desc: desc, status: status });
       await singer.save();
       resolve({
         status: 'SUCCESS',
@@ -125,16 +128,41 @@ export const deleteManySingerService = (singerIds) =>
           singerId: { [Op.in]: singerIds },
         },
       });
-      if (singerSongs) {
-        const arrSongIds = [];
-        for (const item of singerSongs) {
-          if (!arrSongIds.includes(item.songId)) {
-            arrSongIds.push(item.songId);
-          }
-        }
+      const songIds = singerSongs.map((item) => item.songId);
+      const listSongIds = await db.SingerSong.findAll({
+        where: {
+          songId: { [Op.in]: songIds },
+        },
+      });
+      const listSingerIds = singerSongs.map((item) => item.singerId);
+      const listIds = listSongIds.map((item) => item.singerId);
+      const noLitst = listIds.filter((item) => !listSingerIds.includes(item));
+      const noListSingerSong = await db.SingerSong.findAll({
+        where: {
+          singerId: { [Op.in]: noLitst },
+        },
+      });
+      const idSong = noListSingerSong.map((item) => item.songId);
+      const arrSongIds = songIds.filter((item) => !idSong.includes(item));
+      if (arrSongIds.length > 0) {
         const songs = await db.Song.findAll({
           where: {
             id: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.Song.destroy({
+          where: {
+            id: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.Favorite.destroy({
+          where: {
+            songId: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.PLaylist.destroy({
+          where: {
+            songId: { [Op.in]: arrSongIds },
           },
         });
         songs.forEach((item) => {
@@ -147,22 +175,48 @@ export const deleteManySingerService = (singerIds) =>
             fs.unlinkSync(clearLink);
           }
         });
-        await db.Song.destroy({
-          where: {
-            id: { [Op.in]: arrSongIds },
-          },
-        });
-        await db.SingerSong.destroy({
+      }
+      const albums = await db.Album.findAll({
+        where: {
+          singerId: { [Op.in]: singerIds },
+        },
+      });
+      const albumIds = albums.map((item) => item.id);
+      if (albumIds.length > 0) {
+        await db.Album.destroy({
           where: {
             singerId: { [Op.in]: singerIds },
           },
         });
+
+        await db.AlbumFavorite.destroy({
+          where: {
+            albumId: {
+              [Op.in]: albumIds,
+            },
+          },
+        });
+        albums.forEach((item) => {
+          if (item.image) clearFile(item.image);
+        });
       }
+      await db.SingerSong.destroy({
+        where: {
+          singerId: { [Op.in]: singerIds },
+        },
+      });
       const count = singersDeleted.length;
       if (count > 0) {
         await db.Singer.destroy({
           where: {
             id: {
+              [Op.in]: singerIds,
+            },
+          },
+        });
+        await db.Follow.destroy({
+          where: {
+            singerId: {
               [Op.in]: singerIds,
             },
           },
@@ -212,13 +266,19 @@ export const getDetailSingerService = (id) =>
     }
   });
 
-export const getAllSingerService = (limit = 10, offset = 0, trash = 0) =>
+export const getAllSingerService = (limit = 10, offset = 0, trash = 0, singerName) =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      const objLimit = {};
+      if (singerName) obj.name = { [Op.substring]: singerName };
+      if (limit) objLimit.limit = Number(limit);
+      if (offset) objLimit.offset = Number(limit) * Number(offset);
       const singers = await db.Singer.findAndCountAll({
-        where: { trash: trash },
-        limit: Number(limit),
-        offset: Number(limit) * Number(offset),
+        where: { trash: trash, ...obj },
+        ...objLimit,
+        attributes: ['id', 'name', 'image', 'desc', 'status', 'username'],
+        order: [['createdAt', 'DESC']],
       });
       if (!singers) {
         resolve({
@@ -240,6 +300,7 @@ export const getAllSingerService = (limit = 10, offset = 0, trash = 0) =>
       }
       resolve({
         ststus: 'SUCCESS',
+        count: singers.count,
         data: singerFollows,
         currentPage: offset,
         totalPage: Math.ceil(singers.count / Number(limit)),
@@ -249,11 +310,11 @@ export const getAllSingerService = (limit = 10, offset = 0, trash = 0) =>
     }
   });
 
-export const updatePrivateSingerService = (singerIds, trash = 0, status = 1) =>
+export const updatePrivateSingerService = (singerIds, trash = 0) =>
   new Promise(async (resolve, reject) => {
     try {
       const singers = await db.Singer.update(
-        { trash: trash, status: status },
+        { trash: trash },
         {
           where: {
             id: {
@@ -299,7 +360,7 @@ export const updatePasswordService = (password, newPassword, id) =>
     }
   });
 
-export const getSingleSongService = (singerId) =>
+export const getSingleSongService = (singerId, limit = 5, offset = 0) =>
   new Promise(async (resolve, reject) => {
     try {
       const songs = await db.SingerSong.findAll({
@@ -314,15 +375,158 @@ export const getSingleSongService = (singerId) =>
             model: db.Song,
             as: 'songInfo',
           },
+        ],
+      });
+      const listSongs = songs.map((item) => item.songInfo.id);
+      const songOfSinger = await db.Song.findAll({
+        where: { id: { [Op.in]: listSongs }, trash: false },
+        limit: Number(limit),
+        offset: Number(limit) * Number(offset),
+        order: [['createdAt', 'DESC']],
+        include: [
           {
             model: db.Singer,
             as: 'singerInfo',
+            attributes: ['id', 'name', 'image'],
           },
         ],
       });
       resolve({
         status: 'SUCCESS',
-        data: songs,
+        data: songOfSinger,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getTopSongSingerService = (singerId, limit = 6, offset = 0, name = 'views', sort = 'DESC') =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const songs = await db.SingerSong.findAll({ where: { singerId: singerId } });
+      const listSongs = songs.map((item) => item.songId);
+      const topSongs = await db.Song.findAll({
+        where: { id: { [Op.in]: listSongs }, trash: false },
+        limit: Number(limit),
+        offset: Number(limit) * Number(offset),
+        order: [[name, sort]],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: topSongs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getSongHaveSingerService = (singerId, limit) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      const songs = await db.SingerSong.findAll({
+        attributes: ['id', 'singerId', 'songId', [Sequelize.fn('COUNT', Sequelize.col('songId')), 'count']],
+        group: ['songId'],
+        having: {
+          count: { [Op.gt]: 1 },
+        },
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+          },
+        ],
+      });
+      const listSongIds = songs.map((item) => item.songId);
+      const manySingers = await db.SingerSong.findAll({
+        where: {
+          songId: { [Op.in]: listSongIds },
+        },
+      });
+      const listSinger = manySingers.filter((item) => item.singerId == singerId);
+      const listSongs = listSinger.map((item) => item.songId);
+      const songHaveSinger = await db.Song.findAll({
+        where: { id: { [Op.in]: listSongs }, trash: false },
+        ...obj,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name', 'image'],
+          },
+        ],
+      });
+      const listSingers = [];
+      for (const singers of songHaveSinger) {
+        listSingers.push(...singers.singerInfo);
+      }
+      const listIds = [...new Set(listSingers.map((item) => item.id))].filter((item) => item != singerId);
+      const singers = await db.Singer.findAll({
+        where: {
+          id: listIds,
+        },
+        limit: 5,
+        attributes: ['id', 'name', 'image'],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: songHaveSinger,
+        singer: singers,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getHotSongBySingerRandomService = (userId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const follow = await db.Follow.findAll({
+        where: { userId: userId },
+      });
+      const singerIds = follow.map((item) => item.singerId);
+      const singerRandom = Math.floor(Math.random() * singerIds.length);
+      const singer = await db.Singer.findByPk(singerIds[singerRandom], {
+        attributes: ['id', 'name', 'image'],
+      });
+      const songSinger = await db.SingerSong.findAll({
+        where: {
+          singerId: singerIds[singerRandom],
+        },
+      });
+      const songIds = songSinger.map((item) => item.songId);
+      const songs = await db.Song.findAll({
+        where: {
+          id: { [Op.in]: songIds },
+        },
+        limit: 5,
+        order: [['views', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: singer,
+        song: songs,
       });
     } catch (error) {
       reject(error);

@@ -6,13 +6,7 @@ export const createCategory = async (req, res) => {
   const image = req.file?.filename;
   try {
     if (!name || !image) {
-      return res.status(400).json({
-        status: 'ERROR',
-        msg: 'Full information is required',
-      });
-    }
-    if (image && !name) {
-      clearFile(image);
+      if (image) clearFile(image);
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
@@ -37,6 +31,7 @@ export const updateCategory = async (req, res) => {
   }
   try {
     if (!id) {
+      if (image) clearFile(image);
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
@@ -66,7 +61,7 @@ export const getAllCategory = async (req, res) => {
 };
 
 export const deleteManyCategories = async (req, res) => {
-  const categoryIds = req.body.categoryIds.split(',');
+  const categoryIds = req.query.categoryIds.split(',');
   try {
     if (!categoryIds) {
       return res.status(400).json({
@@ -85,9 +80,9 @@ export const deleteManyCategories = async (req, res) => {
 };
 
 export const updateTrashCategories = async (req, res) => {
-  const categoryIds = req.body.categoryIds.split(',');
-  const trash = req.body.trash;
   try {
+    const categoryIds = req.body.categoryIds?.split(',');
+    const trash = req.body.trash;
     if (!categoryIds) {
       return res.status(400).json({
         status: 'ERROR',
@@ -105,7 +100,7 @@ export const updateTrashCategories = async (req, res) => {
 };
 
 export const getDetailCategory = async (req, res) => {
-  const { limit, offset } = req.body;
+  const { limit, name, sort } = req.body;
   const id = req.params.id;
   try {
     if (!id) {
@@ -114,7 +109,7 @@ export const getDetailCategory = async (req, res) => {
         msg: 'Full information is required',
       });
     }
-    const response = await categoryService.getDetailCategoryService(id, limit, offset);
+    const response = await categoryService.getDetailCategoryService(id, limit, name, sort);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

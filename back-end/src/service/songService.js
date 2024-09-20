@@ -1,5 +1,5 @@
-import { Op } from 'sequelize';
-import db from '../models';
+import { Op, where } from 'sequelize';
+import db, { Sequelize } from '../models';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
@@ -57,15 +57,13 @@ export const getDetailSongService = (id) =>
         include: [
           {
             model: db.Singer,
-            as: 'song_singer',
+            as: 'singerInfo',
             attributes: ['id', 'name'],
           },
-          {
-            model: db.User,
-            as: 'favoriteInfo',
-            attributes: ['fullName'],
-          },
         ],
+      });
+      const favorite = await db.Favorite.count({
+        where: { songId: id },
       });
       if (!song) {
         resolve({
@@ -82,59 +80,73 @@ export const getDetailSongService = (id) =>
       resolve({
         status: 'SUCCESS',
         data: song,
-        favorite: song.favoriteInfo.length,
+        favorite: favorite,
       });
     } catch (error) {
       reject(error);
     }
   });
 
-export const getAllSongService = (limit = 10, offset = 0, songName, name = 'id', sort = 'DESC', trash = 0) =>
+export const getAllSongService = (limit, offset, songName, name = 'createdAt', sort = 'DESC', trash = 0) =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
       if (songName) {
-        const songs = await db.Song.findAll({
+        const songs = await db.Song.findAndCountAll({
           where: {
             [Op.and]: [{ name: { [Op.substring]: songName } }, { trash: trash }],
           },
-          limit: Number(limit),
-          offset: Number(limit) * Number(offset),
+          ...obj,
           order: [[name, sort]],
+          distinct: true,
           include: [
             {
               model: db.Singer,
-              as: 'song_singer',
+              as: 'singerInfo',
               attributes: ['id', 'name'],
+            },
+            {
+              model: db.Album,
+              as: 'albumInfo',
             },
           ],
         });
         resolve({
           status: 'SUCCESS',
-          count: songs.length,
-          data: songs,
+          count: songs.count,
+          data: songs.rows,
           currentPage: offset,
-          totalPage: Math.ceil(songs.length / Number(limit)),
+          totalPage: Math.ceil(songs.count / Number(limit)),
         });
       } else {
-        const songs = await db.Song.findAll({
+        const songs = await db.Song.findAndCountAll({
           where: { trash: trash },
-          limit: Number(limit),
-          offset: Number(limit) * Number(offset),
+          ...obj,
           order: [[name, sort]],
+          distinct: true,
           include: [
             {
               model: db.Singer,
-              as: 'song_singer',
+              as: 'singerInfo',
               attributes: ['id', 'name'],
             },
+            {
+              model: db.Album,
+              as: 'albumInfo',
+            },
+            { model: db.Nation, as: 'nationInfo' },
+            { model: db.Category, as: 'categoryInfo' },
+            { model: db.Topic, as: 'topicInfo' },
           ],
         });
         resolve({
           status: 'SUCCESS',
-          count: songs.length,
-          data: songs,
+          count: songs.count,
+          data: songs.rows,
           currentPage: offset,
-          totalPage: Math.ceil(songs.length / Number(limit)),
+          totalPage: Math.ceil(songs.count / Number(limit)),
         });
       }
     } catch (error) {
@@ -165,10 +177,10 @@ export const updateSongService = (
           msg: 'This song is not defined',
         });
       }
-      if (albumId) {
+      if (typeof albumId === 'string' && albumId.toLowerCase() !== 'null') {
         const album = await db.Album.findByPk(albumId);
         if (singerIds) {
-          if (!singerIds.includes(album.singerId)) {
+          if (!singerIds.includes(album.singerId.toString())) {
             update = false;
             resolve({
               status: 'ERROR',
@@ -205,7 +217,7 @@ export const updateSongService = (
           });
         }
         if (singer?.isAdmin || (singer?.isSinger && arrSingerIds.includes(singer.id))) {
-          if (singerIds && !singerIds.includes(singer.id.toString())) {
+          if (singerIds && singer.isSinger && !singerIds.includes(singer.id.toString())) {
             update = false;
             resolve({
               status: 'ERROR',
@@ -233,7 +245,7 @@ export const updateSongService = (
           nationId: nationId,
           topicId: topicId,
           categoryId: categoryId,
-          albumId: albumId == '' ? null : albumId,
+          albumId: albumId === 'null' ? null : albumId,
           name: name,
           link: link,
           image: image,
@@ -276,38 +288,85 @@ export const updateTrashSongService = (trash = 0, songIds) =>
     }
   });
 
-export const deleteManySongService = (songIds) =>
+export const deleteManySongService = (songIds, token) =>
   new Promise(async (resolve, reject) => {
     try {
+      let update = true;
       const songs = await db.Song.findAll({
         where: {
           id: { [Op.in]: songIds },
         },
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+          },
+        ],
       });
-      songs.forEach((item) => {
-        if (item.image) {
-          const clearImg = path.resolve(__dirname, '..', '', `public/${item.image}`);
-          fs.unlinkSync(clearImg);
+      const listSingers = [];
+      for (const singers of songs) {
+        listSingers.push(...singers.singerInfo);
+      }
+      const listSingerIds = [...new Set(listSingers.map((item) => item.id))];
+      jwt.verify(token, process.env.ACCESS_TOKEN, function (err, singer) {
+        if (err) {
+          update = false;
+          resolve({
+            status: 'ERROR',
+            msg: 'The authentication',
+          });
         }
-        if (item.link) {
-          const clearLink = path.resolve(__dirname, '..', '', `public/${item.link}`);
-          fs.unlinkSync(clearLink);
+        if (singer?.isAdmin || (singer?.isSinger && listSingerIds.includes(singer.id))) {
+          update = true;
+        } else {
+          update = false;
+          resolve({
+            status: 'ERROR',
+            msg: 'The authentication',
+          });
         }
       });
-      const songDelete = await db.Song.destroy({
-        where: {
-          id: { [Op.in]: songIds },
-        },
-      });
-      await db.SingerSong.destroy({
-        where: {
-          songId: { [Op.in]: songIds },
-        },
-      });
-      resolve({
-        status: 'SUCCESS',
-        count: songDelete,
-      });
+      if (update) {
+        songs.forEach((item) => {
+          if (item.image) {
+            const clearImg = path.resolve(__dirname, '..', '', `public/${item.image}`);
+            fs.unlinkSync(clearImg);
+          }
+          if (item.link) {
+            const clearLink = path.resolve(__dirname, '..', '', `public/${item.link}`);
+            fs.unlinkSync(clearLink);
+          }
+        });
+        const songDelete = await db.Song.destroy({
+          where: {
+            id: { [Op.in]: songIds },
+          },
+        });
+        await db.SingerSong.destroy({
+          where: {
+            songId: { [Op.in]: songIds },
+          },
+        });
+        await db.Favorite.destroy({
+          where: {
+            songId: { [Op.in]: songIds },
+          },
+        });
+        await db.SongPlaylist.destroy({
+          where: {
+            songId: { [Op.in]: songIds },
+          },
+        });
+        resolve({
+          status: 'SUCCESS',
+          count: songDelete,
+        });
+      } else {
+        resolve({
+          status: 'ERROR',
+          msg: 'Delete failure!',
+        });
+      }
     } catch (error) {
       reject(error);
     }
@@ -323,11 +382,194 @@ export const updateViewSongService = (id) =>
           msg: 'This song is not defined',
         });
       }
-      await song.update({ views: song.views + 1 });
+      await song.increment({ views: 1 });
       await song.save();
       resolve({
         status: 'SUCCESS',
         msg: '+1 view',
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getSongByAlbumIdService = (albumId, limit = 10, name = 'createdAt', sort = 'DESC') =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const songs = await db.Song.findAll({
+        where: {
+          albumId: albumId,
+        },
+        limit: Number(limit),
+        order: [[name, sort]],
+        include: [
+          {
+            model: db.Album,
+            as: 'albumInfo',
+          },
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: songs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const checkFavariteService = (userId, songId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (userId) {
+        const checkFavorite = await db.Favorite.findOne({
+          where: { userId: userId, songId: songId },
+        });
+        if (checkFavorite) {
+          resolve({
+            status: 'SUCCESS',
+            data: true,
+          });
+        }
+        resolve({
+          status: 'SUCCESS',
+          data: false,
+        });
+      } else {
+        resolve({
+          status: 'SUCCESS',
+          data: false,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getTopNewSongService = (limit = 10) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const thirtyDayAgo = new Date();
+      thirtyDayAgo.setDate(thirtyDayAgo.getDate() - 30);
+      const topSongs = await db.Song.findAll({
+        where: { createdAt: { [Op.gte]: thirtyDayAgo } },
+        order: [
+          ['views', 'DESC'],
+          ['createdAt', 'DESC'],
+        ],
+        limit: Number(limit),
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: topSongs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getSongFavoriteService = (userId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const songFavorites = await db.Favorite.findAll({
+        where: { userId: userId },
+      });
+      const songIds = songFavorites.map((item) => item.songId);
+      const songs = await db.Song.findAll({
+        where: {
+          id: { [Op.in]: songIds },
+        },
+        attributes: ['id', 'name', 'image', 'link', 'views', 'vip'],
+        order: [[Sequelize.literal(`CONVERT(Song.name USING utf8mb4) COLLATE utf8mb4_unicode_ci`), 'ASC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: songs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getSameSongService = (songId, limit = 10) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const song = await db.Song.findByPk(songId);
+      if (!song) {
+        resolve({
+          status: 'ERROR',
+          msg: 'This song is not defined',
+        });
+      }
+      const listSongs = await db.Song.findAll({
+        where: {
+          nationId: song.nationId,
+          topicId: song.topicId,
+          categoryId: song.categoryId,
+        },
+        limit: Number(limit),
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Album,
+            as: 'albumInfo',
+          },
+        ],
+      });
+      const listSingers = [];
+      for (const singers of listSongs) {
+        listSingers.push(...singers.singerInfo);
+      }
+      const listSingerIds = new Set(listSingers.map((item) => item.id));
+      const singers = await db.Singer.findAll({
+        where: {
+          id: { [Op.in]: [...listSingerIds] },
+        },
+        limit: 5,
+        attributes: ['id', 'name', 'image'],
+      });
+      const index = listSongs.findIndex((item) => item.id == songId);
+      const element = listSongs.splice(index, 1);
+      listSongs.unshift(...element);
+      resolve({
+        status: 'SUCCESS',
+        index: index,
+        data: listSongs,
+        singers: singers,
       });
     } catch (error) {
       reject(error);

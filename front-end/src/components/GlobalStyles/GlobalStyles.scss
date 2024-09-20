@@ -1,0 +1,43 @@
+@import 'normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@200;300;400&family=Roboto:wght@400;500;700;900&display=swap');
+
+:root {
+  --primary: #170f23;
+  --textColor: #fff;
+  --sideBar: #221a2d;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+  background-color: var(--primary);
+}
+html *::-webkit-scrollbar {
+  border-radius: 0;
+  width: 4px;
+}
+html *::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(170, 171, 177, 0.2);
+}
+html *::-webkit-scrollbar-track {
+  border-radius: 0;
+  background-color: var(--primary);
+}
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--textColor);
+  text-rendering: optimizeSpeed;
+}
+a {
+  text-decoration: none;
+  color: var(--textColor);
+}

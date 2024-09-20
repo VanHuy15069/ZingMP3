@@ -12,14 +12,12 @@ export const createSong = async (req, res) => {
     const singerIds = req.body.singerIds?.split(',');
     const headersToken = req.headers.token;
     if (!nationId || !topicId || !categoryId || !link || !image || !name || !singerIds || !headersToken) {
+      if (image && !link) clearFile(image);
+      if (link && !image) clearFile(link);
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
       });
-    }
-    if ((image || link) && (!nationId || !topicId || !categoryId || !name || !singerIds || !headersToken)) {
-      if (image) clearFile(image);
-      if (link) clearFile(link);
     }
     const token = headersToken?.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN, async function (err, singer) {
@@ -130,9 +128,9 @@ export const updateSong = async (req, res) => {
 };
 
 export const updateTrashSong = async (req, res) => {
-  const trash = req.body.trash;
-  const songIds = req.body.songIds.split(',');
   try {
+    const trash = req.body.trash;
+    const songIds = req.body.songIds.split(',');
     if (!songIds) {
       return res.status(400).json({
         status: 'ERROR',
@@ -150,15 +148,17 @@ export const updateTrashSong = async (req, res) => {
 };
 
 export const deleteManySong = async (req, res) => {
-  const songIds = req.body.songIds.split(',');
   try {
-    if (!songIds) {
+    const songIds = req.query.songIds.split(',');
+    const headersToken = req.headers.token;
+    if (!songIds || !headersToken) {
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
       });
     }
-    const response = await songService.deleteManySongService(songIds);
+    const token = headersToken?.split(' ')[1];
+    const response = await songService.deleteManySongService(songIds, token);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
@@ -178,6 +178,91 @@ export const updateViewSong = async (req, res) => {
       });
     }
     const response = await songService.updateViewSongService(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getSongByAlbumId = async (req, res) => {
+  try {
+    const albumId = req.params.id;
+    const { limit, name, sort } = req.query;
+    if (!albumId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const resolve = await songService.getSongByAlbumIdService(albumId, limit, name, sort);
+    return res.status(200).json(resolve);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const checkFavarite = async (req, res) => {
+  try {
+    const { userId, songId } = req.query;
+    if (!songId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await songService.checkFavariteService(userId, songId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getTopNewSongs = async (req, res) => {
+  try {
+    const limit = req.query.limit;
+    const response = await songService.getTopNewSongService(limit);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getSongFavorite = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const response = await songService.getSongFavoriteService(userId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getSameSongs = async (req, res) => {
+  try {
+    const songId = req.params.id;
+    const limit = req.query.limit;
+    if (!songId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await songService.getSameSongService(songId, limit);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

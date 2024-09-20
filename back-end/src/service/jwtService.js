@@ -24,7 +24,8 @@ export const refreshToken = (token) => {
         }
         const accessToken = renderAccessToken({
           id: user?.id,
-          isAdmin: user?.isAdmin,
+          isAdmin: user?.isAdmin ?? false,
+          isSinger: user?.isSinger ?? false,
         });
         resolve({
           status: 'OK',

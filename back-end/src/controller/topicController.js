@@ -6,13 +6,7 @@ export const createTopic = async (req, res) => {
   const image = req.file?.filename;
   try {
     if (!name || !image) {
-      return res.status(400).json({
-        status: 'ERROR',
-        msg: 'Full information is required',
-      });
-    }
-    if (image && !name) {
-      clearFile(image);
+      if (image) clearFile(image);
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
@@ -37,6 +31,7 @@ export const updateTopic = async (req, res) => {
   }
   try {
     if (!id) {
+      if (image) clearFile(image);
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
@@ -66,7 +61,7 @@ export const getAllTopic = async (req, res) => {
 };
 
 export const deleteManyTopics = async (req, res) => {
-  const topicIds = req.body.topicIds.split(',');
+  const topicIds = req.query.topicIds?.split(',');
   try {
     if (!topicIds) {
       return res.status(400).json({
@@ -85,7 +80,7 @@ export const deleteManyTopics = async (req, res) => {
 };
 
 export const updateTrashTopics = async (req, res) => {
-  const topicIds = req.body.topicIds.split(',');
+  const topicIds = req.body.topicIds?.split(',');
   const trash = req.body.trash;
   try {
     if (!topicIds) {
@@ -105,7 +100,7 @@ export const updateTrashTopics = async (req, res) => {
 };
 
 export const getDetailTopic = async (req, res) => {
-  const { limit, offset } = req.body;
+  const { limit, name, sort } = req.body;
   const id = req.params.id;
   try {
     if (!id) {
@@ -114,7 +109,26 @@ export const getDetailTopic = async (req, res) => {
         msg: 'Full information is required',
       });
     }
-    const response = await topicService.getDetailTopicService(id, limit, offset);
+    const response = await topicService.getDetailTopicService(id, limit, name, sort);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getSongByTopicName = async (req, res) => {
+  try {
+    const { topic, limit, name, sort } = req.query;
+    if (!topic) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await topicService.getSongByTopicNameService(topic, limit, name, sort);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

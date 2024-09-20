@@ -1,0 +1,11 @@
+.my-drawer .ant-drawer-body {
+  border-top: none;
+  padding: 0;
+  padding-bottom: 90px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.my-drawer .ant-drawer-header {
+  padding-left: 8px;
+  border-bottom: none;
+}

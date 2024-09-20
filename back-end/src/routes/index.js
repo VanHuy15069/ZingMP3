@@ -8,6 +8,7 @@ import songRouter from './song';
 import albumRouter from './album';
 import playlistRouter from './playlist';
 import contactRouter from './contact';
+import slideRouter from './slider';
 const router = express.Router();
 const initRouters = (app) => {
   app.use('/api/user', userRouter);
@@ -19,6 +20,7 @@ const initRouters = (app) => {
   app.use('/api/album', albumRouter);
   app.use('/api/playlist', playlistRouter);
   app.use('/api/contact', contactRouter);
+  app.use('/api/slider', slideRouter);
   return app.use('/', router);
 };
 export default initRouters;

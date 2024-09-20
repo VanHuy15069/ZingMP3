@@ -1,5 +1,5 @@
 import path from 'path';
-import db from '../models';
+import db, { Sequelize } from '../models';
 import fs from 'fs';
 import { Op } from 'sequelize';
 
@@ -70,7 +70,7 @@ export const deleteManyNationService = (nationIds) =>
           nationId: { [Op.in]: nationIds },
         },
       });
-      if (songs) {
+      if (songs.length > 0) {
         const arrSongIds = [];
         for (const item of songs) {
           if (!arrSongIds.includes(item.id)) {
@@ -78,6 +78,16 @@ export const deleteManyNationService = (nationIds) =>
           }
         }
         await db.SingerSong.destroy({
+          where: {
+            songId: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.Favorite.destroy({
+          where: {
+            songId: { [Op.in]: arrSongIds },
+          },
+        });
+        await db.PLaylist.destroy({
           where: {
             songId: { [Op.in]: arrSongIds },
           },
@@ -116,13 +126,23 @@ export const deleteManyNationService = (nationIds) =>
     }
   });
 
-export const getAllNationService = (limit = 10, offset = 0, trash = 0) =>
+export const getAllNationService = (limit, offset, trash = 0) =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
       const nations = await db.Nation.findAndCountAll({
         where: { trash: trash },
-        limit: Number(limit),
-        offset: Number(limit) * Number(offset),
+        ...obj,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+          },
+        ],
+        distinct: true,
       });
       resolve({
         status: 'SUCCESS',
@@ -157,23 +177,144 @@ export const updateTrashNationService = (nationIds, trash = 0) =>
     }
   });
 
-export const getDetailNationService = (id, limit = 10, offset = 0) =>
+export const getDetailNationService = (id, limit = 10, name = 'createdAt', sort = 'DESC') =>
   new Promise(async (resolve, reject) => {
     try {
       const nation = await db.Nation.findByPk(id, {
-        limit: limit,
-        offset: Number(limit) * Number(offset),
         include: [
           {
             model: db.Song,
             as: 'songInfo',
+            limit: Number(limit),
+            order: [[name, sort]],
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+              {
+                model: db.Album,
+                as: 'albumInfo',
+              },
+            ],
           },
         ],
+      });
+      const songs = await db.Song.findAll({
+        where: { nationId: id },
+        attributes: ['id', 'albumId', [Sequelize.fn('SUM', Sequelize.col('views')), 'sum']],
+        group: ['albumId'],
+        order: [['sum', 'DESC']],
+        limit: 5,
+        include: [
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+        ],
+      });
+      const hotAlbums = songs.filter((album) => album.albumId !== null);
+      const listIds = hotAlbums.map((item) => item.albumId);
+      const album = await db.Album.findAll({
+        where: {
+          id: { [Op.in]: listIds },
+        },
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      const listSingers = [];
+      for (const singer of nation.songInfo) {
+        listSingers.push(...singer.singerInfo);
+      }
+      const singerIds = [...new Set(listSingers.map((item) => item.id))];
+      const singers = await db.Singer.findAll({
+        where: {
+          id: { [Op.in]: singerIds },
+        },
+        limit: 5,
+        attributes: ['id', 'name'],
       });
       resolve({
         status: 'SUCCESS',
         data: nation,
+        album: album,
+        singers: singers,
       });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getSongsOfNationService = (nation, limit = 10, name = 'createdAt', sort = 'DESC') =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (nation) {
+        const nationSong = await db.Nation.findOne({
+          where: { name: nation },
+        });
+        if (!nationSong) {
+          resolve({
+            status: 'ERROR',
+            msg: 'This nation is not defined',
+          });
+        }
+        const songs = await db.Song.findAll({
+          where: { nationId: nationSong?.id },
+          limit: Number(limit),
+          order: [[name, sort]],
+          include: [
+            {
+              model: db.Singer,
+              as: 'singerInfo',
+              attributes: ['id', 'name'],
+            },
+          ],
+        });
+        resolve({
+          status: 'SUCCESS',
+          data: songs,
+        });
+      } else {
+        const songs = await db.Song.findAll({
+          limit: +limit,
+          order: [[name, sort]],
+          include: [
+            {
+              model: db.Singer,
+              as: 'singerInfo',
+              attributes: ['id', 'name'],
+            },
+          ],
+        });
+        resolve({
+          status: 'SUCCESS',
+          data: songs,
+        });
+      }
     } catch (error) {
       reject(error);
     }

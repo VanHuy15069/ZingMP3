@@ -1,0 +1,11 @@
+import express from 'express';
+import * as slideController from '../controller/slideController';
+import * as middleware from '../middleware/authMiddleware';
+import * as upload from '../middleware/uploadFile';
+const slideRouter = express.Router();
+slideRouter.post('/create', middleware.authMiddleware, upload.uploadImage, slideController.createSlider);
+slideRouter.get('/get-all', slideController.getAllSlider);
+slideRouter.patch('/update/:id', middleware.authMiddleware, upload.uploadImage, slideController.updateSlider);
+slideRouter.patch('/update-trash', middleware.authMiddleware, slideController.updateTrashSlider);
+slideRouter.delete('/delete', middleware.authMiddleware, slideController.deleteManySlider);
+export default slideRouter;

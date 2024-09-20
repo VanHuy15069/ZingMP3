@@ -1,0 +1,9 @@
+.box-result {
+  width: 100%;
+  overflow-y: overlay;
+  max-height: calc(100vh - 240px);
+  &::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: #34224f;
+  }
+}

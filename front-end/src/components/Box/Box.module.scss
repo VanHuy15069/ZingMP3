@@ -1,0 +1,12 @@
+.wrapper {
+  margin: auto;
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 600px;
+  max-height: 100vh;
+  width: 400px;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba($color: #000000, $alpha: 0.4);
+  overflow-y: scroll;
+  scrollbar-width: none;
+}

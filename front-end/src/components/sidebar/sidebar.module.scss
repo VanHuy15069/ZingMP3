@@ -1,0 +1,17 @@
+.active .menu-item {
+  color: #fff;
+  background-color: #393142;
+}
+.menu-item {
+  color: #dadada;
+  font-size: 1.4rem;
+  padding: 12px 21px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    color: #fff;
+    background-color: #393142;
+  }
+}

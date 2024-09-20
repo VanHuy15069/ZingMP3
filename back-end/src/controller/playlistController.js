@@ -106,13 +106,14 @@ export const getDetaiPlaylist = async (req, res) => {
 export const getAllPlaylist = async (req, res) => {
   try {
     const userId = req.params.id;
+    const { limit, name } = req.query;
     if (!userId) {
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
       });
     }
-    const response = await playlistService.getAllPlaylistService(userId);
+    const response = await playlistService.getAllPlaylistService(userId, limit, name);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
@@ -125,7 +126,7 @@ export const getAllPlaylist = async (req, res) => {
 export const removeSongToPlaylist = async (req, res) => {
   try {
     const headersToken = req.headers.token;
-    const { playlistId, songId } = req.body;
+    const { playlistId, songId } = req.query;
     if (!headersToken || !playlistId || !songId) {
       return res.status(400).json({
         status: 'ERROR',

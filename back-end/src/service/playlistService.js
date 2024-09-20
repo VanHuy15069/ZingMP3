@@ -1,6 +1,7 @@
 import db from '../models';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Op } from 'sequelize';
 dotenv.config();
 
 export const createPlaylistService = (name, userId) =>
@@ -79,6 +80,7 @@ export const deletePlaylistService = (id, token) =>
         }
         if (user?.id == playlist.userId) {
           await playlist.destroy();
+          await db.SongPlaylist.destroy({ where: { playlistId: id } });
           resolve({
             status: 'SUCCESS',
             data: playlist,
@@ -118,7 +120,7 @@ export const addSongToPlaylistService = (playlistId, songId, token) =>
           });
           if (!created) {
             resolve({
-              status: 'ERROR',
+              status: 'DEFINED',
               msg: 'The song already exists in the playlist',
             });
           }
@@ -146,6 +148,13 @@ export const getDetaiPlaylistService = (id) =>
           {
             model: db.Song,
             as: 'songInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name', 'image'],
+              },
+            ],
           },
         ],
       });
@@ -155,19 +164,53 @@ export const getDetaiPlaylistService = (id) =>
           msg: 'This playlist is not defined',
         });
       }
+      const listSingers = [];
+      for (const singers of playlist.songInfo) {
+        listSingers.push(...singers.singerInfo);
+      }
+      const listSingerIds = new Set(listSingers.map((item) => item.id));
+      const singers = await db.Singer.findAll({
+        where: {
+          id: { [Op.in]: [...listSingerIds] },
+        },
+        limit: 5,
+        attributes: ['id', 'name', 'image'],
+      });
       resolve({
         status: 'SUCCESS',
         data: playlist,
+        singers: singers,
       });
     } catch (error) {
       reject(error);
     }
   });
 
-export const getAllPlaylistService = (userId) =>
+export const getAllPlaylistService = (userId, limit, name) =>
   new Promise(async (resolve, reject) => {
     try {
-      const playlists = await db.PLaylist.findAll({ where: { userId: userId } });
+      const objLimit = {};
+      if (limit) objLimit.limit = Number(limit);
+      const namePlaylist = {};
+      if (name) namePlaylist.name = { [Op.substring]: name };
+      const playlists = await db.PLaylist.findAll({
+        where: { userId: userId, ...namePlaylist },
+        ...objLimit,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+        ],
+      });
       resolve({
         status: 'SUCCESS',
         data: playlists,

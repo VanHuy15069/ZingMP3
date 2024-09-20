@@ -9,4 +9,5 @@ topicRouter.get('/get-all', topicController.getAllTopic);
 topicRouter.delete('/delete', middleware.authMiddleware, topicController.deleteManyTopics);
 topicRouter.patch('/update-trash', middleware.authMiddleware, topicController.updateTrashTopics);
 topicRouter.get('/get-detail/:id', topicController.getDetailTopic);
+topicRouter.get('/get-by-topic-name', topicController.getSongByTopicName);
 export default topicRouter;

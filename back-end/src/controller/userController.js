@@ -1,4 +1,6 @@
+import { clearFile } from '../middleware/uploadFile';
 import * as userService from '../service/userService';
+import * as jwtService from '../service/jwtService';
 
 export const addUser = async (req, res) => {
   const { fullName, username, passWord, confirmPassword, email } = req.body;
@@ -26,9 +28,9 @@ export const addUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  const { username, passWord } = req.body;
+  const { username, password } = req.body;
   try {
-    if (!username || !passWord) {
+    if (!username || !password) {
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
@@ -98,6 +100,7 @@ export const updateUser = async (req, res) => {
   }
   try {
     if (!userId) {
+      if (image) clearFile(image);
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
@@ -134,7 +137,7 @@ export const updatePrivateUser = async (req, res) => {
 };
 
 export const moveManyUsersToTrash = async (req, res) => {
-  const userIds = req.body.userIds.split(',');
+  const userIds = req.body.userIds?.split(',');
   try {
     if (!userIds) {
       return res.status(400).json({
@@ -153,7 +156,7 @@ export const moveManyUsersToTrash = async (req, res) => {
 };
 
 export const restoreManyUsers = async (req, res) => {
-  const userIds = req.body.userIds.split(',');
+  const userIds = req.body.userIds?.split(',');
   try {
     if (!userIds) {
       return res.status(400).json({
@@ -172,7 +175,7 @@ export const restoreManyUsers = async (req, res) => {
 };
 
 export const deleteManyUser = async (req, res) => {
-  const userIds = req.body.userIds.split(',');
+  const userIds = req.body.userIds?.split(',');
   try {
     if (!userIds) {
       return res.status(400).json({
@@ -191,13 +194,19 @@ export const deleteManyUser = async (req, res) => {
 };
 
 export const updatePassword = async (req, res) => {
-  const id = req.params.id;
-  const { password, newPassword } = req.body;
   try {
-    if (!password || !newPassword) {
+    const id = req.params.id;
+    const { password, newPassword, confirmPassword } = req.body;
+    if (!password || !newPassword || !confirmPassword) {
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Mật khẩu xác nhận không chính xác!',
       });
     }
     const response = await userService.updatePasswordService(password, newPassword, id);
@@ -241,6 +250,85 @@ export const userFavorite = async (req, res) => {
       });
     }
     const response = await userService.userFavoriteService(userId, songId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const userFavoriteAlbum = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const albumId = req.body.albumId;
+    if (!albumId || !userId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await userService.userFavoriteAlbumService(userId, albumId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const checkUserFollow = async (req, res) => {
+  try {
+    const { userId, singerId } = req.query;
+    if (!singerId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await userService.checkUserFollowService(userId, singerId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const headersToken = req.headers.token;
+    if (!headersToken) {
+      return res.status(400).json({
+        status: 'ERROR1',
+        msg: 'The authentication',
+      });
+    }
+    const token = headersToken?.split(' ')[1];
+    const response = await jwtService.refreshToken(token);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getAllSingerFollow = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const limit = req.query.limit;
+    if (!userId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await userService.getAllSingerFollowService(userId, limit);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

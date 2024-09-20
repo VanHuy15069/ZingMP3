@@ -1,0 +1,17 @@
+.swiper {
+  width: 100%;
+  height: 240px;
+}
+
+.swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mySwiper {
+  margin: 0 -15px;
+}
+
+.swiper2.swiper {
+  height: auto;
+}

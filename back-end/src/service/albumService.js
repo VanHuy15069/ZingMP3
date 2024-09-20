@@ -1,10 +1,10 @@
-import db from '../models';
+import db, { Sequelize } from '../models';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { clearFile } from '../middleware/uploadFile';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 dotenv.config();
 
 export const createAlbumService = (name, image, singerId) =>
@@ -55,13 +55,16 @@ export const updateAlbumService = (name, image, singerId, albumId, token) =>
         if (singer?.isAdmin) {
           if (image) clearFile(album.image);
           await album.update({ name: name, image: image, singerId: singerId });
+          await album.save();
           resolve({
             status: 'SUCCESS',
             msg: 'Update successfully',
+            data: { albumId, name, singerId },
           });
         } else if (singer?.isSinger && singer?.id == album.singerId) {
           if (image) clearFile(album.image);
           await album.update({ name: name, image: image });
+          await album.save();
           resolve({
             status: 'SUCCESS',
             msg: 'Update successfully',
@@ -84,15 +87,32 @@ export const getDetailAlbumService = (id) =>
       const album = await db.Album.findByPk(id, {
         include: [
           {
-            model: db.Singer,
-            as: 'singerInfo',
-            attributes: ['id', 'name', 'image'],
-          },
-          {
             model: db.Song,
             as: 'songInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name', 'image'],
+              },
+            ],
           },
         ],
+      });
+      const albumFavorite = await db.AlbumFavorite.findAndCountAll({
+        where: { albumId: id },
+      });
+      const listSingers = [];
+      for (const singers of album.songInfo) {
+        listSingers.push(...singers.singerInfo);
+      }
+      const listSingerIds = new Set(listSingers.map((item) => item.id));
+      const singers = await db.Singer.findAll({
+        where: {
+          id: { [Op.in]: [...listSingerIds] },
+        },
+        limit: 5,
+        attributes: ['id', 'name', 'image'],
       });
       if (!album) {
         resolve({
@@ -103,17 +123,19 @@ export const getDetailAlbumService = (id) =>
       resolve({
         status: 'SUCCESS',
         data: album,
+        favorite: albumFavorite.count,
+        singers: singers,
       });
     } catch (error) {
       reject(error);
     }
   });
 
-export const getAllAlbumSingerService = (singerId, limit = 10, offset = 0) =>
+export const getAllAlbumSingerService = (singerIds, limit = 10, offset = 0) =>
   new Promise(async (resolve, reject) => {
     try {
       const albums = await db.Album.findAndCountAll({
-        where: { singerId: singerId },
+        where: { singerId: { [Op.in]: singerIds } },
         limit: limit,
         offset: Number(limit) * Number(offset),
       });
@@ -128,12 +150,29 @@ export const getAllAlbumSingerService = (singerId, limit = 10, offset = 0) =>
     }
   });
 
-export const getAllAlbumsService = (limit = 10, offset = 0) =>
+export const getAllAlbumsService = (limit, offset, albumName, trash = false, name = 'createdAt', sort = 'DESC') =>
   new Promise(async (resolve, reject) => {
     try {
+      const objName = {};
+      const obj = {};
+      if (albumName) objName.name = { [Op.substring]: albumName };
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
       const albums = await db.Album.findAndCountAll({
-        limit: limit,
-        offset: Number(limit) * Number(offset),
+        where: { trash: trash, ...objName },
+        ...obj,
+        order: [[name, sort]],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Song,
+            as: 'songInfo',
+          },
+        ],
       });
       resolve({
         status: 'SUCCESS',
@@ -191,7 +230,6 @@ export const deleteManyAlbumServive = (albumIds, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const albums = await db.Album.findAll({ where: { id: { [Op.in]: albumIds } } });
-      const songs = await db.Song.findAll({ where: { albumId: { [Op.in]: albumIds } } });
       if (!albums) {
         resolve({
           status: 'ERROR',
@@ -211,6 +249,11 @@ export const deleteManyAlbumServive = (albumIds, token) =>
           });
           await db.Song.update({ albumId: null }, { where: { albumId: { [Op.in]: albumIds } } });
           const albumsDelete = await db.Album.destroy({ where: { id: { [Op.in]: albumIds } } });
+          await db.AlbumFavorite.destroy({
+            where: {
+              albumId: { [Op.in]: albumIds },
+            },
+          });
           resolve({
             status: 'SUCCESS',
             count: albumsDelete,
@@ -221,6 +264,11 @@ export const deleteManyAlbumServive = (albumIds, token) =>
           });
           await db.Song.update({ albumId: null }, { where: { albumId: { [Op.in]: albumIds } } });
           const albumsDelete = await db.Album.destroy({ where: { id: { [Op.in]: albumIds } } });
+          await db.AlbumFavorite.destroy({
+            where: {
+              albumId: { [Op.in]: albumIds },
+            },
+          });
           resolve({
             status: 'SUCCESS',
             count: albumsDelete,
@@ -231,6 +279,147 @@ export const deleteManyAlbumServive = (albumIds, token) =>
             msg: 'The authentication',
           });
         }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAlbumHotService = (limit = 5) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const albums = await db.Song.findAll({
+        attributes: ['id', 'albumId', [Sequelize.fn('SUM', Sequelize.col('views')), 'sum']],
+        group: ['albumId'],
+        order: [['sum', 'DESC']],
+        limit: Number(limit),
+        include: [
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+        ],
+      });
+      const hotAlbums = albums.filter((album) => album.albumId !== null);
+      const listIds = hotAlbums.map((item) => item.albumId);
+      const album = await db.Album.findAll({
+        where: {
+          id: { [Op.in]: listIds },
+        },
+        include: [
+          {
+            model: db.Song,
+            as: 'songInfo',
+            include: [
+              {
+                model: db.Singer,
+                as: 'singerInfo',
+                attributes: ['id', 'name'],
+              },
+            ],
+          },
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: album,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const checkFavoriteService = (userId, albumId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (userId) {
+        const isFavorite = await db.AlbumFavorite.findOne({
+          where: { userId: userId, albumId: albumId },
+        });
+        if (isFavorite) {
+          resolve({
+            status: 'SUCCESS',
+            data: true,
+          });
+        } else {
+          resolve({
+            status: 'SUCCESS',
+            data: false,
+          });
+        }
+      } else {
+        resolve({
+          status: 'SUCCESS',
+          data: false,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAlbumBySingerService = (singerIds, limit = 10, offset = 0) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
+      const album = await db.Album.findAll({
+        where: { singerId: { [Op.in]: singerIds } },
+        ...obj,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: album,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAlbumFavoriteService = (userId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const albums = await db.Album.findAll({
+        include: [
+          {
+            model: db.AlbumFavorite,
+            as: 'albumFavorite',
+            where: { userId: userId },
+          },
+          {
+            model: db.Song,
+            as: 'songInfo',
+          },
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: albums,
       });
     } catch (error) {
       reject(error);

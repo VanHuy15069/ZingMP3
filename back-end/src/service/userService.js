@@ -29,8 +29,7 @@ export const addUserService = ({ fullName, username, passWord, email, image }) =
         });
       } else {
         resolve({
-          response: user,
-          err: 0,
+          data: user,
           msg: 'Successful account registration',
         });
       }
@@ -42,7 +41,7 @@ export const addUserService = ({ fullName, username, passWord, email, image }) =
 export const loginUserService = (userLogin) =>
   new Promise(async (resolve, reject) => {
     try {
-      const { username, passWord } = userLogin;
+      const { username, password } = userLogin;
       const checkUser = await db.User.findOne({
         where: {
           username: username,
@@ -54,7 +53,7 @@ export const loginUserService = (userLogin) =>
           msg: 'User does not exist',
         });
       } else {
-        const checkPassword = bcryptjs.compareSync(passWord, checkUser.passWord);
+        const checkPassword = bcryptjs.compareSync(password, checkUser.passWord);
         if (!checkPassword) {
           resolve({
             status: 'ERROR',
@@ -70,10 +69,12 @@ export const loginUserService = (userLogin) =>
           const accessToken = jwt.renderAccessToken({
             id: checkUser.id,
             isAdmin: checkUser.isAdmin,
+            isSinger: false,
           });
           const refreshToken = jwt.renderRefreshToken({
             id: checkUser.id,
             isAdmin: checkUser.isAdmin,
+            isSinger: false,
           });
           resolve({
             accessToken: accessToken,
@@ -274,6 +275,16 @@ export const deleteManyUserService = (userIds) =>
             fs.unlinkSync(clearImg);
           }
         });
+        await db.Follow.destroy({
+          where: {
+            userId: { [Op.in]: userIds },
+          },
+        });
+        await db.AlbumFavorite.destroy({
+          where: {
+            userId: { [Op.in]: userIds },
+          },
+        });
       }
       resolve({
         status: 'SUCCESS',
@@ -298,15 +309,16 @@ export const updatePasswordService = (password, newPassword, id) =>
       if (!checkPassword) {
         resolve({
           status: 'ERROR',
-          msg: 'Incorrect password',
+          msg: 'Mật khẩu không chính xác',
+        });
+      } else {
+        await user.update({ passWord: hashPassword(newPassword) });
+        await user.save();
+        resolve({
+          status: 'SUCCESS',
+          data: user,
         });
       }
-      await user.update({ passWord: hashPassword(newPassword) });
-      await user.save();
-      resolve({
-        status: 'SUCCESS',
-        data: user,
-      });
     } catch (error) {
       reject(error);
     }
@@ -350,6 +362,82 @@ export const userFavoriteService = (userId, songId) =>
       resolve({
         status: 'SUCCESS',
         data: favorite,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const userFavoriteAlbumService = (userId, albumId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const [favorite, created] = await db.AlbumFavorite.findOrCreate({
+        where: { userId: userId, albumId: albumId },
+      });
+      if (!created) {
+        await favorite.destroy();
+        resolve({
+          status: 'SUCCESS',
+          msg: 'UNFAVORITE',
+        });
+      }
+      resolve({
+        status: 'SUCCESS',
+        data: favorite,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const checkUserFollowService = (userId, singerId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (userId) {
+        const checkFollow = await db.Follow.findOne({
+          where: { userId: userId, singerId: singerId },
+        });
+        if (checkFollow) {
+          resolve({
+            status: 'SUCCESS',
+            data: true,
+          });
+        }
+        resolve({
+          status: 'SUCCESS',
+          data: false,
+        });
+      } else {
+        resolve({
+          status: 'SUCCESS',
+          data: false,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllSingerFollowService = (userId, limit) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const objLimit = {};
+      if (limit) objLimit.limit = Number(limit);
+      const singers = await db.Follow.findAll({
+        where: { userId: userId },
+        ...objLimit,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name', 'image'],
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: singers,
       });
     } catch (error) {
       reject(error);

@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Album.hasMany(models.Song, { foreignKey: 'albumId', as: 'songInfo' });
       Album.belongsTo(models.Singer, { foreignKey: 'singerId', as: 'singerInfo' });
+      Album.hasMany(models.AlbumFavorite, { foreignKey: 'albumId', as: 'albumFavorite' });
     }
   }
   Album.init(
