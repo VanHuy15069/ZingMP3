@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd';
 
-function ModalCreate({ children, title, isModalOpen, formId, onCancel, btnText }) {
+function ModalCreate({ children, title, isModalOpen, formId, onCancel, btnText, loading = false }) {
   return (
     <Modal
       centered
@@ -9,7 +9,7 @@ function ModalCreate({ children, title, isModalOpen, formId, onCancel, btnText }
       open={isModalOpen}
       onCancel={onCancel}
       footer={[
-        <Button key="submit" type="primary" htmlType="submit" form={formId}>
+        <Button loading={loading} key="submit" type="primary" htmlType="submit" form={formId}>
           {btnText}
         </Button>,
       ]}

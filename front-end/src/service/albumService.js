@@ -102,3 +102,18 @@ export const deleteAlbum = async (albumIds, accessToken) => {
   });
   return res.data;
 };
+
+export const getAllAlbumBySingerId = async (id, limit, offset, name, trash, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/album/get-albums-singerId/${id}`, {
+    params: {
+      limit: limit,
+      offset: offset,
+      name: name,
+      trash: trash,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};

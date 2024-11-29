@@ -35,7 +35,7 @@ function ModalPlaylist({
         centered
         footer={
           isAddSong
-            ? []
+            ? [<div className="-mt-[12px]"></div>]
             : [
                 <div key={0} className="text-center">
                   <Button

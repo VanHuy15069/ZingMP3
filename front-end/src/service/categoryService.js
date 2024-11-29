@@ -1,12 +1,12 @@
-import { data } from 'autoprefixer';
 import axios from 'axios';
 
-export const getAllCategory = async (limit, offset, trash) => {
+export const getAllCategory = async (limit, offset, trash, name) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/category/get-all`, {
     params: {
       limit: limit,
       offset: offset,
       trash: trash,
+      name: name,
     },
   });
   return res.data;

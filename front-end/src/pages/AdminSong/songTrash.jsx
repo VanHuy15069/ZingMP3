@@ -14,13 +14,16 @@ function SongTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const songs = useGetAllSongs(5, currentPage - 1, null, 'createdAt', 'DESC', 1);
+  const [searchValue, setSearchValue] = useState('');
+  const songs = useGetAllSongs(10, currentPage - 1, searchValue, 'createdAt', 'DESC', 1);
   const updateTrashSong = useUpdateTrashSong();
   const deleteSong = useDeleteSong();
   const columns = [
     {
       title: 'Tên bài hát',
       dataIndex: 'name',
+      width: 200,
+      fixed: 'left',
     },
     {
       title: 'Hình ảnh',
@@ -43,8 +46,9 @@ function SongTrash() {
       render: (topic) => `${topic.name}`,
     },
     {
-      title: 'Ca sĩ',
+      title: 'Nghệ sĩ',
       dataIndex: 'singer',
+      width: 200,
       render: (singers) => {
         return (
           <div className="flex items-center flex-wrap">
@@ -79,7 +83,9 @@ function SongTrash() {
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '1%',
+      align: 'center',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = songs.data?.data.map((item) => {
@@ -112,6 +118,9 @@ function SongTrash() {
       ),
     };
   });
+  const handleSeach = (value) => {
+    setSearchValue(value);
+  };
   const handleRestore = (song) => {
     Swal.fire({
       title: `Xác nhận khôi phục bài hát ${song.name}!`,
@@ -204,23 +213,31 @@ function SongTrash() {
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        search
+        placeholderSearch={'Tìm kiếm bài hát'}
         trash
         disabled={selectedRowKeys.length === 0}
         title={'Quản lý bài hát (Thùng rác)'}
         icon={<LuListMusic />}
         onCreate={handleRestoreMany}
         onDelete={handleDeleteMany}
+        onSearch={handleSeach}
       />
       <Table
+        scroll={{
+          x: 1500,
+          y: songs.data?.count > 5 ? 'calc(100vh - 270px)' : null,
+        }}
         pagination={{
           current: currentPage,
-          pageSize: 5,
+          pageSize: 10,
           total: songs.data?.count,
           onChange,
         }}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        loading={songs.isLoading}
       />
     </Flex>
   );

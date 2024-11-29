@@ -1,11 +1,12 @@
 import axios from 'axios';
 
-export const getAllNation = async (limit, offset, trash) => {
+export const getAllNation = async (limit, offset, trash, name) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/nation/get-all`, {
     params: {
       limit: limit,
       offset: offset,
       trash: trash,
+      name: name,
     },
   });
   return res.data;

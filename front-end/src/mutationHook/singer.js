@@ -31,6 +31,7 @@ export const useUpdateSinger = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-singers'] });
+      queryClient.invalidateQueries({ queryKey: ['singer'] });
     },
   });
 };
@@ -55,6 +56,34 @@ export const useDeleteSinger = () => {
     mutationFn: async ({ singerIds, accessToken }) => {
       if (singerIds && accessToken) {
         return await singerService.deleteSinger(singerIds, accessToken);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-singers'] });
+    },
+  });
+};
+
+export const useCreateAccountSinger = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, username, password, confirmPassword, accessToken }) => {
+      if (id && username && password && confirmPassword && accessToken && password === confirmPassword) {
+        return await singerService.createAccountSinger(id, username, password, confirmPassword, accessToken);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-singers'] });
+    },
+  });
+};
+
+export const useDeleteAccountSinger = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, accessToken }) => {
+      if (id && accessToken) {
+        return await singerService.deleteAccountSinger(id, accessToken);
       }
     },
     onSuccess: () => {

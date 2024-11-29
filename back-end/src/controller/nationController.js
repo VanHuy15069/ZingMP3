@@ -67,9 +67,9 @@ export const deleteManyNation = async (req, res) => {
 };
 
 export const getAllNation = async (req, res) => {
-  const { limit, offset, trash } = req.query;
+  const { limit, offset, trash, name } = req.query;
   try {
-    const response = await nationService.getAllNationService(limit, offset, trash);
+    const response = await nationService.getAllNationService(limit, offset, trash, name);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

@@ -2,6 +2,7 @@ import AdminAlbum from '../pages/AdminAlbum';
 import AlbumTrash from '../pages/AdminAlbum/albumTrash';
 import AdminCategory from '../pages/AdminCategory';
 import CategoryTrash from '../pages/AdminCategory/categoryTrash';
+import AdminContact from '../pages/AdminContact';
 import AdminNation from '../pages/adminNation';
 import NationTrash from '../pages/adminNation/nationTrash';
 import AdminPage from '../pages/AdminPage';
@@ -13,7 +14,10 @@ import AdminSong from '../pages/AdminSong';
 import SongTrash from '../pages/AdminSong/songTrash';
 import AdminTopic from '../pages/AdminTopic';
 import TopicTrash from '../pages/AdminTopic/topicTrash';
+import AdminUser from '../pages/AdminUser';
+import UserTrash from '../pages/AdminUser/userTrash';
 import CategoryPage from '../pages/categoryPage';
+import ContactPage from '../pages/contactPage';
 import DetailAlbumPage from '../pages/detailAlbumPage';
 import DetailPlaylistPage from '../pages/detailPlaylistPage';
 import DetailSongPage from '../pages/DetailSongPage';
@@ -29,14 +33,24 @@ import NewSongPage from '../pages/newSongPage';
 import ProfilePage from '../pages/ProfilePage';
 import RegisterPage from '../pages/RegisterPage';
 import SearchPage from '../pages/searchPage';
+import SingerAlbum from '../pages/SingerAlbum';
+import SingerAlbumTrash from '../pages/SingerAlbum/SingerAlbumTrash';
+import SingerDetailPage from '../pages/SingerDetail';
+import SingerManageSongs from '../pages/SingerManageSongs';
+import SingerSongTrash from '../pages/SingerManageSongs/songTrash';
 import SingerPage from '../pages/singerPage';
+import SingerSongPage from '../pages/SingerSongPage';
+import SinglePage from '../pages/SinglePage';
 import TopicPage from '../pages/topicPage';
+import VipPage from '../pages/vipPage';
 
 export const publicRouter = [
   { path: '/', component: HomePage },
   { path: '/register', component: RegisterPage, layout: null },
   { path: '/login', component: LoginPage, layout: null },
   { path: '/singer/:id', component: SingerPage },
+  { path: '/singer/songs/:id', component: SingerSongPage },
+  { path: '/single/:id', component: SinglePage },
   { path: '/new-songs', component: NewSongPage },
   { path: '/new-release', component: NewReleasePage },
   { path: '/song/:id', component: DetailSongPage },
@@ -46,6 +60,7 @@ export const publicRouter = [
   { path: '/nation/:id', component: NationPage },
   { path: '/topic/:id', component: TopicPage },
   { path: '/category/:id', component: CategoryPage },
+  { path: '/contact', component: ContactPage, layout: null },
 ];
 
 export const userRouter = [
@@ -54,6 +69,7 @@ export const userRouter = [
   { path: '/my-music/playlists', component: LibraryPlaylistPage },
   { path: '/playlist/:id', component: DetailPlaylistPage },
   { path: '/account', component: ProfilePage },
+  { path: '/vip', component: VipPage, layout: null },
 ];
 
 export const adminRouter = [
@@ -72,4 +88,15 @@ export const adminRouter = [
   { path: '/dashboard/album/trash', component: AlbumTrash },
   { path: '/dashboard/slide', component: AdminSlider },
   { path: '/dashboard/slider/trash', component: SliderTrash },
+  { path: '/dashboard/user', component: AdminUser },
+  { path: '/dashboard/user/trash', component: UserTrash },
+  { path: '/dashboard/contact', component: AdminContact },
+];
+
+export const artistRouer = [
+  { path: '/dashboard/singer/detail', component: SingerDetailPage },
+  { path: '/dashboard/singer/song', component: SingerManageSongs },
+  { path: '/dashboard/singer/song/trash', component: SingerSongTrash },
+  { path: '/dashboard/singer/album', component: SingerAlbum },
+  { path: '/dashboard/singer/album/trash', component: SingerAlbumTrash },
 ];

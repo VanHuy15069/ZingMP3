@@ -208,12 +208,30 @@ export const updateTrashAlbumService = (albumIds, trash = 0, token) =>
             status: 'SUCCESS',
             count: albumsDelete,
           });
-        } else if (singer?.isSinger && albumIds.length === 1 && singer?.id == albums[0].singerId) {
-          const albumsDelete = await db.Album.update({ trash: trash }, { where: { id: { [Op.in]: albumIds } } });
-          resolve({
-            status: 'SUCCESS',
-            count: albumsDelete,
-          });
+        } else if (singer?.isSinger) {
+          function checkAllAlbum(arr) {
+            for (let obj of arr) {
+              if (obj.singerId != singer.id) {
+                return false;
+              }
+            }
+            return true;
+          }
+          const checkSinger = checkAllAlbum(albums);
+          if (checkSinger) {
+            const albumsDelete = await db.Album.update({ trash: trash }, { where: { id: { [Op.in]: albumIds } } });
+            resolve({
+              check: checkSinger,
+              status: 'SUCCESS',
+              count: albumsDelete,
+            });
+          } else {
+            resolve({
+              check: checkSinger,
+              status: 'ERROR',
+              msg: 'The authentication',
+            });
+          }
         } else {
           resolve({
             status: 'ERROR',
@@ -258,21 +276,37 @@ export const deleteManyAlbumServive = (albumIds, token) =>
             status: 'SUCCESS',
             count: albumsDelete,
           });
-        } else if (singer?.isSinger && albumIds.length === 1 && singer?.id == albums[0].singerId) {
-          albums.forEach((item) => {
-            if (item.image) clearFile(item.image);
-          });
-          await db.Song.update({ albumId: null }, { where: { albumId: { [Op.in]: albumIds } } });
-          const albumsDelete = await db.Album.destroy({ where: { id: { [Op.in]: albumIds } } });
-          await db.AlbumFavorite.destroy({
-            where: {
-              albumId: { [Op.in]: albumIds },
-            },
-          });
-          resolve({
-            status: 'SUCCESS',
-            count: albumsDelete,
-          });
+        } else if (singer?.isSinger) {
+          function checkAllAlbum(arr) {
+            for (let obj of arr) {
+              if (obj.singerId !== singer.id) {
+                return false;
+              }
+            }
+            return true;
+          }
+          const checkSinger = checkAllAlbum(albums);
+          if (checkSinger) {
+            albums.forEach((item) => {
+              if (item.image) clearFile(item.image);
+            });
+            await db.Song.update({ albumId: null }, { where: { albumId: { [Op.in]: albumIds } } });
+            const albumsDelete = await db.Album.destroy({ where: { id: { [Op.in]: albumIds } } });
+            await db.AlbumFavorite.destroy({
+              where: {
+                albumId: { [Op.in]: albumIds },
+              },
+            });
+            resolve({
+              status: 'SUCCESS',
+              count: albumsDelete,
+            });
+          } else {
+            resolve({
+              status: 'ERROR',
+              msg: 'The authentication',
+            });
+          }
         } else {
           resolve({
             status: 'ERROR',
@@ -420,6 +454,45 @@ export const getAlbumFavoriteService = (userId) =>
       resolve({
         status: 'SUCCESS',
         data: albums,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllAlbumBySingerService = (singerId, limit, offset, name, trash) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const obj = {};
+      const search = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
+      if (name) search.name = { [Op.substring]: name };
+      const albums = await db.Album.findAndCountAll({
+        where: {
+          singerId: singerId,
+          ...search,
+          trash: trash,
+        },
+        ...obj,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Song,
+            as: 'songInfo',
+          },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: albums,
+        currentPage: offset,
+        totalPage: Math.ceil(albums.count / Number(limit)),
       });
     } catch (error) {
       reject(error);

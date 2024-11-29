@@ -90,9 +90,54 @@ export const updateSinger = async (req, res) => {
   }
 };
 
-export const deleteManySinger = async (req, res) => {
-  const singerIds = req.query.singerIds?.split(',');
+export const updateAccountSinger = async (req, res) => {
   try {
+    const singerId = req.params.id;
+    const { username, password, confirmPassword } = req.body;
+    if (!singerId || !username || !password || !confirmPassword) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: '  Password incorrect',
+      });
+    }
+    const response = await singerService.updateAccountSingerService(singerId, username, password);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const deleteAccountSinger = async (req, res) => {
+  try {
+    const singerId = req.params.id;
+    if (!singerId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await singerService.deleteAccountSingerService(singerId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const deleteManySinger = async (req, res) => {
+  try {
+    const singerIds = req.query.singerIds?.split(',');
     if (!singerIds) {
       return res.status(400).json({
         status: 'ERROR',
@@ -231,6 +276,26 @@ export const getHotSongBySingerRandom = async (req, res) => {
       });
     }
     const response = await singerService.getHotSongBySingerRandomService(userId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getAllSongBySinger = async (req, res) => {
+  try {
+    const singerId = req.params.id;
+    const { limit, offset, name, trash } = req.query;
+    if (!singerId || !trash) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await singerService.getAllSongBySingerService(singerId, limit, offset, name, trash);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

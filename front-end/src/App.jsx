@@ -1,6 +1,6 @@
 import { Fragment, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { publicRouter, userRouter, adminRouter } from './router';
+import { publicRouter, userRouter, adminRouter, artistRouer } from './router';
 import DefaultLayout from './Layout/defaultLayout';
 import { useAudioStore, useUserStore } from './store';
 import * as userService from './service/userService';
@@ -8,6 +8,7 @@ import * as singerService from './service/singerService';
 import { jwtDecode } from 'jwt-decode';
 import { isJsonString } from './golobalFn';
 import AdminLayout from './Layout/adminLayout';
+import SingerLayout from './Layout/singerLayout';
 
 function App() {
   const accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -36,7 +37,6 @@ function App() {
     }
     return { decoded, storateData, refreshToken };
   };
-  console.log(handleDecoded());
 
   useEffect(() => {
     const { storateData, decoded } = handleDecoded();
@@ -78,9 +78,13 @@ function App() {
               key={index}
               path={route.path}
               element={
-                <Layout>
-                  <Page />
-                </Layout>
+                accessToken && handleDecoded().decoded.isSinger ? (
+                  <Navigate to={'/dashboard/singer/detail'} />
+                ) : (
+                  <Layout>
+                    <Page />
+                  </Layout>
+                )
               }
             />
           );
@@ -97,6 +101,24 @@ function App() {
                   <Layout>
                     <Page />
                   </Layout>
+                ) : (
+                  <Navigate to={'/login'} />
+                )
+              }
+            />
+          );
+        })}
+        {artistRouer.map((route, index) => {
+          const Page = route.component;
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                accessToken && handleDecoded().decoded.isSinger ? (
+                  <SingerLayout>
+                    <Page />
+                  </SingerLayout>
                 ) : (
                   <Navigate to={'/login'} />
                 )

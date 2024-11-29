@@ -55,14 +55,16 @@ export const updateCategoryService = (name, image, id) =>
     }
   });
 
-export const getAllCategoryService = (limit, offset, trash = 0) =>
+export const getAllCategoryService = (limit, offset, trash = 0, name) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
+      const search = {};
+      if (name) search.name = { [Op.substring]: name };
       if (limit) obj.limit = Number(limit);
       if (offset) obj.offset = Number(limit) * Number(offset);
       const categories = await db.Category.findAndCountAll({
-        where: { trash: trash },
+        where: { trash: trash, ...search },
         ...obj,
         include: [
           {

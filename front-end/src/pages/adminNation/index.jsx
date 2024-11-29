@@ -25,8 +25,9 @@ function AdminNation() {
   const [checkImage, setCheckImage] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const nation = useGetAllNation(5, currentPage - 1, false);
-  const trash = useGetAllNation(null, null, 1);
+  const [searchValue, setSearchValue] = useState('');
+  const nation = useGetAllNation(10, currentPage - 1, false, searchValue);
+  const trash = useGetAllNation(null, null, 1, null);
   const createNation = useCreateNation();
   const updateNation = useUpdateNation();
   const updateTrashNation = useUpdateTrashNation();
@@ -34,17 +35,17 @@ function AdminNation() {
     {
       title: 'Tên quốc gia',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      align: 'center',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = nation.data?.data.rows.map((item) => {
@@ -71,6 +72,9 @@ function AdminNation() {
       ),
     };
   });
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -207,22 +211,29 @@ function AdminNation() {
     <>
       <Flex gap="middle" vertical>
         <TitleAdmin
+          search
+          placeholderSearch={'Tìm kiếm quốc gia'}
           title={'Quản lý quốc gia'}
           icon={<IoEarthOutline />}
           onCreate={handleCreate}
           onDelete={handleTrashMany}
+          onSearch={handleSearch}
           number={trash.data?.data.count}
         />
         <Table
+          scroll={{
+            y: nation.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+          }}
           pagination={{
             current: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             total: nation.data?.data.count,
             onChange,
           }}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          loading={nation.isLoading}
         />
       </Flex>
       <ModalCreate

@@ -40,3 +40,35 @@ export const feedbackContact = async (req, res) => {
     });
   }
 };
+
+export const getAllContact = async (req, res) => {
+  try {
+    const { limit, offset, status } = req.query;
+    const response = await contactService.getAllContactService(limit, offset, status);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const deleteManyContacts = async (req, res) => {
+  try {
+    const contactIds = req.query.contactIds?.split(',');
+    if (!contactIds) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await contactService.deleteManyContactService(contactIds);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};

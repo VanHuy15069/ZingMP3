@@ -66,7 +66,7 @@ export const getDetailUser = async (req, res) => {
 };
 
 export const getAllUser = async (req, res) => {
-  const { limit, offset } = req.body;
+  const { limit, offset } = req.query;
   try {
     const response = await userService.getAllUserService(limit, offset);
     return res.status(200).json(response);
@@ -79,7 +79,7 @@ export const getAllUser = async (req, res) => {
 };
 
 export const getAllUserIntoTrash = async (req, res) => {
-  const { limit, offset } = req.body;
+  const { limit, offset } = req.query;
   try {
     const response = await userService.getAllUserIntoTrashService(limit, offset);
     return res.status(200).json(response);
@@ -120,12 +120,6 @@ export const updatePrivateUser = async (req, res) => {
   const id = req.params.id;
   const { status, vip } = req.body;
   try {
-    if (!vip || !status) {
-      return res.status(400).json({
-        status: 'ERROR',
-        msg: 'Full information is required',
-      });
-    }
     const response = await userService.updatePrivateUserService(status, vip, id);
     return res.status(200).json(response);
   } catch (error) {
@@ -175,8 +169,8 @@ export const restoreManyUsers = async (req, res) => {
 };
 
 export const deleteManyUser = async (req, res) => {
-  const userIds = req.body.userIds?.split(',');
   try {
+    const userIds = req.query.userIds?.split(',');
     if (!userIds) {
       return res.status(400).json({
         status: 'ERROR',

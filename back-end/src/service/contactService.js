@@ -2,6 +2,7 @@ import db from '../models';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { Op } from 'sequelize';
 dotenv.config();
 
 export const createContactService = (fullName, problem, phone, email, content) =>
@@ -83,6 +84,58 @@ export const feedbackContactService = (feedback, id, token) =>
               msg: 'The authentication',
             });
           }
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllContactService = (limit = 10, offset = 0, status) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const obj = {};
+      if (status) obj.where = { status: status };
+      const contacts = await db.Contact.findAndCountAll({
+        ...obj,
+        limit: Number(limit),
+        offset: Number(limit) * Number(offset),
+        order: [['createdAt', 'DESC']],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: contacts,
+        currentPage: offset,
+        totalPage: Math.ceil(contacts.count / Number(limit)),
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const deleteManyContactService = (contactIds) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const contacts = await db.Contact.findAll({
+        where: {
+          id: { [Op.in]: contactIds },
+        },
+      });
+      const checkFeedback = contacts.some((item) => item.status == false);
+      if (checkFeedback) {
+        resolve({
+          status: 'WANRING',
+          msg: 'Tồn tại nội dung vẫn chưa phản hồi!',
+        });
+      } else {
+        const contactsDeleted = await db.Contact.destroy({
+          where: {
+            id: { [Op.in]: contactIds },
+          },
+        });
+        resolve({
+          status: 'SUCCESS',
+          count: contactsDeleted,
         });
       }
     } catch (error) {

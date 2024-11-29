@@ -13,7 +13,8 @@ import { Bounce, toast } from 'react-toastify';
 function CategoryTrash() {
   const user = useUserStore((state) => state.user);
   const [currentPage, setCurrentPage] = useState(1);
-  const category = useGetAllCategory(5, currentPage - 1, 1);
+  const [searchValue, setSearchValue] = useState('');
+  const category = useGetAllCategory(10, currentPage - 1, 1, searchValue);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const updateTrashCategory = useUpdateTrashCategory();
   const deleteCategory = useDeleteCategory();
@@ -21,17 +22,17 @@ function CategoryTrash() {
     {
       title: 'Tên thể loại',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      align: 'center',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = category.data?.data.rows.map((item) => {
@@ -58,6 +59,9 @@ function CategoryTrash() {
       ),
     };
   });
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   const handleRestore = (item) => {
     Swal.fire({
       title: `Xác nhận khôi phục thể loại nhạc ${category.name}!`,
@@ -154,17 +158,23 @@ function CategoryTrash() {
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        search
+        placeholderSearch={'Tìm kiếm thể loại'}
         trash
         disabled={selectedRowKeys.length === 0}
         title={'Quản lý thể loại (Thùng rác)'}
         icon={<TbCategoryPlus />}
         onCreate={handleRestoreMany}
         onDelete={handleDeleteMany}
+        onSearch={handleSearch}
       />
       <Table
+        scroll={{
+          y: category.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+        }}
         pagination={{
           current: currentPage,
-          pageSize: 5,
+          pageSize: 10,
           total: category.data?.data.count,
           onChange,
         }}
@@ -172,6 +182,7 @@ function CategoryTrash() {
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        loading={category.isLoading}
       />
     </Flex>
   );

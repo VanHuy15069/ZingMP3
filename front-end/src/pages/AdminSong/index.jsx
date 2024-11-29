@@ -38,14 +38,15 @@ function AdminSong() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [option, setOption] = useState(1);
+  const [searchValue, setSearchValue] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const nations = useGetAllNation(null, null, false);
-  const categories = useGetAllCategory(null, null, false);
-  const topics = useGetAllTopic(null, null, false);
+  const nations = useGetAllNation(null, null, false, null);
+  const categories = useGetAllCategory(null, null, false, null);
+  const topics = useGetAllTopic(null, null, false, null);
   const singers = useGetAllSingers(null, null, false, null);
   const trash = useGetAllSongs(null, null, null, 'createdAt', 'DESC', 1);
   const albums = useGetAlbumsBySinger(singerIds.join(','), null, null);
-  const songs = useGetAllSongs(5, currentPage - 1, null, 'createdAt', 'DESC', false);
+  const songs = useGetAllSongs(10, currentPage - 1, searchValue, 'createdAt', 'DESC', false);
   const createSong = useCreateSong();
   const updateSong = useUpdateSong();
   const updateTrashSong = useUpdateTrashSong();
@@ -73,6 +74,7 @@ function AdminSong() {
       label: singer.name,
     };
   });
+
   const optionAlbum = albums.data?.data.map((album) => {
     return {
       value: album.id,
@@ -83,6 +85,8 @@ function AdminSong() {
     {
       title: 'Tên bài hát',
       dataIndex: 'name',
+      width: 160,
+      fixed: 'left',
     },
     {
       title: 'Hình ảnh',
@@ -105,8 +109,9 @@ function AdminSong() {
       render: (topic) => `${topic.name}`,
     },
     {
-      title: 'Ca sĩ',
+      title: 'Nghệ sĩ',
       dataIndex: 'singer',
+      width: 200,
       render: (singers) => {
         return (
           <div className="flex items-center flex-wrap">
@@ -141,11 +146,14 @@ function AdminSong() {
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '1%',
+      align: 'center',
+      width: 290,
+      fixed: 'right',
     },
   ];
-  const dataSource = songs.data?.data.map((item) => {
+  const dataSource = songs.data?.data.map((item, index) => {
     return {
+      index: index + 1,
       key: item.id,
       name: <p className={item.vip ? 'text-yellow-500 font-bold' : ''}>{item.name}</p>,
       image: (
@@ -163,7 +171,7 @@ function AdminSong() {
       singer: item.singerInfo,
       album: item.albumInfo,
       action: (
-        <Flex gap="small">
+        <Flex gap="small" justify="flex-end">
           <Button type="primary" size="large" icon={<EditOutlined />} onClick={() => handleOpenUpdate(item)}>
             Chỉnh sửa
           </Button>
@@ -254,6 +262,9 @@ function AdminSong() {
   };
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
+  };
+  const handleSeach = (value) => {
+    setSearchValue(value);
   };
   useEffect(() => {
     return () => URL.revokeObjectURL(imgUpload);
@@ -373,23 +384,30 @@ function AdminSong() {
     <>
       <Flex gap="middle" vertical>
         <TitleAdmin
+          search
+          placeholderSearch={'Tìm kiếm bài hát'}
           title={'Quản lý bài hát'}
           icon={<LuListMusic />}
           onCreate={handleCreate}
           onDelete={handleTrashMany}
+          onSearch={handleSeach}
           number={trash.data?.count}
         />
         <Table
-          scroll={{ x: true }}
+          scroll={{
+            x: 1500,
+            y: songs.data?.count > 5 ? 'calc(100vh - 270px)' : null,
+          }}
           pagination={{
             current: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             total: songs.data?.count,
             onChange,
           }}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          loading={songs.isLoading}
         />
       </Flex>
       <ModalCreate
@@ -398,7 +416,7 @@ function AdminSong() {
         formId={'song'}
         onCancel={() => {
           setIsModalOpen(false);
-          // form.resetFields();
+          form.resetFields();
         }}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
       >
@@ -455,12 +473,12 @@ function AdminSong() {
               options={optionTopics}
             />
           </Form.Item>
-          <Form.Item label="Tên ca sĩ" name="singerIds" rules={[{ required: true, message: 'Hãy nhập tên ca sĩ' }]}>
+          <Form.Item label="Tên nghệ sĩ" name="singerIds" rules={[{ required: true, message: 'Hãy nhập tên nghệ sĩ' }]}>
             <Select
               mode="multiple"
               allowClear
               showSearch
-              placeholder="Tên ca sĩ"
+              placeholder="Tên nghệ sĩ"
               optionFilterProp="label"
               filterSort={(optionA, optionB) =>
                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
@@ -474,7 +492,7 @@ function AdminSong() {
               allowClear
               showSearch
               disabled={singerIds.length === 0}
-              placeholder={singerIds.length === 0 ? 'Chọn ca sĩ trước' : 'Tên album'}
+              placeholder={singerIds.length === 0 ? 'Chọn nghệ sĩ trước' : 'Tên album'}
               optionFilterProp="label"
               filterSort={(optionA, optionB) =>
                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())

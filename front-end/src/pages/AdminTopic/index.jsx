@@ -25,7 +25,8 @@ function AdminTopic() {
   const [checkImage, setCheckImage] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const topic = useGetAllTopic(5, currentPage - 1, false);
+  const [searchValue, setSearchValue] = useState('');
+  const topic = useGetAllTopic(10, currentPage - 1, false, searchValue);
   const createTopic = useCreateTopic();
   const updateTopic = useUpdateTopic();
   const updateTrashTopic = useUpdateTrashTopic();
@@ -34,17 +35,16 @@ function AdminTopic() {
     {
       title: 'Tên chủ đề',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = topic.data?.data.rows.map((item) => {
@@ -97,6 +97,9 @@ function AdminTopic() {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+  };
+  const handleSearch = (value) => {
+    setSearchValue(value);
   };
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
@@ -203,22 +206,29 @@ function AdminTopic() {
     <>
       <Flex gap="middle" vertical>
         <TitleAdmin
+          search
+          placeholderSearch={'Tìm kiếm chủ đề'}
           title={'Quản lý chủ đề'}
           icon={<MdOutlineTopic />}
           onCreate={handleCreate}
           onDelete={handleTrashMany}
+          onSearch={handleSearch}
           number={trashTopic.data?.data.count}
         />
         <Table
+          scroll={{
+            y: topic.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+          }}
           pagination={{
             current: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             total: topic.data?.data.count,
             onChange,
           }}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          loading={topic.isLoading}
         />
       </Flex>
       <ModalCreate

@@ -101,7 +101,7 @@ function Infomation({ user, accessToken }) {
             </Button>
             {imgUpload && (
               <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
-                <Image src={imgUpload} alt="" className="w-full h-full object-cover" />
+                <Image src={imgUpload} height={80} width={80} alt="" className="object-cover" />
               </div>
             )}
           </div>

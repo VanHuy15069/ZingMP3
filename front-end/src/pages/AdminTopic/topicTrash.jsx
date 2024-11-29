@@ -13,24 +13,24 @@ function TopicTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const topic = useGetAllTopic(5, currentPage - 1, 1);
+  const [searchValue, setSearchValue] = useState('');
+  const topic = useGetAllTopic(10, currentPage - 1, 1, searchValue);
   const updateTrashTopic = useUpdateTrashTopic();
   const deleteTopic = useDeleteTopic();
   const columns = [
     {
       title: 'Tên chủ đề',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = topic.data?.data.rows.map((item) => {
@@ -57,6 +57,9 @@ function TopicTrash() {
       ),
     };
   });
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   const handleRestore = (topic) => {
     Swal.fire({
       title: `Xác nhận khôi phục chủ đề ${topic.name}!`,
@@ -149,23 +152,30 @@ function TopicTrash() {
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        search
+        placeholderSearch={'Tìm kiếm chủ đề'}
         trash
         disabled={selectedRowKeys.length === 0}
         title={'Quản lý chủ đề (Thùng rác)'}
         icon={<MdOutlineTopic />}
         onCreate={handleRestoreMany}
         onDelete={handleDeleteMany}
+        onSearch={handleSearch}
       />
       <Table
+        scroll={{
+          y: topic.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+        }}
         pagination={{
           current: currentPage,
-          pageSize: 5,
+          pageSize: 10,
           total: topic.data?.data.count,
           onChange,
         }}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        loading={topic.isLoading}
       />
     </Flex>
   );

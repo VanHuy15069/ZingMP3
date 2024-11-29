@@ -14,29 +14,27 @@ function AlbumTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const albums = useGetAllAlbums(5, currentPage - 1, null, 1, 'createdAt', 'DESC');
+  const albums = useGetAllAlbums(10, currentPage - 1, null, 1, 'createdAt', 'DESC');
   const updateTrashAlbum = useUpdateTrashAlbum();
   const deleteAlbum = useDeleteAlbum();
   const columns = [
     {
       title: 'Tên album',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '30%',
     },
     {
-      title: 'Ca sĩ',
+      title: 'Nghệ sĩ',
       dataIndex: 'singer',
-      width: '20%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = albums.data?.data.rows.map((item) => {
@@ -164,15 +162,19 @@ function AlbumTrash() {
         onDelete={handleDeleteMany}
       />
       <Table
+        scroll={{
+          y: albums.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+        }}
         pagination={{
           current: currentPage,
-          pageSize: 5,
+          pageSize: 10,
           total: albums.data?.data.count,
           onChange,
         }}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        loading={albums.isLoading}
       />
     </Flex>
   );

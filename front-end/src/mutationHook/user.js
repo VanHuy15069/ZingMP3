@@ -133,3 +133,65 @@ export const useChangePassword = () => {
     },
   });
 };
+
+export const usesUpdatePrivateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ status, vip, id, accessToken }) => {
+      if (id && accessToken) {
+        return await userService.updatePrivateUser(status, vip, id, accessToken);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-user'] });
+    },
+    onError: (e) => {
+      alert('ĐÃ CÓ LỖI XẢY RA!');
+    },
+  });
+};
+
+export const useMoveUserToTrash = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userIds, accessToken }) => {
+      return await userService.moveUserToTrash(userIds, accessToken);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-user'] });
+      queryClient.invalidateQueries({ queryKey: ['get-all-user-trash'] });
+    },
+    onError: (e) => {
+      alert('ĐÃ CÓ LỖI XẢY RA!');
+    },
+  });
+};
+
+export const useRestoreUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userIds, accessToken }) => {
+      return await userService.restoreUser(userIds, accessToken);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-user-trash'] });
+    },
+    onError: (e) => {
+      alert('ĐÃ CÓ LỖI XẢY RA!');
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userIds, accessToken }) => {
+      if (userIds && accessToken) {
+        return await userService.deleteUser(userIds, accessToken);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-user-trash'] });
+    },
+  });
+};

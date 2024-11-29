@@ -14,24 +14,25 @@ function NationTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const nation = useGetAllNation(5, currentPage - 1, 1);
+  const [searchValue, setSearchValue] = useState('');
+  const nation = useGetAllNation(10, currentPage - 1, 1, searchValue);
   const updateTrashNation = useUpdateTrashNation();
   const deleteNation = useDeleteNation();
   const columns = [
     {
       title: 'Tên quốc gia',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      align: 'center',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = nation.data?.data.rows.map((item) => {
@@ -58,6 +59,9 @@ function NationTrash() {
       ),
     };
   });
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   const handleRestore = (nation) => {
     Swal.fire({
       title: `Xác nhận khôi phục quốc gia ${nation.name}!`,
@@ -150,23 +154,30 @@ function NationTrash() {
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        search
+        placeholderSearch={'Tìm kiếm quốc gia'}
         trash
         disabled={selectedRowKeys.length === 0}
         title={'Quản lý quốc gia (Thùng rác)'}
         icon={<IoEarthOutline />}
         onCreate={handleRestoreMany}
         onDelete={handleDeleteMany}
+        onSearch={handleSearch}
       />
       <Table
+        scroll={{
+          y: nation.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+        }}
         pagination={{
           current: currentPage,
-          pageSize: 5,
+          pageSize: 10,
           total: nation.data?.data.count,
           onChange,
         }}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        loading={nation.isLoading}
       />
     </Flex>
   );

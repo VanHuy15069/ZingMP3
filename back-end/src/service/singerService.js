@@ -57,13 +57,13 @@ export const loginSingerService = (singerLogin) =>
         if (!checkPassword) {
           resolve({
             status: 'ERROR',
-            msg: 'The account being entered is incorrect',
+            msg: 'Tên đăng nhập hoặc mật khẩu không đúng!',
           });
         } else {
           if (!checkSinger.status) {
             resolve({
               status: 'ERROR',
-              msg: 'This account has been locked',
+              msg: 'Tài khoản này đang tạm khóa!',
             });
           }
           const accessToken = jwt.renderAccessToken({
@@ -108,6 +108,50 @@ export const updateSingerService = (name, image, desc, id, status) =>
         status: 'SUCCESS',
         data: singer,
       });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const updateAccountSingerService = (singerId, username, password) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const singer = await db.Singer.findByPk(singerId);
+      if (!singer) {
+        resolve({
+          status: 'Error',
+          msg: 'This singer is not defined',
+        });
+      } else {
+        await singer.update({ username: username, password: hashPassword(password) });
+        await singer.save();
+        resolve({
+          status: 'SUCCESS',
+          data: singer,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const deleteAccountSingerService = (singerId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const singer = await db.Singer.findByPk(singerId);
+      if (!singer) {
+        resolve({
+          status: 'Error',
+          msg: 'This singer is not defined',
+        });
+      } else {
+        await singer.update({ username: null, password: null });
+        await singer.save();
+        resolve({
+          status: 'SUCCESS',
+          data: singer,
+        });
+      }
     } catch (error) {
       reject(error);
     }
@@ -248,6 +292,15 @@ export const getDetailSingerService = (id) =>
             as: 'followInfo',
             attributes: ['id', 'fullName'],
           },
+          {
+            model: db.Song,
+            as: 'songInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Album,
+            as: 'singerInfo',
+          },
         ],
       });
       if (!singer) {
@@ -260,13 +313,15 @@ export const getDetailSingerService = (id) =>
         ststus: 'SUCCESS',
         data: singer,
         follow: singer.followInfo.length,
+        songs: singer.songInfo.length,
+        albums: singer.singerInfo.length,
       });
     } catch (error) {
       reject(error);
     }
   });
 
-export const getAllSingerService = (limit = 10, offset = 0, trash = 0, singerName) =>
+export const getAllSingerService = (limit, offset = 0, trash = 0, singerName) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
@@ -360,9 +415,12 @@ export const updatePasswordService = (password, newPassword, id) =>
     }
   });
 
-export const getSingleSongService = (singerId, limit = 5, offset = 0) =>
+export const getSingleSongService = (singerId, limit, offset = 0) =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
       const songs = await db.SingerSong.findAll({
         attributes: ['id', 'singerId', 'songId', [Sequelize.fn('COUNT', Sequelize.col('songId')), 'count']],
         group: ['songId'],
@@ -380,8 +438,7 @@ export const getSingleSongService = (singerId, limit = 5, offset = 0) =>
       const listSongs = songs.map((item) => item.songInfo.id);
       const songOfSinger = await db.Song.findAll({
         where: { id: { [Op.in]: listSongs }, trash: false },
-        limit: Number(limit),
-        offset: Number(limit) * Number(offset),
+        ...obj,
         order: [['createdAt', 'DESC']],
         include: [
           {
@@ -400,15 +457,17 @@ export const getSingleSongService = (singerId, limit = 5, offset = 0) =>
     }
   });
 
-export const getTopSongSingerService = (singerId, limit = 6, offset = 0, name = 'views', sort = 'DESC') =>
+export const getTopSongSingerService = (singerId, limit, offset, name = 'views', sort = 'DESC') =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
       const songs = await db.SingerSong.findAll({ where: { singerId: singerId } });
       const listSongs = songs.map((item) => item.songId);
       const topSongs = await db.Song.findAll({
         where: { id: { [Op.in]: listSongs }, trash: false },
-        limit: Number(limit),
-        offset: Number(limit) * Number(offset),
+        ...obj,
         order: [[name, sort]],
         include: [
           {
@@ -421,6 +480,9 @@ export const getTopSongSingerService = (singerId, limit = 6, offset = 0, name = 
             as: 'albumInfo',
             attributes: ['id', 'name'],
           },
+          // { model: db.Nation, as: 'nationInfo' },
+          // { model: db.Category, as: 'categoryInfo' },
+          // { model: db.Topic, as: 'topicInfo' },
         ],
       });
       resolve({
@@ -527,6 +589,48 @@ export const getHotSongBySingerRandomService = (userId) =>
         status: 'SUCCESS',
         data: singer,
         song: songs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllSongBySingerService = (singerId, limit, offset, name, trash) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const obj = {};
+      if (limit) obj.limit = Number(limit);
+      if (offset) obj.offset = Number(limit) * Number(offset);
+      const search = {};
+      if (name) search.name = { [Op.substring]: name };
+      const songs = await db.SingerSong.findAll({ where: { singerId: singerId } });
+      const listSongs = songs.map((item) => item.songId);
+      const topSongs = await db.Song.findAndCountAll({
+        where: { id: { [Op.in]: listSongs }, ...search, trash: trash },
+        ...obj,
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.Album,
+            as: 'albumInfo',
+            attributes: ['id', 'name'],
+          },
+          { model: db.Nation, as: 'nationInfo' },
+          { model: db.Category, as: 'categoryInfo' },
+          { model: db.Topic, as: 'topicInfo' },
+        ],
+      });
+      resolve({
+        status: 'SUCCESS',
+        data: topSongs.rows,
+        count: topSongs.count,
+        currentPage: offset,
+        totalPage: Math.ceil(topSongs.count / Number(limit)),
       });
     } catch (error) {
       reject(error);

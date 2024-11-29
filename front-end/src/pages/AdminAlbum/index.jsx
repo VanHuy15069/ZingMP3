@@ -23,9 +23,10 @@ function AdminAlbum() {
   const [option, setOption] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [checkImage, setCheckImage] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const albums = useGetAllAlbums(5, currentPage - 1, null, false, 'createdAt', 'DESC');
+  const albums = useGetAllAlbums(10, currentPage - 1, searchValue, false, 'createdAt', 'DESC');
   const createAlbum = useCreateAlbum();
   const updateAlbum = useUpdateAlbum();
   const updateTrashAlbum = useUpdateTrashAlbum();
@@ -41,22 +42,20 @@ function AdminAlbum() {
     {
       title: 'Tên album',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '30%',
     },
     {
-      title: 'Ca sĩ',
+      title: 'Nghệ sĩ',
       dataIndex: 'singer',
-      width: '20%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = albums.data?.data.rows.map((item) => {
@@ -144,6 +143,9 @@ function AdminAlbum() {
       });
     } else navigate('/dashboard/album/trash');
   };
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   useEffect(() => {
     if (createAlbum.isSuccess) {
       if (createAlbum.data?.status === 'SUCCESS') {
@@ -219,22 +221,29 @@ function AdminAlbum() {
     <>
       <Flex gap="middle" vertical>
         <TitleAdmin
+          search
+          placeholderSearch={'Tìm kiếm album'}
           title={'Quản lý album'}
           icon={<BsJournalAlbum />}
           onCreate={handleCreate}
           onDelete={handleTrashMany}
+          onSearch={handleSearch}
           number={trashAlbum.data?.data.count}
         />
         <Table
+          scroll={{
+            y: albums.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+          }}
           pagination={{
             current: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             total: albums.data?.data.count,
             onChange,
           }}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          loading={albums.isLoading}
         />
       </Flex>
       <ModalCreate
@@ -259,10 +268,10 @@ function AdminAlbum() {
           <Form.Item label="Tên album" name="name" rules={[{ required: true, message: 'Hãy nhập tên album' }]}>
             <Input type="text" placeholder="Tên album" />
           </Form.Item>
-          <Form.Item label="Tên ca sĩ" name="singerId" rules={[{ required: true, message: 'Hãy nhập tên ca sĩ' }]}>
+          <Form.Item label="Tên nghệ sĩ" name="singerId" rules={[{ required: true, message: 'Hãy nhập tên nghệ sĩ' }]}>
             <Select
               showSearch
-              placeholder="Tên ca sĩ"
+              placeholder="Tên nghệ sĩ"
               optionFilterProp="label"
               filterSort={(optionA, optionB) =>
                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
@@ -276,7 +285,7 @@ function AdminAlbum() {
               <Button icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>
                 Click to Upload
               </Button>
-              {checkImage && <p className="text-text-err">Hãy chọn hình ảnh cho ca sĩ</p>}
+              {checkImage && <p className="text-text-err">Hãy chọn hình ảnh cho nghệ sĩ</p>}
               {imgUpload && <Image src={imgUpload} alt="" height={90} className="w-[40%] object-cover block" />}
             </div>
           </Form.Item>

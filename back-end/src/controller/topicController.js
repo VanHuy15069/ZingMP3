@@ -48,9 +48,9 @@ export const updateTopic = async (req, res) => {
 };
 
 export const getAllTopic = async (req, res) => {
-  const { limit, offset, trash } = req.query;
   try {
-    const response = await topicService.getAllTopicService(limit, offset, trash);
+    const { limit, offset, trash, name } = req.query;
+    const response = await topicService.getAllTopicService(limit, offset, trash, name);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
@@ -61,8 +61,8 @@ export const getAllTopic = async (req, res) => {
 };
 
 export const deleteManyTopics = async (req, res) => {
-  const topicIds = req.query.topicIds?.split(',');
   try {
+    const topicIds = req.query.topicIds?.split(',');
     if (!topicIds) {
       return res.status(400).json({
         status: 'ERROR',
@@ -80,9 +80,9 @@ export const deleteManyTopics = async (req, res) => {
 };
 
 export const updateTrashTopics = async (req, res) => {
-  const topicIds = req.body.topicIds?.split(',');
-  const trash = req.body.trash;
   try {
+    const topicIds = req.body.topicIds?.split(',');
+    const trash = req.body.trash;
     if (!topicIds) {
       return res.status(400).json({
         status: 'ERROR',
@@ -100,9 +100,9 @@ export const updateTrashTopics = async (req, res) => {
 };
 
 export const getDetailTopic = async (req, res) => {
-  const { limit, name, sort } = req.body;
-  const id = req.params.id;
   try {
+    const { limit, name, sort } = req.body;
+    const id = req.params.id;
     if (!id) {
       return res.status(400).json({
         status: 'ERROR',

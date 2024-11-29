@@ -5,7 +5,6 @@ import { EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { GoTrash } from 'react-icons/go';
 import TitleAdmin from '../../components/titleAdmin';
 import { TbCategoryPlus } from 'react-icons/tb';
-import './table.css';
 import ModalCreate from '../../components/Modal/modalCreate';
 import { useCreateCategory, useUpdateCategory, useUpdateTrashCategory } from '../../mutationHook/category';
 import { useUserStore } from '../../store';
@@ -18,17 +17,17 @@ function AdminCategory() {
     {
       title: 'Tên thể loại',
       dataIndex: 'name',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      align: 'center',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const navigate = useNavigate();
@@ -39,8 +38,9 @@ function AdminCategory() {
   const [currentPage, setCurrentPage] = useState(1);
   const [imgUpload, setImgUpload] = useState();
   const [image, setImage] = useState();
-  const category = useGetAllCategory(5, currentPage - 1, false);
-  const trash = useGetAllCategory(null, null, 1);
+  const [searchValue, setSearchValue] = useState('');
+  const category = useGetAllCategory(10, currentPage - 1, false, searchValue);
+  const trash = useGetAllCategory(null, null, 1, null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
@@ -73,6 +73,9 @@ function AdminCategory() {
       ),
     };
   });
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   const handleCreate = () => {
     setIsModalOpen(true);
     setImgUpload();
@@ -212,16 +215,22 @@ function AdminCategory() {
     <>
       <Flex gap="middle" vertical>
         <TitleAdmin
+          search
+          placeholderSearch={'Tìm kiếm thể loại'}
           title={'Quản lý thể loại'}
           icon={<TbCategoryPlus />}
           onCreate={handleCreate}
           onDelete={handleDelete}
+          onSearch={handleSearch}
           number={trash.data?.data.count}
         />
         <Table
+          scroll={{
+            y: category.data?.data.count > 5 ? 'calc(100vh - 270px)' : null,
+          }}
           pagination={{
             current: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             total: category.data?.data.count,
             onChange,
           }}
@@ -229,6 +238,7 @@ function AdminCategory() {
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          loading={category.isLoading}
         />
       </Flex>
       <ModalCreate

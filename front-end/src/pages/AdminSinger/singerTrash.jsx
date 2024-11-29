@@ -15,12 +15,13 @@ function SingerTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const singers = useGetAllSingers(5, currentPage - 1, 1);
+  const [searchValue, setSearchValue] = useState('');
+  const singers = useGetAllSingers(10, currentPage - 1, 1, searchValue);
   const updateTrashSinger = useUpdateTrashSinger();
   const deleteSinger = useDeleteSinger();
   const columns = [
     {
-      title: 'Tên ca sĩ',
+      title: 'Tên nghệ sĩ',
       dataIndex: 'name',
       width: '15%',
     },
@@ -37,7 +38,17 @@ function SingerTrash() {
     {
       title: 'Tài khoản',
       dataIndex: 'username',
-      render: (username) => `${username ? 'Đã có tài khoản' : 'Chưa có tài khoản'}`,
+      align: 'center',
+      render: (status) =>
+        status ? (
+          <p className="p-3 m-auto leading-none bg-green-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+            Hoạt động
+          </p>
+        ) : (
+          <p className="p-3 m-auto leading-none bg-red-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+            Đã khóa
+          </p>
+        ),
     },
     {
       title: 'Trạng thái',
@@ -47,8 +58,8 @@ function SingerTrash() {
     {
       title: 'Thao tác',
       dataIndex: 'action',
+      width: 290,
       fixed: 'right',
-      width: '10%',
     },
   ];
   const dataSource = singers.data?.data.map((item) => {
@@ -78,9 +89,12 @@ function SingerTrash() {
       ),
     };
   });
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
   const handleRestore = (singer) => {
     Swal.fire({
-      title: `Xác nhận khôi phục ca sĩ ${singer.name}!`,
+      title: `Xác nhận khôi phục nghệ sĩ ${singer.name}!`,
       showCancelButton: true,
       confirmButtonText: 'Xác nhận',
       cancelButtonText: 'Hủy bỏ',
@@ -93,7 +107,7 @@ function SingerTrash() {
   };
   const handleRestoreMany = () => {
     Swal.fire({
-      title: `Xác nhận khôi phục lại ${selectedRowKeys.length} ca sĩ!`,
+      title: `Xác nhận khôi phục lại ${selectedRowKeys.length} nghệ sĩ!`,
       showCancelButton: true,
       confirmButtonText: 'Xác nhận',
       cancelButtonText: 'Hủy bỏ',
@@ -106,8 +120,8 @@ function SingerTrash() {
   };
   const handleDelete = (singer) => {
     Swal.fire({
-      title: `Xác nhận xóa vĩnh viễn ca sĩ ${singer.name}!`,
-      text: 'Điều này có thể sẽ xóa đi các dữ liệu liên quan đến ca sĩ này.',
+      title: `Xác nhận xóa vĩnh viễn nghệ sĩ ${singer.name}!`,
+      text: 'Điều này có thể sẽ xóa đi các dữ liệu liên quan đến nghệ sĩ này.',
       showCancelButton: true,
       confirmButtonText: 'Xác nhận',
       cancelButtonText: 'Hủy bỏ',
@@ -120,8 +134,8 @@ function SingerTrash() {
   };
   const handleDeleteMany = () => {
     Swal.fire({
-      title: `Xác nhận xóa vĩnh viễn ${selectedRowKeys.length} ca sĩ!`,
-      text: 'Điều này có thể sẽ xóa đi các dữ liệu liên quan đến ca sĩ này.',
+      title: `Xác nhận xóa vĩnh viễn ${selectedRowKeys.length} nghệ sĩ!`,
+      text: 'Điều này có thể sẽ xóa đi các dữ liệu liên quan đến nghệ sĩ này.',
       showCancelButton: true,
       confirmButtonText: 'Xác nhận',
       cancelButtonText: 'Hủy bỏ',
@@ -139,7 +153,7 @@ function SingerTrash() {
     if (updateTrashSinger.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);
-      toast.success(`Ca sĩ đã được khôi phục!`, {
+      toast.success(`Nghệ sĩ đã được khôi phục!`, {
         toastId: 2,
         draggable: true,
         transition: Bounce,
@@ -170,14 +184,20 @@ function SingerTrash() {
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        search
         trash
+        placeholderSearch={'Tìm kiếm nghẹ sĩ'}
         disabled={selectedRowKeys.length === 0}
-        title={'Quản lý ca sĩ (Thùng rác)'}
+        title={'Quản lý nghệ sĩ (Thùng rác)'}
         icon={<RiUserStarLine />}
         onCreate={handleRestoreMany}
         onDelete={handleDeleteMany}
+        onSearch={handleSearch}
       />
       <Table
+        scroll={{
+          y: singers.data?.count > 5 ? 'calc(100vh - 270px)' : null,
+        }}
         pagination={{
           current: currentPage,
           pageSize: 5,
@@ -187,6 +207,7 @@ function SingerTrash() {
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        loading={singers.isLoading}
       />
     </Flex>
   );

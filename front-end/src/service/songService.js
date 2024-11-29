@@ -171,3 +171,40 @@ export const countViews = async (id) => {
   const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/song/count/${id}`);
   return res.data;
 };
+
+export const staticalSongs = async (month, limit, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/song/statical`, {
+    params: {
+      month: month,
+      limit: limit,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+export const countStatical = async (data, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/song/count-statical`, {
+    params: {
+      data: data,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+export const getTopSongs = async (limit, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/song/get-top-song`, {
+    params: {
+      limit: limit,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};

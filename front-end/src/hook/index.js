@@ -8,6 +8,7 @@ import * as playlistService from '../service/playlistService';
 import * as topicService from '../service/topicService';
 import * as categoryService from '../service/categoryService';
 import * as nationService from '../service/nationService';
+import * as contactService from '../service/contactService';
 
 export const useGetDetailUser = (id, accessToken) => {
   return useQuery({
@@ -213,24 +214,24 @@ export const useGetAllAlbums = (limit, offset, albumName, trash, name, sort) => 
   });
 };
 
-export const useGetAllTopic = (limit, offset, trash) => {
+export const useGetAllTopic = (limit, offset, trash, name) => {
   return useQuery({
-    queryKey: ['get-all-topic', limit, offset, trash],
-    queryFn: () => topicService.getAllTopic(limit, offset, trash),
+    queryKey: ['get-all-topic', limit, offset, trash, name],
+    queryFn: () => topicService.getAllTopic(limit, offset, trash, name),
   });
 };
 
-export const useGetAllCategory = (limit, offset, trash) => {
+export const useGetAllCategory = (limit, offset, trash, name) => {
   return useQuery({
-    queryKey: ['get-all-category', limit, offset, trash],
-    queryFn: () => categoryService.getAllCategory(limit, offset, trash),
+    queryKey: ['get-all-category', limit, offset, trash, name],
+    queryFn: () => categoryService.getAllCategory(limit, offset, trash, name),
   });
 };
 
-export const useGetAllNation = (limit, offset, trash) => {
+export const useGetAllNation = (limit, offset, trash, name) => {
   return useQuery({
-    queryKey: ['get-all-nation', limit, offset, trash],
-    queryFn: () => nationService.getAllNation(limit, offset, trash),
+    queryKey: ['get-all-nation', limit, offset, trash, name],
+    queryFn: () => nationService.getAllNation(limit, offset, trash, name),
   });
 };
 
@@ -262,6 +263,70 @@ export const useGetSingerFollow = (id, accessToken) => {
   return useQuery({
     queryKey: ['get-singer-follow-random', id],
     queryFn: () => singerService.getSingerFollow(id, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useGetAllUser = (limit, offset, accessToken) => {
+  return useQuery({
+    queryKey: ['get-all-user', limit, offset],
+    queryFn: () => userService.getAllUser(limit, offset, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useGetAllUserIntoTrash = (limit, offset, accessToken) => {
+  return useQuery({
+    queryKey: ['get-all-user-trash', limit, offset],
+    queryFn: () => userService.getUserIntoTrash(limit, offset, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useGetAllContact = (limit, offset, status, accessToken) => {
+  return useQuery({
+    queryKey: ['get-all-contact', limit, offset, status],
+    queryFn: () => contactService.getAllContact(limit, offset, status, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useStaticalSongs = (month, limit, accessToken) => {
+  return useQuery({
+    queryKey: ['statical', month, limit],
+    queryFn: () => songService.staticalSongs(month, limit, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useCountStatical = (data, accessToken) => {
+  return useQuery({
+    queryKey: ['count-statical', data],
+    queryFn: () => songService.countStatical(data, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useGetTopSongs = (limit, accessToken) => {
+  return useQuery({
+    queryKey: ['get-top-song', limit],
+    queryFn: () => songService.getTopSongs(limit, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useGetAllSongBySinger = (id, limit, offset, name, trash, accessToken) => {
+  return useQuery({
+    queryKey: ['all-song-by-singer', id, limit, offset, name, trash],
+    queryFn: () => singerService.getAllSongBySinger(id, limit, offset, name, trash, accessToken),
+    enabled: !!accessToken,
+  });
+};
+
+export const useGetAllAlbumBySingerId = (id, limit, offset, name, trash, accessToken) => {
+  return useQuery({
+    queryKey: ['get-all-album-by-singerId', id, limit, offset, name, trash],
+    queryFn: () => albumService.getAllAlbumBySingerId(id, limit, offset, name, trash, accessToken),
     enabled: !!accessToken,
   });
 };

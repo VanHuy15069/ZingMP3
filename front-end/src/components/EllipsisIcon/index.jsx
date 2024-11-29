@@ -220,22 +220,26 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
             className="bg-border-primary text-white text-[14px] outline-none border-border-primary rounded-[999px] hover:bg-border-primary hover:border-border-primary focus:bg-border-primary focus:border-border-primary placeholder:text-second-text"
           />
           <div className="mt-[10px]">
-            {playlist.data?.data.map((item, index) => {
-              return (
-                <div
-                  onClick={() => handleAddPlaylist(item.id, item.name)}
-                  key={index}
-                  className="cursor-pointer -mx-[24px]"
-                >
-                  <div className="py-[10px] px-[24px] flex items-center text-[14px] hover:bg-border-primary">
-                    <span className="text-[18px] mr-[15px]">
-                      <PiPlaylist />
-                    </span>
-                    <p className="text-ellipsis overflow-hidden line-clamp-1">{item.name}</p>
+            {playlist.data?.data.length > 0 ? (
+              playlist.data?.data.map((item, index) => {
+                return (
+                  <div
+                    onClick={() => handleAddPlaylist(item.id, item.name)}
+                    key={index}
+                    className="cursor-pointer -mx-[24px]"
+                  >
+                    <div className="py-[10px] px-[24px] flex items-center text-[14px] hover:bg-border-primary">
+                      <span className="text-[18px] mr-[15px]">
+                        <PiPlaylist />
+                      </span>
+                      <p className="text-ellipsis overflow-hidden line-clamp-1">{item.name}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="text-[12px] text-center">Không tìm thấy playlist</div>
+            )}
           </div>
         </ModalPlaylist>
       </div>

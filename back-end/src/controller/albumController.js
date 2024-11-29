@@ -3,7 +3,7 @@ import * as albumService from '../service/albumService';
 
 export const createAlbum = async (req, res) => {
   try {
-    const singerId = req.body.singerId || req.params.singerId;
+    const singerId = req.body.id || req.params.id;
     const name = req.body.name;
     const image = req.file?.filename;
     if (!image || !name || !singerId) {
@@ -207,6 +207,26 @@ export const getAlbumFavorite = async (req, res) => {
       });
     }
     const response = await albumService.getAlbumFavoriteService(userId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getAllAlbumBySinger = async (req, res) => {
+  try {
+    const singerId = req.params.id;
+    const { limit, offset, name, trash } = req.query;
+    if (!singerId || !trash) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await albumService.getAllAlbumBySingerService(singerId, limit, offset, name, trash);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

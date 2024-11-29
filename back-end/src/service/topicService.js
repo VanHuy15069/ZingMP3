@@ -55,14 +55,16 @@ export const updateTopicService = (name, image, id) =>
     }
   });
 
-export const getAllTopicService = (limit, offset, trash = 0) =>
+export const getAllTopicService = (limit, offset, trash = 0, name) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
+      const search = {};
+      if (name) search.name = { [Op.substring]: name };
       if (limit) obj.limit = Number(limit);
       if (offset) obj.offset = Number(limit) * Number(offset);
       const topics = await db.Topic.findAndCountAll({
-        where: { trash: trash },
+        where: { trash: trash, ...search },
         ...obj,
         include: [
           {

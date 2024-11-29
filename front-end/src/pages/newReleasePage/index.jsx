@@ -46,7 +46,7 @@ function NewReleasePage() {
     <div className="pt-[40px] pb-[50px]">
       <div className="flex items-center">
         <h3 className="capitalize text-[40px] font-bold">Mới phát hành</h3>
-        <span onClick={handlePlaySong} className="text-[44px] ml-[12px] cursor-pointer">
+        <span onClick={handlePlaySong} className="text-[44px] ml-[12px]">
           <MdPlayCircle />
         </span>
       </div>

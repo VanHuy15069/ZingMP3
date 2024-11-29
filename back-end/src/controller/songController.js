@@ -271,3 +271,58 @@ export const getSameSongs = async (req, res) => {
     });
   }
 };
+
+export const statisticalSongs = async (req, res) => {
+  try {
+    const { month, limit } = req.query;
+    if (!month) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await songService.statisticalSongService(month, limit);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const countStatical = async (req, res) => {
+  try {
+    const data = req.query.data.toString();
+    console.log(data);
+
+    if (!data) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    if (data === 'topics' || data === 'categories' || data === 'nations') {
+      const response = await songService.countStaticalService(data);
+      return res.status(200).json(response);
+    }
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const getTopSongs = async (req, res) => {
+  try {
+    const limit = req.query.limit;
+    const response = await songService.getTopSongService(limit);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};

@@ -13,6 +13,7 @@ export const useCreateSong = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-songs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-song-by-singer'] });
     },
   });
 };
@@ -30,6 +31,7 @@ export const useUpdateSong = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-songs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-song-by-singer'] });
     },
   });
 };
@@ -44,6 +46,7 @@ export const useUpdateTrashSong = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-songs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-song-by-singer'] });
     },
   });
 };
@@ -58,6 +61,7 @@ export const useDeleteSong = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-songs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-song-by-singer'] });
     },
   });
 };

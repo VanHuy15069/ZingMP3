@@ -1,9 +1,21 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Flex } from 'antd';
+import { Button, Flex, Input } from 'antd';
 import { GoTrash } from 'react-icons/go';
 import { MdOutlineReplay } from 'react-icons/md';
 
-function TitleAdmin({ icon, title, onCreate, onDelete, number, trash = false, disabled = false }) {
+function TitleAdmin({
+  icon,
+  title,
+  onCreate,
+  onDelete,
+  number,
+  trash = false,
+  disabled = false,
+  search = false,
+  onSearch,
+  placeholderSearch,
+}) {
+  const { Search } = Input;
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4 text-[26px] font-bold text-[#333]">
@@ -11,6 +23,7 @@ function TitleAdmin({ icon, title, onCreate, onDelete, number, trash = false, di
         <h3>{title}</h3>
       </div>
       <Flex gap="small">
+        {search && <Search size="large" placeholder={placeholderSearch} onSearch={onSearch} enterButton />}
         <Button
           disabled={disabled}
           type="primary"

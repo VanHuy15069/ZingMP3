@@ -28,6 +28,7 @@ function Audio() {
   const audioRef = useRef();
   const inputRef = useRef();
   const volumRef = useRef();
+  const [addView, setAddViews] = useState(false);
   const list = JSON.parse(localStorage.getItem('listMusic'));
   const [listSongs, setListSongs] = useState([]);
   const [currentSong, setCurrentSong] = useState({});
@@ -173,6 +174,14 @@ function Audio() {
       }
     }
   };
+  const handleRandom = () => {
+    if (isLoop) setIsLoop(false);
+    setIsRandom(!isRandom);
+  };
+  const handleLoop = () => {
+    if (isRandom) setIsRandom(false);
+    setIsLoop(!isLoop);
+  };
   useEffect(() => {
     if (audioRef.current) {
       if (audio.isPlay) {
@@ -192,10 +201,11 @@ function Audio() {
   }, [audio.songId, audio.isPlay, isReload]);
 
   useEffect(() => {
+    clearTimeout(timeoutId);
     if (audio.isPlay && !isViewed) {
       const countViewSong = setTimeout(() => {
-        countViews.mutate({ id: currentSong.id });
-      }, 40000);
+        setAddViews(true);
+      }, 50000);
       setTimeoutId(countViewSong);
     } else {
       clearTimeout(timeoutId);
@@ -205,8 +215,14 @@ function Audio() {
   }, [audio.songId, audio.isPlay, isViewed]);
 
   useEffect(() => {
+    if (addView) {
+      countViews.mutate({ id: currentSong.id });
+    }
+  }, [addView]);
+  useEffect(() => {
     if (countViews.isSuccess) {
       setIsViewed(true);
+      setAddViews(false);
     }
   }, [countViews.isSuccess]);
   return (
@@ -296,7 +312,7 @@ function Audio() {
           <div className="flex items-center justify-center h-[50px]">
             <Tooltip title={<p className="text-[12px]">{isRandom ? 'Tắt phát ngẫu nhiên' : 'Bật phát ngẫu nhiên'}</p>}>
               <span
-                onClick={() => setIsRandom(!isRandom)}
+                onClick={handleRandom}
                 className={`p-[3px] flex items-center justify-center mx-[7px] text-[16px] h-[40px] w-[40px] cursor-pointer ${
                   isRandom && 'text-purple-hover'
                 } hover:bg-border-primary rounded-full`}
@@ -337,7 +353,7 @@ function Audio() {
             </span>
             <Tooltip title={<p className="text-[12px]">{isLoop ? 'Tắt phát lại' : 'Bật phát lại'}</p>}>
               <span
-                onClick={() => setIsLoop(!isLoop)}
+                onClick={handleLoop}
                 className={`p-[3px] flex items-center justify-center mx-[7px] text-[16px] cursor-pointer ${
                   isLoop && 'text-purple-hover'
                 } hover:bg-border-primary rounded-full`}

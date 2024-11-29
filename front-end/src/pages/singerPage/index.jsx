@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import HeaderProfile from '../../components/headerProfile';
 import {
   useCheckFavorite,
@@ -29,6 +29,7 @@ import SingerItem from '../../components/singerItem';
 import avatar from '../../Image/avatar.png';
 const cx = classNames.bind(styles);
 function SingerPage() {
+  const navigate = useNavigate();
   const [isReload, setIsReload] = useContext(Context);
   const user = useUserStore((state) => state.user);
   const { audio, updateSongPlay, updateSongAlbum, updateSongId } = useAudioStore();
@@ -46,6 +47,9 @@ function SingerPage() {
   const songs = useGetSongHaveSingers(params.id, 5);
   const singers = useGetSongHaveSingers(params.id, null);
 
+  const handleNavigate = () => {
+    navigate(`/singer/songs/${params.id}`);
+  };
   useEffect(() => {
     if (topSongs.isSuccess && newSong.isSuccess) {
       const checkSong = topSongs.data?.data.find((item) => item.id === newSong.data?.data[0].id);
@@ -148,7 +152,10 @@ function SingerPage() {
         <div className={`flex-1 ${newSong.data?.data[0]?.singerInfo?.length === 1 && 'ml-[28px]'}`}>
           <div className="flex justify-between items-center mb-[20px]">
             <h3 className="text-[20px] font-bold">Bài hát nổi bật</h3>
-            <div className="uppercase flex items-center text-[12px] text-alpha cursor-pointer font-medium hover:text-purple-hover">
+            <div
+              onClick={handleNavigate}
+              className="uppercase flex items-center text-[12px] text-alpha cursor-pointer font-medium hover:text-purple-hover"
+            >
               <p>Tất cả</p>
               <span className="text-[16px] ml-[6px]">
                 <RightOutlined />
@@ -166,9 +173,11 @@ function SingerPage() {
           </div>
         </div>
       </div>
-      <div className="mt-[48px]">
-        <ListSongs navigate title={'Single & EP'} songs={singleSongs.data?.data} time />
-      </div>
+      {singleSongs.data?.data.length > 0 && (
+        <div className="mt-[48px]">
+          <ListSongs navigate title={'Single & EP'} songs={singleSongs.data?.data} time link={`/single/${params.id}`} />
+        </div>
+      )}
       {albums.data?.data.length > 0 && (
         <div className="mt-[48px]">
           <div className="flex items-center justify-between mb-[20px] text-[20px]">

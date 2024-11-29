@@ -8,6 +8,7 @@ import {
 import { faFlag } from '@fortawesome/free-regular-svg-icons';
 import { faAngleRight, faBrush, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
 
 function SettingBox() {
   return (
@@ -84,18 +85,19 @@ function SettingBox() {
           <ExportOutlined />
         </span>
       </div>
-
-      <div className="rounded-[4px] text-[#dadada] h-[44px] leading-normal text-[14px] py-[12px] px-[10px] flex items-center justify-between hover:bg-[#493961]">
-        <div className="flex items-center">
-          <span className="mr-[12px] text-[20px]">
-            <PhoneOutlined />
+      <Link to={'/contact'} target="_blank">
+        <div className="rounded-[4px] text-[#dadada] h-[44px] leading-normal text-[14px] py-[12px] px-[10px] flex items-center justify-between hover:bg-[#493961]">
+          <div className="flex items-center">
+            <span className="mr-[12px] text-[20px]">
+              <PhoneOutlined />
+            </span>
+            <p>Liên hệ</p>
+          </div>
+          <span>
+            <ExportOutlined />
           </span>
-          <p>Liên hệ</p>
         </div>
-        <span>
-          <ExportOutlined />
-        </span>
-      </div>
+      </Link>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { useCheckFollow, useGetDeatailSinger, useGetTopSongBySinger } from '../.
 import avatar from '../../Image/avatar.png';
 import { useAudioStore, useUserStore } from '../../store';
 import { handleAddSongs } from '../../golobalFn';
+import { useFollowSinger } from '../../mutationHook/user';
 const cx = classNames.bind(styles);
 
 function SingerItem({ singerId }) {
@@ -17,6 +18,7 @@ function SingerItem({ singerId }) {
   const singer = useGetDeatailSinger(singerId);
   const checkFollow = useCheckFollow(user?.id, singerId);
   const songs = useGetTopSongBySinger(singerId, 20, 0, 'createdAt', 'DESC');
+  const followMutation = useFollowSinger(user.id, singerId);
   let avatarImg = avatar;
   if (singer.data?.data.image) avatarImg = `${import.meta.env.VITE_API_FILE_URL}/${singer.data?.data.image}`;
   const handlePlaySong = (e) => {
@@ -24,6 +26,9 @@ function SingerItem({ singerId }) {
     handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum);
     updateSongPlay(true);
     e.stopPropagation();
+  };
+  const handleFollow = () => {
+    followMutation.mutate({ userId: user.id, singerId: singerId, accessToken: user.accessToken });
   };
   return (
     <div className="w-full">
@@ -60,7 +65,10 @@ function SingerItem({ singerId }) {
             <p className="uppercase">Góc nhạc</p>
           </button>
         ) : (
-          <button className="flex items-center outline-none border border-purple-primary bg-purple-primary text-[12px] py-[6px] px-[19px] rounded-[999px] hover:bg-[#8b45ca]">
+          <button
+            onClick={handleFollow}
+            className="flex items-center outline-none border border-purple-primary bg-purple-primary text-[12px] py-[6px] px-[19px] rounded-[999px] hover:bg-[#8b45ca]"
+          >
             <span className="mr-[5px]">
               <FontAwesomeIcon icon={faUserPlus} />
             </span>

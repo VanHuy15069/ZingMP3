@@ -13,6 +13,7 @@ export const useCreateAlbum = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-albums'] });
+      queryClient.invalidateQueries({ queryKey: ['get-all-album-by-singerId'] });
     },
   });
 };
@@ -30,6 +31,7 @@ export const useUpdateAlbum = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-albums'] });
+      queryClient.invalidateQueries({ queryKey: ['get-all-album-by-singerId'] });
     },
   });
 };
@@ -44,6 +46,7 @@ export const useUpdateTrashAlbum = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-albums'] });
+      queryClient.invalidateQueries({ queryKey: ['get-all-album-by-singerId'] });
     },
   });
 };
@@ -58,6 +61,7 @@ export const useDeleteAlbum = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-albums'] });
+      queryClient.invalidateQueries({ queryKey: ['get-all-album-by-singerId'] });
     },
   });
 };

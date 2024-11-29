@@ -57,13 +57,13 @@ export const loginUserService = (userLogin) =>
         if (!checkPassword) {
           resolve({
             status: 'ERROR',
-            msg: 'The account being entered is incorrect',
+            msg: 'Tên đăng nhập hoặc mật khẩu không đúng!',
           });
         } else {
           if (!checkUser.status) {
             resolve({
               status: 'ERROR',
-              msg: 'This account has been locked',
+              msg: 'Tài khoản này đang tạm khóa!',
             });
           }
           const accessToken = jwt.renderAccessToken({
@@ -111,7 +111,7 @@ export const getAllUserService = (limit = 10, offset = 0) =>
   new Promise(async (resolve, reject) => {
     try {
       const users = await db.User.findAndCountAll({
-        where: { trash: false },
+        where: { trash: false, isAdmin: false },
         limit: Number(limit),
         offset: Number(offset * limit),
       });
@@ -174,6 +174,8 @@ export const updateUserService = (dataUser, image, userId) =>
 export const updatePrivateUserService = (status, vip, id) =>
   new Promise(async (resolve, reject) => {
     try {
+      const objVip = {};
+      if (vip) objVip.vip = vip;
       const user = await db.User.findByPk(id);
       if (!user) {
         resolve({
@@ -181,7 +183,7 @@ export const updatePrivateUserService = (status, vip, id) =>
           msg: 'This user is not defined',
         });
       }
-      await user.update({ status: status, vip: vip });
+      await user.update({ status: status, ...objVip });
       await user.save();
       resolve({
         status: 'SUCCESS',

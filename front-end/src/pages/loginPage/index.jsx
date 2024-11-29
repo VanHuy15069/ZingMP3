@@ -50,7 +50,7 @@ function LoginPage() {
     const singer = await singerService.getDetailSinger(id);
     updateUser(id, singer.data.name, singer.data.username, singer.data.vip, singer.data.image, accessToken);
     updateRole('singer');
-    navigate('/');
+    navigate('/dashboard/singer/detail');
   };
   useEffect(() => {
     if (mutation.isSuccess) {
@@ -119,7 +119,7 @@ function LoginPage() {
             <InputLG
               tyle={'password'}
               placeholder={'Nhập mật khẩu của bạn'}
-              {...register('password', { required: true, minLength: 8 })}
+              {...register('password', { required: true })}
             />
             {errors?.password?.type === 'required' && (
               <p className="text-[#ff041d] mt-[4px] text-[10px]">Nhập mật khẩu của bạn vào!</p>
@@ -130,7 +130,7 @@ function LoginPage() {
               onChange={handleCheckUser}
               className="text-[13px] text-[#048ec8] cursor-pointer hover:text-[#ff04d1] select-none"
             >
-              Tôi là một ca sĩ
+              Tôi là một nghệ sĩ
             </Checkbox>
           </div>
           <div className="flex justify-between text-[13px]">

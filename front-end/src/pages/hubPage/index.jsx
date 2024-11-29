@@ -11,9 +11,9 @@ function HubPage() {
   const [topTopic, setTopTopic] = useState({});
   const [topCategory, setTopCategory] = useState({});
   const [topNation, setTopNation] = useState({});
-  const allTopics = useGetAllTopic(null, null, false);
-  const allCatgory = useGetAllCategory(null, null, false);
-  const allNation = useGetAllNation(null, null, false);
+  const allTopics = useGetAllTopic(null, null, false, null);
+  const allCatgory = useGetAllCategory(null, null, false, null);
+  const allNation = useGetAllNation(null, null, false, null);
 
   useEffect(() => {
     if (allTopics.isSuccess) {

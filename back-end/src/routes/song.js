@@ -15,4 +15,7 @@ songRouter.get('/check-favorite', songController.checkFavarite);
 songRouter.get('/get-new-songs', songController.getTopNewSongs);
 songRouter.get('/get-favorite-song/:id', middleware.authUserMiddleware, songController.getSongFavorite);
 songRouter.get('/get-same/:id', songController.getSameSongs);
+songRouter.get('/statical', middleware.authMiddleware, songController.statisticalSongs);
+songRouter.get('/count-statical', middleware.authMiddleware, songController.countStatical);
+songRouter.get('/get-top-song', middleware.authMiddleware, songController.getTopSongs);
 export default songRouter;

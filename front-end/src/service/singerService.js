@@ -75,3 +75,44 @@ export const getSingerFollow = async (id, accessToken) => {
   });
   return res.data;
 };
+
+export const createAccountSinger = async (id, username, password, confirmPassword, accessToken) => {
+  const res = await axios.patch(
+    `${import.meta.env.VITE_API_BASE_URL}/singer/create-account/${id}`,
+    {
+      username: username,
+      password: password,
+      confirmPassword: confirmPassword,
+    },
+    {
+      headers: {
+        token: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const deleteAccountSinger = async (id, accessToken) => {
+  const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/singer/delete-account/${id}`, '', {
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+export const getAllSongBySinger = async (id, limit, offset, name, trash, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/singer/get-all-song/${id}`, {
+    params: {
+      limit: limit,
+      offset: offset,
+      name: name,
+      trash: trash,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};

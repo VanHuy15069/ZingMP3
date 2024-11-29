@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons';
 import { RxDashboard } from 'react-icons/rx';
-import { IoEarthOutline } from 'react-icons/io5';
+import { IoEarthOutline, IoLogOutOutline } from 'react-icons/io5';
 import { MdOutlineTopic } from 'react-icons/md';
 import { TbCategoryPlus } from 'react-icons/tb';
 import { LuListMusic } from 'react-icons/lu';
 import { BsJournalAlbum } from 'react-icons/bs';
 import { RiUserStarLine } from 'react-icons/ri';
 import { TfiLayoutSliderAlt } from 'react-icons/tfi';
-import { Button, Layout, Menu, theme } from 'antd';
+import { Button, Layout, Menu, theme, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { LiaHomeSolid } from 'react-icons/lia';
 import { useUserStore } from '../store';
 import { useGetDetailUser } from '../hook';
 import avatar from '../Image/avatar.png';
+import { VscFeedback } from 'react-icons/vsc';
 const { Header, Sider, Content } = Layout;
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -29,8 +30,17 @@ const AdminLayout = ({ children }) => {
   const handleClick = (e) => {
     navigate(`${e.key}`);
   };
+  const handleLogout = () => {
+    const list = JSON.parse(localStorage.getItem('listMusic'));
+    const songNotVips = list.filter((item) => item.vip === false);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.setItem('listMusic', JSON.stringify(songNotVips));
+    navigate('/login');
+    window.location.reload();
+  };
   return (
-    <Layout className="h-screen">
+    <Layout className="min-h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={256}>
         <div className="h-[64px] flex items-center justify-center bg-[#0c2c4b]">
           {collapsed ? (
@@ -71,7 +81,7 @@ const AdminLayout = ({ children }) => {
             {
               key: '/dashboard/singer',
               icon: <RiUserStarLine />,
-              label: 'Quản lý ca sĩ',
+              label: 'Quản lý nghệ sĩ',
             },
             {
               key: '/dashboard/song',
@@ -86,12 +96,17 @@ const AdminLayout = ({ children }) => {
             {
               key: '/dashboard/user',
               icon: <UserOutlined />,
-              label: 'Quản lý người dùng',
+              label: 'Quản lý tài  khoản',
             },
             {
               key: '/dashboard/slide',
               icon: <TfiLayoutSliderAlt />,
               label: 'Quản lý slider',
+            },
+            {
+              key: '/dashboard/contact',
+              icon: <VscFeedback />,
+              label: 'Phản hồi khách hàng',
             },
           ]}
         />
@@ -132,14 +147,21 @@ const AdminLayout = ({ children }) => {
             <div className="h-[40px] w-[40px] rounded-full overflow-hidden">
               <img className="h-full w-full object-cover" src={image} alt="" />
             </div>
-            <p className="ml-[6px] font-semibold text-[#333]">{detailUser.data?.data.fullName}</p>
+            <p className="ml-[6px] font-semibold text-[#333] text-[16px]">{detailUser.data?.data.fullName}</p>
+            <Tooltip title={'Đăng xuất'} placement="bottomRight">
+              <button
+                onClick={handleLogout}
+                className="text-[22px] cursor-pointer ml-[20px] rounded-full p-[16px] hover:bg-[#e7e3e3]"
+              >
+                <IoLogOutOutline />
+              </button>
+            </Tooltip>
           </div>
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
+            margin: '24px 16px 0',
             // padding: 24,
-            minHeight: 280,
             // background: colorBgContainer,
             // borderRadius: borderRadiusLG,
           }}

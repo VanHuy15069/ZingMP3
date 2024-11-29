@@ -28,7 +28,7 @@ function AdminSlider() {
   const [checkImage, setCheckImage] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const slider = useGetSlider(5, currentPage - 1, false, null);
+  const slider = useGetSlider(10, currentPage - 1, false, null);
   const createSlider = useCreateSlider();
   const updateSlider = useUpdateSlider();
   const updateTrashSlider = useUpdateTrashSlider();
@@ -37,23 +37,21 @@ function AdminSlider() {
     {
       title: 'Đường dẫn',
       dataIndex: 'link',
-      width: '30%',
     },
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
-      width: '50%',
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
-      width: '50%',
       render: (status) => `${status ? 'Hiển thị' : 'Không hiển thị'}`,
     },
     {
       title: 'Thao tác',
       dataIndex: 'action',
-      width: '20%',
+      width: 290,
+      fixed: 'right',
     },
   ];
   const dataSource = slider.data?.data.map((item) => {
@@ -220,15 +218,19 @@ function AdminSlider() {
           number={trashSlider.data?.count}
         />
         <Table
+          scroll={{
+            y: slider.data?.count > 5 ? 'calc(100vh - 270px)' : null,
+          }}
           pagination={{
             current: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             total: slider.data?.count,
             onChange,
           }}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          loading={slider.isLoading}
         />
       </Flex>
       <ModalCreate

@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import moment from 'moment';
 dotenv.config();
 
 export const createSongService = (nationId, topicId, categoryId, albumId, name, link, image, singerIds, vip) =>
@@ -111,6 +112,9 @@ export const getAllSongService = (limit, offset, songName, name = 'createdAt', s
               model: db.Album,
               as: 'albumInfo',
             },
+            { model: db.Nation, as: 'nationInfo' },
+            { model: db.Category, as: 'categoryInfo' },
+            { model: db.Topic, as: 'topicInfo' },
           ],
         });
         resolve({
@@ -399,6 +403,7 @@ export const getSongByAlbumIdService = (albumId, limit = 10, name = 'createdAt',
       const songs = await db.Song.findAll({
         where: {
           albumId: albumId,
+          trash: false,
         },
         limit: Number(limit),
         order: [[name, sort]],
@@ -457,7 +462,7 @@ export const getTopNewSongService = (limit = 10) =>
       const thirtyDayAgo = new Date();
       thirtyDayAgo.setDate(thirtyDayAgo.getDate() - 30);
       const topSongs = await db.Song.findAll({
-        where: { createdAt: { [Op.gte]: thirtyDayAgo } },
+        where: { createdAt: { [Op.gte]: thirtyDayAgo }, trash: false },
         order: [
           ['views', 'DESC'],
           ['createdAt', 'DESC'],
@@ -535,6 +540,7 @@ export const getSameSongService = (songId, limit = 10) =>
           nationId: song.nationId,
           topicId: song.topicId,
           categoryId: song.categoryId,
+          trash: false,
         },
         limit: Number(limit),
         order: [['createdAt', 'DESC']],
@@ -570,6 +576,169 @@ export const getSameSongService = (songId, limit = 10) =>
         index: index,
         data: listSongs,
         singers: singers,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const statisticalSongService = (month, limit = 10) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const currentYear = moment().year();
+      const startOfMonth = new Date(currentYear, month - 1, 1);
+      const endOfMonth = new Date(currentYear, month, 0, 23, 59, 59, 999);
+      const topSong = await db.Song.findAll({
+        where: {
+          createdAt: { [Op.between]: [startOfMonth, endOfMonth] },
+        },
+        order: [['createdAt', 'DESC']],
+        limit: Number(limit),
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+      const arr = [];
+      for (const song of topSong) {
+        const favorite = await db.Favorite.findAndCountAll({
+          where: { songId: song.id },
+        });
+        const obj = {};
+        obj.songName = song.name;
+        obj.image = song.image;
+        obj.views = song.views;
+        obj.favorite = favorite.count;
+        obj.createdAt = song.createdAt;
+        obj.singer = song.singerInfo;
+        arr.push(obj);
+      }
+      resolve({
+        status: 'SUCCESS',
+        data: arr,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const countStaticalService = (data) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (data === 'topics') {
+        const topics = await db.Song.findAll({
+          attributes: ['topicId', [Sequelize.fn('COUNT', Sequelize.col('topicId')), 'count']],
+          group: ['topicId'],
+          include: [
+            {
+              model: db.Topic,
+              as: 'topicInfo',
+              attributes: ['name'],
+            },
+          ],
+        });
+        const arr = [];
+        for (const item of topics) {
+          const obj = {};
+          obj.name = item.topicInfo.name;
+          obj.count = item.dataValues.count;
+          arr.push(obj);
+        }
+        resolve({
+          data: arr,
+          err: 0,
+          msg: 'OK',
+        });
+      } else if (data === 'categories') {
+        const categories = await db.Song.findAll({
+          attributes: ['categoryId', [Sequelize.fn('COUNT', Sequelize.col('categoryId')), 'count']],
+          group: ['categoryId'],
+          include: [
+            {
+              model: db.Category,
+              as: 'categoryInfo',
+              attributes: ['name'],
+            },
+          ],
+        });
+        const arr = [];
+        for (const item of categories) {
+          const obj = {};
+          obj.name = item.categoryInfo.name;
+          obj.count = item.dataValues.count;
+          arr.push(obj);
+        }
+        resolve({
+          data: arr,
+          err: 0,
+          msg: 'OK',
+        });
+      } else if (data === 'nations') {
+        const nations = await db.Song.findAll({
+          attributes: ['nationId', [Sequelize.fn('COUNT', Sequelize.col('nationId')), 'count']],
+          group: ['nationId'],
+          include: [
+            {
+              model: db.Nation,
+              as: 'nationInfo',
+              attributes: ['name'],
+            },
+          ],
+        });
+        const arr = [];
+        for (const item of nations) {
+          const obj = {};
+          obj.name = item.nationInfo.name;
+          obj.count = item.dataValues.count;
+          arr.push(obj);
+        }
+        resolve({
+          data: arr,
+          err: 0,
+          msg: 'OK',
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getTopSongService = (limit = 5) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const musics = await db.Song.findAll({
+        attributes: ['id', 'name', 'image', 'views', 'createdAt'],
+        order: [['views', 'DESC']],
+        limit: Number(limit),
+        include: [
+          {
+            model: db.Singer,
+            as: 'singerInfo',
+            attributes: ['name'],
+          },
+        ],
+      });
+      const arr = [];
+      for (const song of musics) {
+        const favorite = await db.Favorite.findAndCountAll({
+          where: { songId: song.id },
+        });
+        const obj = {};
+        obj.songName = song.name;
+        obj.image = song.image;
+        obj.views = song.views;
+        obj.createdAt = song.createdAt;
+        obj.singerInfo = song.singerInfo;
+        obj.favorite = favorite.count;
+        arr.push(obj);
+      }
+      resolve({
+        data: arr,
+        err: 0,
+        msg: 'OK',
       });
     } catch (error) {
       reject(error);

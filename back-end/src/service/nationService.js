@@ -126,14 +126,16 @@ export const deleteManyNationService = (nationIds) =>
     }
   });
 
-export const getAllNationService = (limit, offset, trash = 0) =>
+export const getAllNationService = (limit, offset, trash = 0, name) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
+      const search = {};
+      if (name) search.name = { [Op.substring]: name };
       if (limit) obj.limit = Number(limit);
       if (offset) obj.offset = Number(limit) * Number(offset);
       const nations = await db.Nation.findAndCountAll({
-        where: { trash: trash },
+        where: { trash: trash, ...search },
         ...obj,
         order: [['createdAt', 'DESC']],
         include: [

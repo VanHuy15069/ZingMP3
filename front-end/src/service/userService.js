@@ -114,3 +114,85 @@ export const changePassword = async (data, header) => {
   });
   return res.data;
 };
+
+export const getAllUser = async (limit, offset, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/user/getAll`, {
+    params: {
+      limit: limit,
+      offset: offset,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+export const updatePrivateUser = async (status, vip, id, accessToken) => {
+  const obj = {};
+  if (vip) obj.vip = vip;
+  const res = await axios.patch(
+    `${import.meta.env.VITE_API_BASE_URL}/user/update-private/${id}`,
+    {
+      status: status,
+      ...obj,
+    },
+    {
+      headers: {
+        token: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const moveUserToTrash = async (userIds, accessToken) => {
+  const res = await axios.patch(
+    `${import.meta.env.VITE_API_BASE_URL}/user/move-to-trash`,
+    { userIds: userIds },
+    {
+      headers: {
+        token: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const restoreUser = async (userIds, accessToken) => {
+  const res = await axios.patch(
+    `${import.meta.env.VITE_API_BASE_URL}/user/restore-users`,
+    { userIds: userIds },
+    {
+      headers: {
+        token: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const getUserIntoTrash = async (limit, offset, accessToken) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/user/getAll-into-trash`, {
+    params: {
+      limit: limit,
+      offset: offset,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+export const deleteUser = async (userIds, accessToken) => {
+  const res = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/user/delete-users`, {
+    params: {
+      userIds: userIds,
+    },
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};

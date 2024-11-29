@@ -47,7 +47,15 @@ function RegisterPage() {
     }
   }, [isSuccess]);
   const registerUser = (data) => {
-    mutation.mutate(data);
+    if (data.passWord === data.confirmPassword) mutation.mutate(data);
+    else {
+      Swal.fire({
+        title: 'Error',
+        text: 'Mật khẩu xác nhận không trùng khớp!',
+        icon: 'error',
+        customClass: 'min-h-[30vh] w-[30vw] text-[14px]',
+      });
+    }
   };
   return (
     <div className="flex h-screen bg-[#048ec8] bg-gradient-to-r from-[#048ec8] to-fuchsia-500 text-[#333333]">

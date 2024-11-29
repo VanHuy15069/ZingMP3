@@ -48,9 +48,9 @@ export const updateCategory = async (req, res) => {
 };
 
 export const getAllCategory = async (req, res) => {
-  const { limit, offset, trash } = req.query;
+  const { limit, offset, trash, name } = req.query;
   try {
-    const response = await categoryService.getAllCategoryService(limit, offset, trash);
+    const response = await categoryService.getAllCategoryService(limit, offset, trash, name);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
