@@ -6,8 +6,12 @@ import cors from 'cors';
 import path from 'path';
 require('dotenv').config();
 const app = express();
+app.use(
+  cors({
+    origin: process.env.FE_URL,
+  }),
+);
 const port = process.env.PORT || 9090;
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 initRouters(app);

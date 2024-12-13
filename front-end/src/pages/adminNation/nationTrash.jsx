@@ -120,6 +120,15 @@ function NationTrash() {
     });
   };
   useEffect(() => {
+    if (nation.isError || updateTrashNation.isError || deleteNation.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [nation.isError, updateTrashNation.isError, deleteNation.isError]);
+  useEffect(() => {
     if (updateTrashNation.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);

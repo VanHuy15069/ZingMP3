@@ -23,9 +23,9 @@ function ListSongs({ navigate = true, title, songs, time = false, link }) {
         )}
       </div>
       <div className="flex items-center flex-wrap -mx-[14px]">
-        {songs?.slice(0, 5)?.map((item, index) => {
+        {songs?.slice(0, window.innerWidth >= 1130 ? 5 : 4)?.map((item, index) => {
           return (
-            <div key={index} className="w-[20%] px-[14px] cursor-pointer block">
+            <div key={index} className="w-[20%] px-[14px] cursor-pointer block tablet:max-laptop:w-[25%]">
               <SongItemLarge
                 time={time}
                 song={item}

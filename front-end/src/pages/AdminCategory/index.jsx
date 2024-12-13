@@ -111,6 +111,15 @@ function AdminCategory() {
     setSelectedRowKeys(newSelectedRowKeys);
   };
   useEffect(() => {
+    if (category.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [category.isError]);
+  useEffect(() => {
     if (createCategory.isSuccess) {
       if (createCategory.data?.status === 'SUCCESS') {
         setIsModalOpen(false);
@@ -122,15 +131,20 @@ function AdminCategory() {
           transition: Bounce,
         });
       } else {
-        setIsModalOpen(false);
         toast.error(`Thể loại nhạc đã tồn tại trên hệ thống!`, {
           toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       }
+    } else if (createCategory.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [createCategory.isSuccess]);
+  }, [createCategory.isSuccess, createCategory.isError]);
   useEffect(() => {
     if (updateCategory.isSuccess) {
       setIsModalOpen(false);
@@ -141,8 +155,14 @@ function AdminCategory() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (updateCategory.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [updateCategory.isSuccess]);
+  }, [updateCategory.isSuccess, updateCategory.isError]);
   useEffect(() => {
     if (updateTrashCategory.isSuccess) {
       setCurrentPage(1);
@@ -152,8 +172,14 @@ function AdminCategory() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (updateTrashCategory.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [updateTrashCategory.isSuccess]);
+  }, [updateTrashCategory.isSuccess, updateTrashCategory.isError]);
 
   useEffect(() => {
     form.setFieldValue('name', item?.name);
@@ -250,6 +276,7 @@ function AdminCategory() {
         isModalOpen={isModalOpen}
         formId={'createCategory'}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createCategory.isPending || updateCategory.isPending}
       >
         <Form
           form={form}

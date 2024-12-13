@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { RxDashboard } from 'react-icons/rx';
 import { LuListMusic } from 'react-icons/lu';
@@ -6,9 +6,9 @@ import { BsJournalAlbum } from 'react-icons/bs';
 import { RiUserStarLine } from 'react-icons/ri';
 import { Button, Layout, Menu, theme, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
 import { useUserStore } from '../store';
-import { useGetDeatailSinger, useGetDetailUser } from '../hook';
+import { useGetDeatailSinger } from '../hook';
 import { IoLogOutOutline } from 'react-icons/io5';
 import avatar from '../Image/avatar.png';
 const { Header, Sider, Content } = Layout;
@@ -16,7 +16,6 @@ const SingerLayout = ({ children }) => {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
   const detailSinger = useGetDeatailSinger(user.id, user.accessToken);
-  const detailUser = useGetDetailUser(user.id, user.accessToken);
   const [collapsed, setCollapsed] = useState(false);
   let image = avatar;
   if (detailSinger.data?.data.image) image = `${import.meta.env.VITE_API_FILE_URL}/${detailSinger.data?.data.image}`;
@@ -29,9 +28,18 @@ const SingerLayout = ({ children }) => {
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    navigate('/login');
     window.location.reload();
+    navigate('/login');
   };
+  useEffect(() => {
+    if (detailSinger.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [detailSinger.isError]);
   return (
     <Layout className="min-h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={256}>
@@ -115,7 +123,7 @@ const SingerLayout = ({ children }) => {
           {children}
         </Content>
       </Layout>
-      <ToastContainer position="top-right" containerId={3} theme="light" autoClose={3000} draggable />
+      <ToastContainer position="top-right" containerId={3} theme="light" autoClose={3000} draggable stacked />
     </Layout>
   );
 };

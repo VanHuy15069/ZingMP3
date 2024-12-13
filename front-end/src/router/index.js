@@ -30,8 +30,10 @@ import LoginPage from '../pages/loginPage';
 import NationPage from '../pages/nationPage';
 import NewReleasePage from '../pages/newReleasePage';
 import NewSongPage from '../pages/newSongPage';
+import NotFound from '../pages/Page404';
 import ProfilePage from '../pages/ProfilePage';
 import RegisterPage from '../pages/RegisterPage';
+import ResetPasswordPage from '../pages/resetPasswordPage';
 import SearchPage from '../pages/searchPage';
 import SingerAlbum from '../pages/SingerAlbum';
 import SingerAlbumTrash from '../pages/SingerAlbum/SingerAlbumTrash';
@@ -43,6 +45,7 @@ import SingerSongPage from '../pages/SingerSongPage';
 import SinglePage from '../pages/SinglePage';
 import TopicPage from '../pages/topicPage';
 import VipPage from '../pages/vipPage';
+import GetOrder from '../pages/vipPage/getOrder';
 
 export const publicRouter = [
   { path: '/', component: HomePage },
@@ -61,6 +64,8 @@ export const publicRouter = [
   { path: '/topic/:id', component: TopicPage },
   { path: '/category/:id', component: CategoryPage },
   { path: '/contact', component: ContactPage, layout: null },
+  { path: '/reset-password/:token', component: ResetPasswordPage, layout: null },
+  { path: '*', component: NotFound, layout: null },
 ];
 
 export const userRouter = [
@@ -69,7 +74,8 @@ export const userRouter = [
   { path: '/my-music/playlists', component: LibraryPlaylistPage },
   { path: '/playlist/:id', component: DetailPlaylistPage },
   { path: '/account', component: ProfilePage },
-  { path: '/vip', component: VipPage, layout: null },
+  { path: '/upgrade-account', component: VipPage, layout: null },
+  { path: '/check-order', component: GetOrder, layout: null },
 ];
 
 export const adminRouter = [

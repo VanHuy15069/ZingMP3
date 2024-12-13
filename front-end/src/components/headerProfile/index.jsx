@@ -21,7 +21,7 @@ function HeaderProfile({ name, image, singerId = false, follows, isFollow, vip =
     followMutation.mutate({ userId: user.id, singerId: singerId, accessToken: user.accessToken });
   };
   return (
-    <div className="absolute top-0 right-0 left-[240px] select-none">
+    <div className="absolute top-0 right-0 left-[240px] select-none tablet:max-laptop:left-[70px]">
       <div className={cx('background')}>
         <img className="block h-full w-full object-cover" src={avatarImg} alt="" />
         <div className="flex absolute items-center h-[140px] top-[135px] left-[59px]">

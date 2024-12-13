@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
 import { RightOutlined } from '@ant-design/icons';
 import ListSongs from '../../components/listSongs/listSongs';
 import SongItem from '../../components/songItem/songItem';
-import 'react-toastify/dist/ReactToastify.css';
 import NewSongItem from '../../components/newSongItem';
 import 'swiper/css/navigation';
 import AlbumItem from '../../components/albumItem';
@@ -39,11 +38,11 @@ function HomePage() {
   const newSongs = useGetSongsByNation(null, 12);
   const newSongsVN = useGetSongsByNation('Việt Nam', 12);
   const newSongsQT = useGetSongsByNation('Âu Mỹ', 12);
-  const topSongs = useGetAllSongs(20, 0, null, 'views', 'DESC');
+  const topSongs = useGetAllSongs(20, 0, null, 'views', 'DESC', false, null, null);
   const chillTopic = useGetSongByTopic('Chill/Thư giãn', 20, 'views', 'DESC');
   const sadTopic = useGetSongByTopic('Giai điệu buồn', 20, 'views', 'DESC');
   const [songs, setSongs] = useState(newSongs);
-  const albumsHot = useGetAlbumsHot(5);
+  const albumsHot = useGetAlbumsHot(window.innerWidth >= 1130 ? 5 : 4);
   const topNewSongs = useGetTopNewSongs(8);
   const singerFollow = useGetSingerFollow(user?.id, user?.accessToken);
 
@@ -52,39 +51,41 @@ function HomePage() {
   }, [newSongs.isSuccess]);
 
   return (
-    <div className="pt-[32px]">
-      <Swiper
-        slidesPerView={2}
-        autoplay={true}
-        speed={700}
-        rewind={false}
-        grabCursor={true}
-        effect={'creative'}
-        creativeEffect={{
-          prev: {
-            translate: [584, 0, 0],
-          },
-          next: {
-            translate: ['100%', 0, 0],
-          },
-        }}
-        modules={[EffectCreative, Autoplay]}
-        className="mySwiper"
-      >
-        {sliders.data?.data.map((slider) => {
-          return (
-            <SwiperSlide key={slider.id}>
-              <Link to={slider.link} className="h-full w-full rounded-[10px] overflow-hidden px-[15px]">
-                <img
-                  className="h-full w-full object-cover block rounded-[10px] "
-                  src={`${import.meta.env.VITE_API_FILE_URL}/${slider.image}`}
-                  alt="slider"
-                />
-              </Link>
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
+    <div className="pt-[32px] tablet:max-laptop:pt-0">
+      <div className="tablet:max-laptop:hidden">
+        <Swiper
+          slidesPerView={2}
+          autoplay={true}
+          speed={700}
+          rewind={false}
+          grabCursor={true}
+          effect={'creative'}
+          creativeEffect={{
+            prev: {
+              translate: [584, 0, 0],
+            },
+            next: {
+              translate: ['100%', 0, 0],
+            },
+          }}
+          modules={[EffectCreative, Autoplay]}
+          className="mySwiper"
+        >
+          {sliders.data?.data.map((slider) => {
+            return (
+              <SwiperSlide key={slider.id}>
+                <Link to={slider.link} className="h-full w-full rounded-[10px] overflow-hidden px-[15px]">
+                  <img
+                    className="h-full w-full object-cover block rounded-[10px] "
+                    src={`${import.meta.env.VITE_API_FILE_URL}/${slider.image}`}
+                    alt="slider"
+                  />
+                </Link>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </div>
       <div className="mt-[48px]">
         <ListSongs navigate={false} title={'Có thể bạn muốn nghe'} songs={topSongs.data?.data} />
       </div>
@@ -141,7 +142,7 @@ function HomePage() {
         </div>
         <div className="flex items-center flex-wrap -mx-[14px]">
           {songs.data?.data?.map((item) => (
-            <div key={item.id} className="w-1/3 px-[14px]">
+            <div key={item.id} className="w-1/3 px-[14px] tablet:max-laptop:w-1/2">
               <SongItem song={item} listSongs={songs.data?.data} />
             </div>
           ))}
@@ -171,7 +172,7 @@ function HomePage() {
           </Link>
         </div>
         <Swiper
-          slidesPerView={3}
+          slidesPerView={window.innerWidth >= 1300 ? 3 : 2}
           spaceBetween={28}
           autoplay={{ delay: 5000, disableOnInteraction: true }}
           speed={200}
@@ -224,9 +225,9 @@ function HomePage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center -mx-[14px]">
-            {singerFollow.data?.song.map((item) => {
+            {singerFollow.data?.song?.slice(0, window.innerWidth >= 1130 ? 5 : 4).map((item) => {
               return (
-                <div key={item.id} className="px-[14px] w-1/5">
+                <div key={item.id} className="px-[14px] w-1/5 tablet:max-laptop:w-1/4">
                   <SongItemLarge
                     song={item}
                     onClick={() => handleAddSongs(item, singerFollow.data?.song, user, updateSongId, updateSongAlbum)}
@@ -244,7 +245,7 @@ function HomePage() {
         <div className="flex items-center flex-wrap -mx-[14px]">
           {albumsHot.data?.data?.map((item, index) => {
             return (
-              <div key={index} className="w-[20%] px-[14px] cursor-pointer block">
+              <div key={index} className="w-[20%] px-[14px] cursor-pointer block tablet:max-laptop:w-1/4">
                 <AlbumItem album={item} />
               </div>
             );

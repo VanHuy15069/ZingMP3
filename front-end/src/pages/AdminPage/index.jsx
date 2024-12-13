@@ -9,16 +9,17 @@ import {
   useStaticalSongs,
 } from '../../hook';
 import { useUserStore } from '../../store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import ChartCicle from '../../components/PieChart';
 import { PiHeadphonesLight, PiHeart } from 'react-icons/pi';
+import { Bounce, toast } from 'react-toastify';
 
 function AdminPage() {
   const user = useUserStore((state) => state.user);
   const users = useGetAllUser(1, 0, user.accessToken);
   const singers = useGetAllSingers(1, 0, false, null);
-  const songs = useGetAllSongs(1, 0, null, null, null, false);
+  const songs = useGetAllSongs(1, 0, null, null, null, false, null, null);
   const [date, setDate] = useState(dayjs());
   const [lable, setLable] = useState('nations');
   const statical = useStaticalSongs(date?.month() + 1, 10, user.accessToken);
@@ -27,8 +28,24 @@ function AdminPage() {
   const onChange = (date) => {
     setDate(date);
   };
+  useEffect(() => {
+    if (
+      users.isError ||
+      songs.isError ||
+      singers.isError ||
+      topSongs.isError ||
+      countStatical.isError ||
+      statical.isError
+    ) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [users.isError, songs.isError, singers.isError, topSongs.isError, countStatical.isError, statical.isError]);
   return (
-    <div>
+    <>
       <div className="-mx-[14px] flex items-center">
         <div className="w-1/3 px-[14px] ">
           <div className="bg-green-500 text-white text-[22px] font-bold h-[100px] w-full flex items-center justify-center rounded-[6px]">
@@ -139,7 +156,7 @@ function AdminPage() {
           })}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 export default AdminPage;

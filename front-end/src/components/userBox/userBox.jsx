@@ -16,8 +16,8 @@ function UserBox({ user }) {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.setItem('listMusic', JSON.stringify(songNotVips));
-    navigate('/');
     window.location.reload();
+    navigate('/');
   };
 
   return (
@@ -34,7 +34,7 @@ function UserBox({ user }) {
         </div>
         {!detailUser.data?.data.vip && (
           <Button
-            onClick={() => navigate('/vip')}
+            onClick={() => navigate('/upgrade-account')}
             bgColor={'bg-border-primary'}
             border="border-none"
             py={'py-[6px]'}
@@ -54,7 +54,7 @@ function UserBox({ user }) {
           <p>Thông tin cá nhân</p>
         </div>
       </Link>
-      <Link to={`/library`}>
+      <Link to={`/my-music`}>
         <div className="rounded-[4px] py-[12px] px-[10px] h-[44px] flex items-center text-[14px] hover:bg-[#493961]">
           <span className="mr-[12px] text-[20px]">
             <RiFolderMusicLine />

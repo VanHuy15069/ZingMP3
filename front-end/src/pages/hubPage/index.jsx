@@ -59,11 +59,11 @@ function HubPage() {
       <div className="mt-[48px]">
         <div className="mb-[20px] capitalize text-[20px] font-bold">Nổi bật</div>
         <div className="flex flex-wrap -mx-[14px]">
-          <div className="px-[14px] w-1/4">
+          <div className="px-[14px] w-1/4 tablet:max-laptop:hidden">
             <Card image={newSong} link={'/new-songs'} content={'BXH Nhạc mới'} />
           </div>
           {allTopics.isSuccess && (
-            <div className="px-[14px] w-1/4">
+            <div className="px-[14px] w-1/4 tablet:max-laptop:w-1/3">
               <Card
                 image={`${import.meta.env.VITE_API_FILE_URL}/${topTopic?.image}`}
                 link={`/topic/${topTopic.id}`}
@@ -72,7 +72,7 @@ function HubPage() {
             </div>
           )}
           {allCatgory.isSuccess && (
-            <div className="px-[14px] w-1/4">
+            <div className="px-[14px] w-1/4 tablet:max-laptop:w-1/3">
               <Card
                 image={`${import.meta.env.VITE_API_FILE_URL}/${topCategory?.image}`}
                 link={`/category/${topCategory.id}`}
@@ -81,7 +81,7 @@ function HubPage() {
             </div>
           )}
           {allNation.isSuccess && (
-            <div className="px-[14px] w-1/4">
+            <div className="px-[14px] w-1/4 tablet:max-laptop:w-1/3">
               <Card
                 image={`${import.meta.env.VITE_API_FILE_URL}/${topNation?.image}`}
                 link={`/nation/${topNation.id}`}
@@ -96,7 +96,7 @@ function HubPage() {
         <div className="flex flex-wrap -mx-[14px]">
           {allNation.data?.data.rows.map((item) => {
             return (
-              <div key={item.id} className="px-[14px] w-1/4">
+              <div key={item.id} className="px-[14px] w-1/4 tablet:max-laptop:w-1/2 tablet:max-laptop:py-[14px]">
                 <Card
                   image={`${import.meta.env.VITE_API_FILE_URL}/${item?.image}`}
                   link={`/nation/${item.id}`}
@@ -112,7 +112,7 @@ function HubPage() {
         <div className="flex flex-wrap -m-[14px]">
           {allTopics.data?.data.rows.map((item) => {
             return (
-              <div key={item.id} className="w-1/4 p-[14px]">
+              <div key={item.id} className="w-1/4 p-[14px] tablet:max-laptop:w-1/3">
                 <TopicItem topic={item} />
               </div>
             );

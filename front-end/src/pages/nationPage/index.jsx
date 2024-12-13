@@ -33,7 +33,7 @@ function NationPage() {
         <div className="flex items-center flex-wrap -mx-[14px]">
           {topSongs.data?.data.songInfo.map((item) => {
             return (
-              <div key={item.id} className="w-1/3 px-[14px]">
+              <div key={item.id} className="w-1/3 px-[14px] tablet:max-laptop:w-1/2">
                 <SongItemSmall hideHeard hideAlbum song={item} listSongs={topSongs.data?.data.songInfo} />
               </div>
             );
@@ -46,9 +46,9 @@ function NationPage() {
             <h3 className="capitalize text-[20px] font-bold">Album</h3>
           </div>
           <div className="flex items-center flex-wrap -mx-[14px]">
-            {topSongs.data?.album.map((item) => {
+            {topSongs.data?.album.slice(0, window.innerWidth >= 1130 ? 5 : 4).map((item) => {
               return (
-                <div key={item.id} className="w-1/5 px-[14px]">
+                <div key={item.id} className="w-1/5 px-[14px] tablet:max-laptop:w-1/4">
                   <AlbumItem album={item} />
                 </div>
               );
@@ -61,9 +61,9 @@ function NationPage() {
           <h3 className="capitalize text-[20px] font-bold">Nghệ Sĩ</h3>
         </div>
         <div className="flex items-center flex-wrap -mx-[14px]">
-          {topSongs.data?.singers.map((item) => {
+          {topSongs.data?.singers.slice(0, window.innerWidth >= 1130 ? 5 : 4).map((item) => {
             return (
-              <div key={item.id} className="w-1/5 px-[14px]">
+              <div key={item.id} className="w-1/5 px-[14px] tablet:max-laptop:w-1/4">
                 <SingerItem singerId={item.id} />
               </div>
             );

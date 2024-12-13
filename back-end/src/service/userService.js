@@ -4,6 +4,10 @@ import bcryptjs from 'bcryptjs';
 import * as jwt from './jwtService';
 import path from 'path';
 import fs from 'fs';
+import nodemailer from 'nodemailer';
+import jsonwebtoken from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const hashPassword = (password) => bcryptjs.hashSync(password, bcryptjs.genSaltSync(10));
 
@@ -50,7 +54,7 @@ export const loginUserService = (userLogin) =>
       if (!checkUser) {
         resolve({
           status: 'ERROR',
-          msg: 'User does not exist',
+          msg: 'Tên đăng nhập hoặc mật khẩu không đúng!',
         });
       } else {
         const checkPassword = bcryptjs.compareSync(password, checkUser.passWord);
@@ -114,6 +118,7 @@ export const getAllUserService = (limit = 10, offset = 0) =>
         where: { trash: false, isAdmin: false },
         limit: Number(limit),
         offset: Number(offset * limit),
+        order: [['createdAt', 'DESC']],
       });
       resolve({
         status: 'SUCCESS',
@@ -441,6 +446,120 @@ export const getAllSingerFollowService = (userId, limit) =>
         status: 'SUCCESS',
         data: singers,
       });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const upgradeAccountService = (id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findByPk(id);
+      if (!user) {
+        resolve({
+          status: 'Error',
+          msg: 'This user is not defined',
+        });
+      }
+      await user.update({ vip: 1 });
+      await user.save();
+      resolve({
+        status: 'SUCCESS',
+        data: user,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const sendTokenService = (username, email) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findOne({
+        where: {
+          username: username,
+          email: email,
+        },
+      });
+      if (!user) {
+        resolve({
+          status: 'ERROR',
+          msg: 'This user is not defined',
+        });
+      }
+      const token = jwt.renderResetPasswordToken({ username: user.username, email: user.email });
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'vanhuy15069@gmail.com',
+          pass: 'xvvj mygu uxbs iqvw',
+        },
+      });
+      const emailDetail = {
+        from: '"Van Huy" <vanhuy15069@gmail.com>',
+        to: `${user.email}`,
+        subject: 'Yêu cầu cấp lại mật khẩu',
+        text: `Nhấp vào đường dẫn sau để thực hiện việc cấp lại mật khẩu, thời gian tồn tại của của đường dẫn là 15 phút tính từ thời điểm email này được gửi đến: ${process.env.FE_URL}/reset-password/${token}`,
+      };
+      transporter.sendMail(emailDetail, async (error, info) => {
+        if (error) {
+          resolve({
+            status: 'ERROR',
+            msg: 'Can not send email',
+            error: error,
+          });
+        }
+        resolve({
+          status: 'SUCCESS',
+          data: info,
+        });
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const checkTokenService = (token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const decode = jsonwebtoken.verify(token, process.env.RESET_PASSWORD_TOEKN);
+      if (decode) {
+        resolve({
+          status: 'SUCCESS',
+          data: decode,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const resetPasswordService = (token, password) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const decode = jsonwebtoken.verify(token, process.env.RESET_PASSWORD_TOEKN);
+      if (decode) {
+        const user = await db.User.findOne({
+          where: {
+            username: decode.username,
+            email: decode.email,
+          },
+        });
+        if (!user) {
+          resolve({
+            status: 'ERROR',
+            msg: 'This user is not defined',
+          });
+        }
+        user.update({ passWord: hashPassword(password) });
+        user.save();
+        resolve({
+          status: 'SUCCESS',
+          msg: 'update successfully!',
+        });
+      }
     } catch (error) {
       reject(error);
     }

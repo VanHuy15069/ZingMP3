@@ -12,6 +12,11 @@ export const renderRefreshToken = (payload) => {
   return accessToken;
 };
 
+export const renderResetPasswordToken = (payload) => {
+  const accessToken = jwt.sign({ ...payload }, process.env.RESET_PASSWORD_TOEKN, { expiresIn: '15m' });
+  return accessToken;
+};
+
 export const refreshToken = (token) => {
   return new Promise(async (resolve, reject) => {
     try {

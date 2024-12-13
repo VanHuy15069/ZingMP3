@@ -174,9 +174,9 @@ export const getDetailUser = async (req, res) => {
 };
 
 export const getAllSinger = async (req, res) => {
-  const { limit, offset, trash, singerName } = req.query;
+  const { limit, offset, trash, singerName, name, sort } = req.query;
   try {
-    const response = await singerService.getAllSingerService(limit, offset, trash, singerName);
+    const response = await singerService.getAllSingerService(limit, offset, trash, singerName, name, sort);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
@@ -288,14 +288,24 @@ export const getHotSongBySingerRandom = async (req, res) => {
 export const getAllSongBySinger = async (req, res) => {
   try {
     const singerId = req.params.id;
-    const { limit, offset, name, trash } = req.query;
+    const { limit, offset, name, trash, key, value, nameSort, sort } = req.query;
     if (!singerId || !trash) {
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
       });
     }
-    const response = await singerService.getAllSongBySingerService(singerId, limit, offset, name, trash);
+    const response = await singerService.getAllSongBySingerService(
+      singerId,
+      limit,
+      offset,
+      name,
+      trash,
+      key,
+      value,
+      nameSort,
+      sort,
+    );
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

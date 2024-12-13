@@ -208,6 +208,15 @@ function AdminContact() {
     });
   };
   useEffect(() => {
+    if (contacts.isError || feedback.isError || deleteContacts.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [contacts.isError, feedback.isError, deleteContacts.isError]);
+  useEffect(() => {
     if (feedback.isSuccess) {
       setContact({});
       setShowModal(false);

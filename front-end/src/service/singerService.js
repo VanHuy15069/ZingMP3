@@ -11,13 +11,15 @@ export const getDetailSinger = async (id) => {
   return res.data;
 };
 
-export const getAllSingers = async (limit, offset, trash, singerName) => {
+export const getAllSingers = async (limit, offset, trash, singerName, name, sort) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/singer/get-all`, {
     params: {
       limit: limit,
       offset: offset,
       trash: trash,
       singerName: singerName,
+      name: name,
+      sort: sort,
     },
   });
   return res.data;
@@ -102,13 +104,17 @@ export const deleteAccountSinger = async (id, accessToken) => {
   return res.data;
 };
 
-export const getAllSongBySinger = async (id, limit, offset, name, trash, accessToken) => {
+export const getAllSongBySinger = async (id, limit, offset, name, trash, accessToken, key, value, nameSort, sort) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/singer/get-all-song/${id}`, {
     params: {
       limit: limit,
       offset: offset,
       name: name,
       trash: trash,
+      key: key,
+      value: value,
+      nameSort: nameSort,
+      sort: sort,
     },
     headers: {
       token: `Bearer ${accessToken}`,

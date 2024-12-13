@@ -13,7 +13,7 @@ function SearchSinger({ searchValue }) {
           <div className="flex items-center flex-wrap -mx-[14px]">
             {singers.data?.data.map((item) => {
               return (
-                <div key={item.id} className="px-[14px] w-1/5">
+                <div key={item.id} className="px-[14px] w-1/5 mb-[30px] tablet:max-laptop:w-1/4">
                   <SingerItem singerId={item.id} />
                 </div>
               );

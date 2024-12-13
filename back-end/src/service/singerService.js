@@ -321,7 +321,7 @@ export const getDetailSingerService = (id) =>
     }
   });
 
-export const getAllSingerService = (limit, offset = 0, trash = 0, singerName) =>
+export const getAllSingerService = (limit, offset = 0, trash = 0, singerName, name = 'createdAt', sort = 'DESC') =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
@@ -333,7 +333,7 @@ export const getAllSingerService = (limit, offset = 0, trash = 0, singerName) =>
         where: { trash: trash, ...obj },
         ...objLimit,
         attributes: ['id', 'name', 'image', 'desc', 'status', 'username'],
-        order: [['createdAt', 'DESC']],
+        order: [[name, sort]],
       });
       if (!singers) {
         resolve({
@@ -560,55 +560,69 @@ export const getHotSongBySingerRandomService = (userId) =>
       const follow = await db.Follow.findAll({
         where: { userId: userId },
       });
-      const singerIds = follow.map((item) => item.singerId);
-      const singerRandom = Math.floor(Math.random() * singerIds.length);
-      const singer = await db.Singer.findByPk(singerIds[singerRandom], {
-        attributes: ['id', 'name', 'image'],
-      });
-      const songSinger = await db.SingerSong.findAll({
-        where: {
-          singerId: singerIds[singerRandom],
-        },
-      });
-      const songIds = songSinger.map((item) => item.songId);
-      const songs = await db.Song.findAll({
-        where: {
-          id: { [Op.in]: songIds },
-        },
-        limit: 5,
-        order: [['views', 'DESC']],
-        include: [
-          {
-            model: db.Singer,
-            as: 'singerInfo',
-            attributes: ['id', 'name'],
+      if (follow.length > 0) {
+        const singerIds = follow.map((item) => item.singerId);
+        const singerRandom = Math.floor(Math.random() * singerIds.length);
+        const singer = await db.Singer.findByPk(singerIds[singerRandom], {
+          attributes: ['id', 'name', 'image'],
+        });
+        const songSinger = await db.SingerSong.findAll({
+          where: {
+            singerId: singerIds[singerRandom],
           },
-        ],
-      });
-      resolve({
-        status: 'SUCCESS',
-        data: singer,
-        song: songs,
-      });
+        });
+        const songIds = songSinger.map((item) => item.songId);
+        const songs = await db.Song.findAll({
+          where: {
+            id: { [Op.in]: songIds },
+          },
+          limit: 5,
+          order: [['views', 'DESC']],
+          include: [
+            {
+              model: db.Singer,
+              as: 'singerInfo',
+              attributes: ['id', 'name'],
+            },
+          ],
+        });
+        resolve({
+          status: 'SUCCESS',
+          data: singer,
+          song: songs,
+        });
+      }
     } catch (error) {
       reject(error);
     }
   });
 
-export const getAllSongBySingerService = (singerId, limit, offset, name, trash) =>
+export const getAllSongBySingerService = (
+  singerId,
+  limit,
+  offset,
+  name,
+  trash,
+  key,
+  value,
+  nameSort = 'createdAt',
+  sort = 'DESC',
+) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
+      const filter = {};
       if (limit) obj.limit = Number(limit);
       if (offset) obj.offset = Number(limit) * Number(offset);
+      if (key && value) filter[key] = value;
       const search = {};
       if (name) search.name = { [Op.substring]: name };
       const songs = await db.SingerSong.findAll({ where: { singerId: singerId } });
       const listSongs = songs.map((item) => item.songId);
       const topSongs = await db.Song.findAndCountAll({
-        where: { id: { [Op.in]: listSongs }, ...search, trash: trash },
+        where: { id: { [Op.in]: listSongs }, ...search, trash: trash, ...filter },
         ...obj,
-        order: [['createdAt', 'DESC']],
+        order: [[nameSort, sort]],
         include: [
           {
             model: db.Singer,

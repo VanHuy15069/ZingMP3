@@ -1,4 +1,5 @@
 import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import userRouter from './user';
 import singerRouter from './singer';
 import nationRouter from './nation';
@@ -9,8 +10,27 @@ import albumRouter from './album';
 import playlistRouter from './playlist';
 import contactRouter from './contact';
 import slideRouter from './slider';
+import payRouter from './vnpayOrder';
 const router = express.Router();
 const initRouters = (app) => {
+  // app.use(
+  //   '/api/order',
+  //   createProxyMiddleware({
+  //     target: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html', // Thay thế bằng địa chỉ gateway thanh toán
+  //     changeOrigin: true, // Cho phép thay đổi gốc
+  //     pathRewrite: {
+  //       '^/api/order': '', // Xóa prefix '/api/order' khi chuyển tiếp
+  //     },
+  //     onProxyReq: (proxyReq, req, res) => {
+  //       // Thêm header tùy chỉnh nếu cần
+  //       proxyReq.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+  //       console.log('Request:', proxyReq.method, proxyReq.path);
+  //     },
+  //     onProxyRes: (proxyRes, req, res) => {
+  //       console.log('Response:', proxyRes.statusCode);
+  //     },
+  //   }),
+  // );
   app.use('/api/user', userRouter);
   app.use('/api/singer', singerRouter);
   app.use('/api/nation', nationRouter);
@@ -21,6 +41,7 @@ const initRouters = (app) => {
   app.use('/api/playlist', playlistRouter);
   app.use('/api/contact', contactRouter);
   app.use('/api/slider', slideRouter);
+  app.use('/api/order', payRouter);
   return app.use('/', router);
 };
 export default initRouters;

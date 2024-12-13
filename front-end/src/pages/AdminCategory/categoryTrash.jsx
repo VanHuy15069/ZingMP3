@@ -90,6 +90,15 @@ function CategoryTrash() {
     });
   };
   useEffect(() => {
+    if (category.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [category.isError]);
+  useEffect(() => {
     if (updateTrashCategory.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);
@@ -98,8 +107,14 @@ function CategoryTrash() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (updateTrashCategory.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [updateTrashCategory.isSuccess]);
+  }, [updateTrashCategory.isSuccess, updateTrashCategory.isError]);
   useEffect(() => {
     if (deleteCategory.isSuccess) {
       setCurrentPage(1);
@@ -109,8 +124,14 @@ function CategoryTrash() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (deleteCategory.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [deleteCategory.isSuccess]);
+  }, [deleteCategory.isSuccess, deleteCategory.isError]);
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };

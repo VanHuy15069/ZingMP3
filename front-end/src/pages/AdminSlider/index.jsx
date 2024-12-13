@@ -144,6 +144,15 @@ function AdminSlider() {
     } else navigate('/dashboard/slider/trash');
   };
   useEffect(() => {
+    if (slider.isError || createSlider.isError || updateSlider.isError || updateTrashSlider.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [slider.isError, createSlider.isError, updateSlider.isError, updateTrashSlider.isError]);
+  useEffect(() => {
     if (createSlider.isSuccess) {
       if (createSlider.data?.status === 'SUCCESS') {
         setIsModalOpen(false);
@@ -242,6 +251,7 @@ function AdminSlider() {
         isModalOpen={isModalOpen}
         formId={'slider'}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createSlider.isPending || updateSlider.isPending}
       >
         <Form
           form={form}

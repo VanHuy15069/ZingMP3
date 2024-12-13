@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons';
 import { RxDashboard } from 'react-icons/rx';
 import { IoEarthOutline, IoLogOutOutline } from 'react-icons/io5';
@@ -10,7 +10,7 @@ import { RiUserStarLine } from 'react-icons/ri';
 import { TfiLayoutSliderAlt } from 'react-icons/tfi';
 import { Button, Layout, Menu, theme, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
 import { LiaHomeSolid } from 'react-icons/lia';
 import { useUserStore } from '../store';
 import { useGetDetailUser } from '../hook';
@@ -36,9 +36,18 @@ const AdminLayout = ({ children }) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.setItem('listMusic', JSON.stringify(songNotVips));
-    navigate('/login');
     window.location.reload();
+    navigate('/login');
   };
+  useEffect(() => {
+    if (detailUser.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [detailUser.isError]);
   return (
     <Layout className="min-h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={256}>
@@ -169,7 +178,7 @@ const AdminLayout = ({ children }) => {
           {children}
         </Content>
       </Layout>
-      <ToastContainer position="top-right" containerId={2} theme="light" autoClose={3000} draggable />
+      <ToastContainer position="top-right" containerId={2} theme="light" autoClose={3000} draggable stacked />
     </Layout>
   );
 };

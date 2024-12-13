@@ -1,7 +1,7 @@
-import { Button, Flex, Form, Image, Input, Select, Table } from 'antd';
+import { Avatar, Button, Flex, Form, Image, Input, Select, Table } from 'antd';
 import TitleAdmin from '../../components/titleAdmin';
 import { GoTrash } from 'react-icons/go';
-import { EditOutlined, UploadOutlined } from '@ant-design/icons';
+import { EditOutlined, FileImageOutlined, UploadOutlined } from '@ant-design/icons';
 import { useGetAllAlbums, useGetAllSingers } from '../../hook';
 import { useEffect, useRef, useState } from 'react';
 import ModalCreate from '../../components/Modal/modalCreate';
@@ -144,8 +144,18 @@ function AdminAlbum() {
     } else navigate('/dashboard/album/trash');
   };
   const handleSearch = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
+  useEffect(() => {
+    if (albums.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [albums.isError]);
   useEffect(() => {
     if (createAlbum.isSuccess) {
       if (createAlbum.data?.status === 'SUCCESS') {
@@ -158,15 +168,20 @@ function AdminAlbum() {
           transition: Bounce,
         });
       } else {
-        setIsModalOpen(false);
         toast.error(`album đã tồn tại trên hệ thống!`, {
           toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       }
+    } else if (createAlbum.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [createAlbum.isSuccess]);
+  }, [createAlbum.isSuccess, createAlbum.isError]);
   useEffect(() => {
     if (updateAlbum.isSuccess) {
       setIsModalOpen(false);
@@ -177,8 +192,14 @@ function AdminAlbum() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (updateAlbum.isError) {
+      toast.error(`505! Server Error`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [updateAlbum.isSuccess]);
+  }, [updateAlbum.isSuccess, updateAlbum.isError]);
   useEffect(() => {
     if (updateTrashAlbum.isSuccess) {
       setCurrentPage(1);
@@ -188,8 +209,14 @@ function AdminAlbum() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (updateTrashAlbum.isError) {
+      toast.error(`505! Server Error`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [updateTrashAlbum.isSuccess]);
+  }, [updateTrashAlbum.isSuccess, updateTrashAlbum.isError]);
   const onFinish = (data) => {
     if (option === 1) {
       if (image) {
@@ -255,6 +282,7 @@ function AdminAlbum() {
         isModalOpen={isModalOpen}
         formId={'album'}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createAlbum.isPending || updateAlbum.isPending}
       >
         <Form
           form={form}
@@ -279,14 +307,18 @@ function AdminAlbum() {
               options={optionSingers}
             />
           </Form.Item>
-          <Form.Item label="Hình ảnh">
+          <Form.Item label="Hình ảnh" className="form-image">
             <input type="file" id="file" ref={inputRef} style={{ display: 'none' }} onChange={handleFileSelect} />
-            <div className="flex flex-col gap-[8px]">
-              <Button icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>
+            <div className="flex items-center gap-[18px]">
+              <Button icon={<UploadOutlined />} className="w-1/2" onClick={() => inputRef.current.click()}>
                 Click to Upload
               </Button>
               {checkImage && <p className="text-text-err">Hãy chọn hình ảnh cho nghệ sĩ</p>}
-              {imgUpload && <Image src={imgUpload} alt="" height={90} className="w-[40%] object-cover block" />}
+              {imgUpload ? (
+                <Image src={imgUpload} alt="" height={90} width={90} className="object-cover block rounded-[8px]" />
+              ) : (
+                <Avatar shape="square" size={90} icon={<FileImageOutlined />} />
+              )}
             </div>
           </Form.Item>
         </Form>

@@ -1,11 +1,11 @@
 import { useGetDeatailSinger } from '../../hook';
 import { useUserStore } from '../../store';
 import avatar from '../../Image/avatar.png';
-import { Button, Form, Image, Input } from 'antd';
+import { Avatar, Button, Form, Image, Input } from 'antd';
 import ModalCreate from '../../components/Modal/modalCreate';
 import { useEffect, useRef, useState } from 'react';
 import TextArea from 'antd/es/input/TextArea';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { useCreateAccountSinger, useUpdateSinger } from '../../mutationHook/singer';
 import { Bounce, toast } from 'react-toastify';
 function SingerDetailPage() {
@@ -54,6 +54,15 @@ function SingerDetailPage() {
     }
   };
   useEffect(() => {
+    if (singerDetail.isError || updateSinger.isError || updateAccount.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 3,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [singerDetail.isError, updateSinger.isError, updateAccount.isError]);
+  useEffect(() => {
     if (updateSinger.isSuccess || updateAccount.isSuccess) {
       setIsModalOpen(false);
       setImgUpload();
@@ -101,6 +110,7 @@ function SingerDetailPage() {
         }}
         btnText={'Cập nhật'}
         formId={'utdsinger'}
+        loading={updateSinger.isPending || updateAccount.isPending}
       >
         <Form
           form={form}
@@ -141,13 +151,17 @@ function SingerDetailPage() {
           >
             <Input type="password" placeholder="Xác nhận mật khẩu" />
           </Form.Item>
-          <Form.Item label="Hình ảnh">
+          <Form.Item label="Hình ảnh" className="form-image">
             <input type="file" id="file" ref={inputRef} style={{ display: 'none' }} onChange={handleFileSelect} />
-            <div className="flex flex-col gap-[8px]">
-              <Button icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>
+            <div className="flex items-center gap-[18px]">
+              <Button icon={<UploadOutlined />} className="w-1/2" onClick={() => inputRef.current.click()}>
                 Click to Upload
               </Button>
-              {imgUpload && <Image src={imgUpload} alt="" height={90} className="w-[40%] object-cover block" />}
+              {imgUpload ? (
+                <Image src={imgUpload} alt="" height={90} width={90} className="object-cover block rounded-full" />
+              ) : (
+                <Avatar size={90} icon={<UserOutlined />} />
+              )}
             </div>
           </Form.Item>
         </Form>

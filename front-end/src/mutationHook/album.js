@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as albumService from '../service/albumService';
+
 export const useCreateAlbum = () => {
   const queryClient = useQueryClient();
   return useMutation({

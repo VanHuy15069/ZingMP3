@@ -75,9 +75,9 @@ export const getDetailSong = async (req, res) => {
 };
 
 export const getAllSong = async (req, res) => {
-  const { limit, offset, songName, name, sort, trash } = req.query;
+  const { limit, offset, songName, name, sort, key, value, trash } = req.query;
   try {
-    const response = await songService.getAllSongService(limit, offset, songName, name, sort, trash);
+    const response = await songService.getAllSongService(limit, offset, songName, name, sort, key, value, trash);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

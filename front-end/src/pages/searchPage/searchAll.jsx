@@ -8,10 +8,10 @@ import emptyImg from '../../Image/empty-dark.png';
 import { Empty } from 'antd';
 
 function SearchAll({ value, navigateSongs, navigateAlbum, navigateSinger }) {
-  const topSongs = useGetAllSongs(20, 0, value, 'views', 'DESC');
-  const newSongs = useGetAllSongs(20, 0, value, 'createdAt', 'DESC');
+  const topSongs = useGetAllSongs(20, 0, value, 'views', 'DESC', false, null, null);
+  const newSongs = useGetAllSongs(20, 0, value, 'createdAt', 'DESC', false, null, null);
   const albums = useGetAllAlbums(5, 0, value, false, 'createdAt', 'DESC');
-  const singers = useGetAllSingers(5, 0, false, value);
+  const singers = useGetAllSingers(window.innerWidth >= 1130 ? 5 : 4, 0, false, value);
 
   return (
     <>
@@ -94,7 +94,7 @@ function SearchAll({ value, navigateSongs, navigateAlbum, navigateSinger }) {
               <div className="flex items-center flex-wrap -mx-[14px]">
                 {singers.data?.data.map((item) => {
                   return (
-                    <div key={item.id} className="px-[14px] w-1/5">
+                    <div key={item.id} className="px-[14px] w-1/5 tablet:max-laptop:w-1/4">
                       <SingerItem singerId={item.id} />
                     </div>
                   );

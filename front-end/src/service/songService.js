@@ -12,7 +12,7 @@ export const getSongByNation = async (nation, limit, name, sort) => {
   return res.data;
 };
 
-export const getAllSongService = async (limit, offset, songName, name, sort, trash) => {
+export const getAllSongService = async (limit, offset, songName, name, sort, trash, key, value) => {
   const objSong = {};
   if (songName) objSong.songName = songName;
   if (name) objSong.name = name;
@@ -23,6 +23,8 @@ export const getAllSongService = async (limit, offset, songName, name, sort, tra
       offset: offset,
       trash: trash,
       ...objSong,
+      key: key,
+      value: value,
     },
   });
   return res.data;

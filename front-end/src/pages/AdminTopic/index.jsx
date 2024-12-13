@@ -135,6 +135,15 @@ function AdminTopic() {
     } else navigate('/dashboard/topic/trash');
   };
   useEffect(() => {
+    if (topic.isError || createTopic.isError || updateTopic.isError || updateTrashTopic.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [topic.isError, createTopic.isError, updateTopic.isError, updateTrashTopic.isError]);
+  useEffect(() => {
     if (createTopic.isSuccess) {
       if (createTopic.data?.status === 'SUCCESS') {
         setIsModalOpen(false);
@@ -240,6 +249,7 @@ function AdminTopic() {
         isModalOpen={isModalOpen}
         formId={'topic'}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createTopic.isPending || updateTopic.isPending}
       >
         <Form
           form={form}

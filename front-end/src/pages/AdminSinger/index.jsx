@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGetAllSingers } from '../../hook';
-import { Button, Flex, Form, Image, Input, Switch, Table } from 'antd';
+import { Avatar, Button, Flex, Form, Image, Input, Switch, Table } from 'antd';
 import TitleAdmin from '../../components/titleAdmin';
 import { RiUserStarLine } from 'react-icons/ri';
-import { EditOutlined, UploadOutlined } from '@ant-design/icons';
+import { EditOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { GoTrash } from 'react-icons/go';
 import avatar from '../../Image/avatar.png';
 import ModalCreate from '../../components/Modal/modalCreate';
@@ -35,7 +35,9 @@ function AdminSinger() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [item, setItem] = useState({});
   const [status, setStatus] = useState(false);
-  const singers = useGetAllSingers(10, currentPage - 1, false, searchValue);
+  const [name, setName] = useState('createdAt');
+  const [sort, setSort] = useState('DESC');
+  const singers = useGetAllSingers(10, currentPage - 1, false, searchValue, name, sort);
   const createSinger = useCreateSinger();
   const updateSinger = useUpdateSinger();
   const updateTrashSinger = useUpdateTrashSinger();
@@ -47,6 +49,7 @@ function AdminSinger() {
       title: 'Tên nghệ sĩ',
       dataIndex: 'name',
       fixed: 'left',
+      sorter: true,
     },
     {
       title: 'Hình ảnh',
@@ -210,12 +213,31 @@ function AdminSinger() {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+  const onChangeTable = (pagination, filters, sorter, extra) => {
+    if (sorter.order) {
+      setName(sorter.field);
+      setSort(sorter.order === 'ascend' ? 'ASC' : sorter.order === 'descend' ? 'DESC' : undefined);
+    } else {
+      setName('createdAt');
+      setSort('DESC');
+    }
+  };
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
   };
   const handleSearch = (value) => {
     setSearchValue(value);
+    setCurrentPage(1);
   };
+  useEffect(() => {
+    if (singers.isError || createSinger.isError || updateSinger.isError || updateTrashSinger.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [singers.isError, createSinger.isError, updateSinger.isError, updateTrashSinger.isError]);
   useEffect(() => {
     if (createSinger.isSuccess) {
       if (createSinger.data?.status === 'SUCCESS') {
@@ -316,7 +338,7 @@ function AdminSinger() {
     form.setFieldValue('name', item?.name);
     form.setFieldValue('desc', item?.desc);
     form.setFieldValue('username', null);
-  }, [item]);
+  }, [isModalOpen]);
   useEffect(() => {
     return () => URL.revokeObjectURL(imgUpload);
   }, [imgUpload]);
@@ -346,6 +368,15 @@ function AdminSinger() {
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          showSorterTooltip={{
+            target: 'sorter-icon',
+          }}
+          onChange={onChangeTable}
+          locale={{
+            triggerDesc: 'Sắp xếp giảm dần',
+            triggerAsc: 'Sắp xếp tăng dần',
+            cancelSort: 'Hủy sắp xếp',
+          }}
           loading={singers.isLoading}
         />
       </Flex>
@@ -358,6 +389,7 @@ function AdminSinger() {
         }}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
         formId={'singer'}
+        loading={createSinger.isPending || updateSinger.isPending}
       >
         <Form
           form={form}
@@ -427,13 +459,17 @@ function AdminSinger() {
             </Form.Item>
           )}
           {(option === 1 || option === 2) && (
-            <Form.Item label="Hình ảnh">
+            <Form.Item className="form-image" label="Hình ảnh">
               <input type="file" id="file" ref={inputRef} style={{ display: 'none' }} onChange={handleFileSelect} />
-              <div className="flex flex-col gap-[8px]">
-                <Button icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>
+              <div className="flex items-center gap-[18px]">
+                <Button icon={<UploadOutlined />} className="w-1/2" onClick={() => inputRef.current.click()}>
                   Click to Upload
                 </Button>
-                {imgUpload && <Image src={imgUpload} alt="" height={90} className="w-[40%] object-cover block" />}
+                {imgUpload ? (
+                  <Image src={imgUpload} alt="" height={90} width={90} className="object-cover block rounded-full" />
+                ) : (
+                  <Avatar size={90} icon={<UserOutlined />} />
+                )}
               </div>
             </Form.Item>
           )}

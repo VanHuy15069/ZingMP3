@@ -27,7 +27,7 @@ function DetailSongItem({
   let image = defaultImage;
   if (isPlaylist && song?.songInfo[0]?.image) image = `${import.meta.env.VITE_API_FILE_URL}/${song.songInfo[0].image}`;
   return (
-    <div className="sticky top-[110px] w-[300px] float-left block">
+    <div className="sticky top-[110px] w-[300px] float-left block tablet:max-laptop:flex tablet:max-laptop:w-full tablet:max-laptop:static tablet:max-laptop:pb-[30px] gap-[20px]">
       {song && (
         <div className={cx('image', { active: isActive })}>
           {isPlaylist ? (
@@ -42,10 +42,10 @@ function DetailSongItem({
           </div>
         </div>
       )}
-      <div className="mt-[12px] flex flex-col items-center select-none">
-        <div className="w-full text-center">
+      <div className="mt-[12px] flex flex-col items-center select-none tablet:max-laptop:justify-between">
+        <div className="w-full text-center tablet:max-laptop:text-left">
           <h3 className="text-[20px] font-bold leading-[1.5]">{song?.name}</h3>
-          <div className="flex items-center text-[12px] text-second-text justify-center">
+          <div className="flex items-center text-[12px] text-second-text justify-center tablet:max-laptop:justify-start">
             {!isPlaylist &&
               !listSingers &&
               song?.singerInfo?.map((item, index) => {
@@ -87,26 +87,28 @@ function DetailSongItem({
           </div>
           {(favorite || favorite === 0) && <p className="text-[12px] text-second-text">{favorite} người yêu thích</p>}
         </div>
-        <div onClick={onPlay} className="mt-[16px]">
-          {isActive && audio.isPlay ? (
-            <button className="flex items-center mb-[16px] rounded-[999px] bg-purple-primary border-purple-primary uppercase text-[14px] py-[9px] px-[24px]">
-              <span className="text-[16px] mr-[5px]">
-                <MdPause />
-              </span>
-              <p>Tạm dừng</p>
-            </button>
-          ) : (
-            <button className="flex items-center mb-[16px] rounded-[999px] bg-purple-primary border-purple-primary uppercase text-[14px] py-[9px] px-[24px]">
-              <span className="text-[16px] mr-[5px]">
-                <IoMdPlay />
-              </span>
-              <p>Phát tất cả</p>
-            </button>
-          )}
+        <div className="tablet:max-laptop:flex gap-[10px]">
+          <div onClick={onPlay} className="my-[16px] tablet:max-laptop:my-0">
+            {isActive && audio.isPlay ? (
+              <button className="flex items-center rounded-[999px] bg-purple-primary border-purple-primary uppercase text-[14px] py-[9px] px-[24px]">
+                <span className="text-[16px] mr-[5px]">
+                  <MdPause />
+                </span>
+                <p>Tạm dừng</p>
+              </button>
+            ) : (
+              <button className="flex items-center rounded-[999px] bg-purple-primary border-purple-primary uppercase text-[14px] py-[9px] px-[24px]">
+                <span className="text-[16px] mr-[5px]">
+                  <IoMdPlay />
+                </span>
+                <p>Phát tất cả</p>
+              </button>
+            )}
+          </div>
           {!isPlaylist && (
             <div className="flex items-center justify-center gap-[10px]">
               <HeartIcon isFavorite={isFavorite} songId={song.id} overlay />
-              {!isAlbum && <DownLoadIcon overlay />}
+              {!isAlbum && <DownLoadIcon overlay song={song} />}
             </div>
           )}
         </div>

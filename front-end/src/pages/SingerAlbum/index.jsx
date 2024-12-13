@@ -1,8 +1,8 @@
-import { Button, Flex, Form, Image, Input, Select, Table } from 'antd';
+import { Avatar, Button, Flex, Form, Image, Input, Table } from 'antd';
 import TitleAdmin from '../../components/titleAdmin';
 import { GoTrash } from 'react-icons/go';
-import { EditOutlined, UploadOutlined } from '@ant-design/icons';
-import { useGetAllAlbumBySingerId, useGetAllAlbums, useGetAllSingers } from '../../hook';
+import { EditOutlined, FileImageOutlined, UploadOutlined } from '@ant-design/icons';
+import { useGetAllAlbumBySingerId } from '../../hook';
 import { useEffect, useRef, useState } from 'react';
 import ModalCreate from '../../components/Modal/modalCreate';
 import { useUserStore } from '../../store';
@@ -135,6 +135,15 @@ function SingerAlbum() {
     setSearchValue(value);
   };
   useEffect(() => {
+    if (albums.isError || createAlbum.isError || updateAlbum.isError || updateTrashAlbum.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 3,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [albums.isError, createAlbum.isError, updateAlbum.isError, updateTrashAlbum.isError]);
+  useEffect(() => {
     if (createAlbum.isSuccess) {
       if (createAlbum.data?.status === 'SUCCESS') {
         setIsModalOpen(false);
@@ -243,6 +252,7 @@ function SingerAlbum() {
         isModalOpen={isModalOpen}
         formId={'album'}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createAlbum.isPending || updateAlbum.isPending}
       >
         <Form
           form={form}
@@ -256,14 +266,18 @@ function SingerAlbum() {
           <Form.Item label="Tên album" name="name" rules={[{ required: true, message: 'Hãy nhập tên album' }]}>
             <Input type="text" placeholder="Tên album" />
           </Form.Item>
-          <Form.Item label="Hình ảnh">
+          <Form.Item label="Hình ảnh" className="form-image">
             <input type="file" id="file" ref={inputRef} style={{ display: 'none' }} onChange={handleFileSelect} />
-            <div className="flex flex-col gap-[8px]">
-              <Button icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>
+            <div className="flex items-center gap-[18px]">
+              <Button icon={<UploadOutlined />} className="w-1/2" onClick={() => inputRef.current.click()}>
                 Click to Upload
               </Button>
-              {checkImage && <p className="text-text-err">Hãy chọn hình ảnh cho nghệ sĩ</p>}
-              {imgUpload && <Image src={imgUpload} alt="" height={90} className="w-[40%] object-cover block" />}
+              {checkImage && <p className="text-text-err">Hãy chọn hình ảnh cho album</p>}
+              {imgUpload ? (
+                <Image src={imgUpload} alt="" height={90} width={90} className="object-cover block rounded-[8px]" />
+              ) : (
+                <Avatar shape="square" size={90} icon={<FileImageOutlined />} />
+              )}
             </div>
           </Form.Item>
         </Form>

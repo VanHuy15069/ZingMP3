@@ -14,7 +14,7 @@ import { useGetPlaylist } from '../../hook';
 import { useDebounce } from '@uidotdev/usehooks';
 import { PiPlaylist } from 'react-icons/pi';
 import Swal from 'sweetalert2';
-import { useAddSongPlaylist, useDeletePlaylist, useRemoveSongPlaylist } from '../../mutationHook/playlist';
+import { useAddSongPlaylist, useRemoveSongPlaylist } from '../../mutationHook/playlist';
 
 function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }) {
   const user = useUserStore((state) => state.user);
@@ -128,19 +128,36 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
   const handlePlayNext = () => {
     const songIndex = list.findIndex((item) => item.id === song.id);
     if (songIndex !== -1) {
-      list.splice(songIndex, 1);
-      list.splice(1, 0, song);
+      if (songIndex !== 0) {
+        list.splice(songIndex, 1);
+        list.splice(1, 0, song);
+        localStorage.setItem('listMusic', JSON.stringify(list));
+        setIsReload(!isReload);
+        toast('Bài hát sẽ được phát tiếp theo!', {
+          toastId: 1,
+          draggable: true,
+          hideProgressBar: true,
+          transition: Bounce,
+        });
+      } else {
+        toast('Bài hát đang được phát!', {
+          toastId: 1,
+          draggable: true,
+          hideProgressBar: true,
+          transition: Bounce,
+        });
+      }
     } else {
       list.splice(1, 0, song);
+      localStorage.setItem('listMusic', JSON.stringify(list));
+      setIsReload(!isReload);
+      toast('Bài hát sẽ được phát tiếp theo!', {
+        toastId: 1,
+        draggable: true,
+        hideProgressBar: true,
+        transition: Bounce,
+      });
     }
-    localStorage.setItem('listMusic', JSON.stringify(list));
-    setIsReload(!isReload);
-    toast('Đã thêm bài hát vào danh sách phát!', {
-      toastId: 1,
-      draggable: true,
-      hideProgressBar: true,
-      transition: Bounce,
-    });
   };
   const handleOpenModal = (e) => {
     if (user?.accessToken) {

@@ -20,8 +20,8 @@ function LibraryPage() {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
   const { updateSongId, updateSongAlbum, updateSongPlay } = useAudioStore();
-  const singers = useGetAllSingerFollow(user.id, 5, user.accessToken);
-  const playlists = useGetPlaylist(user.id, 5, null, user.accessToken);
+  const singers = useGetAllSingerFollow(user.id, window.innerWidth >= 1130 ? 5 : 4, user.accessToken);
+  const playlists = useGetPlaylist(user.id, window.innerWidth >= 1130 ? 5 : 4, null, user.accessToken);
   const playlistMutation = useCreatePlaylist(user?.id);
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -104,14 +104,14 @@ function LibraryPage() {
         <div className="flex flex-wrap items-center -mx-[14px] mt-[32px]">
           {singers.data?.data.map((item, index) => {
             return (
-              <div key={index} className="px-[14px] w-1/6">
+              <div key={index} className="px-[14px] w-1/6 tablet:max-laptop:w-1/4">
                 <SingerItemSmall singer={item.singerInfo} />
               </div>
             );
           })}
           <div
             onClick={() => navigate('/my-music/singers')}
-            className="px-[14px] w-1/6 cursor-pointer hover:text-purple-hover"
+            className="px-[14px] w-1/6 cursor-pointer hover:text-purple-hover tablet:max-laptop:w-1/4"
           >
             <div className="relative pt-[100%] rounded-full border border-border-primary">
               <span className="absolute text-[40px] top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
@@ -148,7 +148,7 @@ function LibraryPage() {
         <div className="flex items-center -mx-[14px]">
           {playlists.data?.data.map((item) => {
             return (
-              <div key={item.id} className="px-[14px] w-1/5">
+              <div key={item.id} className="px-[14px] w-1/5 tablet:max-laptop:w-1/4">
                 <PlaylistItem playlist={item} />
               </div>
             );

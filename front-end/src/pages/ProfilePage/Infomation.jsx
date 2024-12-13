@@ -93,7 +93,7 @@ function Infomation({ user, accessToken }) {
         <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Email không thể để trống!' }]}>
           <Input className="text-black" type="email" placeholder="Email" />
         </Form.Item>
-        <Form.Item className="form-image" label="Hình ảnh">
+        <Form.Item className="form-image" label="Ảnh đại diện">
           <input type="file" id="file" ref={inputRef} style={{ display: 'none' }} onChange={handleFileSelect} />
           <div className="flex items-center gap-[12px]">
             <Button className="text-black" icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>

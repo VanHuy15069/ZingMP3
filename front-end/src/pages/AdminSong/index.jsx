@@ -1,4 +1,4 @@
-import { Button, Flex, Form, Image, Input, Select, Space, Switch, Table } from 'antd';
+import { Avatar, Button, Flex, Form, Image, Input, Select, Switch, Table } from 'antd';
 import TitleAdmin from '../../components/titleAdmin';
 import { LuListMusic } from 'react-icons/lu';
 import {
@@ -9,7 +9,7 @@ import {
   useGetAllSongs,
   useGetAllTopic,
 } from '../../hook';
-import { EditOutlined, UploadOutlined } from '@ant-design/icons';
+import { EditOutlined, FileImageOutlined, UploadOutlined } from '@ant-design/icons';
 import { GoTrash } from 'react-icons/go';
 import { useEffect, useRef, useState } from 'react';
 import ModalCreate from '../../components/Modal/modalCreate';
@@ -19,6 +19,7 @@ import { useCreateSong, useUpdateSong, useUpdateTrashSong } from '../../mutation
 import { Bounce, toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 function AdminSong() {
   const navigate = useNavigate();
@@ -44,12 +45,18 @@ function AdminSong() {
   const categories = useGetAllCategory(null, null, false, null);
   const topics = useGetAllTopic(null, null, false, null);
   const singers = useGetAllSingers(null, null, false, null);
-  const trash = useGetAllSongs(null, null, null, 'createdAt', 'DESC', 1);
+  const trash = useGetAllSongs(null, null, null, 'createdAt', 'DESC', 1, null, null);
   const albums = useGetAlbumsBySinger(singerIds.join(','), null, null);
-  const songs = useGetAllSongs(10, currentPage - 1, searchValue, 'createdAt', 'DESC', false);
   const createSong = useCreateSong();
   const updateSong = useUpdateSong();
   const updateTrashSong = useUpdateTrashSong();
+  const [valueChange, setValueChange] = useState(null);
+  const [placeholderSelect, setPlaceholderSelect] = useState('Chọn điều kiện lọc trước');
+  const [optionValue, setOptionValue] = useState([]);
+  const [value, setValue] = useState(null);
+  const [name, setName] = useState('createdAt');
+  const [sort, setSort] = useState('DESC');
+  const songs = useGetAllSongs(10, currentPage - 1, searchValue, name, sort, false, valueChange, value);
   const optionNations = nations.data?.data.rows.map((nation) => {
     return {
       value: nation.id,
@@ -81,12 +88,18 @@ function AdminSong() {
       label: album.name,
     };
   });
+  const optionName = [
+    { label: 'Quốc gia', value: 'nationId' },
+    { label: 'Thể loại', value: 'categoryId' },
+    { label: 'Chủ đề', value: 'topicId' },
+  ];
   const columns = [
     {
       title: 'Tên bài hát',
       dataIndex: 'name',
       width: 160,
       fixed: 'left',
+      sorter: true,
     },
     {
       title: 'Hình ảnh',
@@ -134,6 +147,12 @@ function AdminSong() {
       },
     },
     {
+      title: 'Ngày phát hành',
+      dataIndex: 'createdAt',
+      align: 'center',
+      sorter: true,
+    },
+    {
       title: 'Album',
       dataIndex: 'album',
       render: (album) => `${album ? album.name : ''}`,
@@ -142,6 +161,7 @@ function AdminSong() {
       title: 'Lượt nghe',
       dataIndex: 'views',
       align: 'center',
+      sorter: true,
     },
     {
       title: 'Thao tác',
@@ -169,6 +189,7 @@ function AdminSong() {
       category: item.categoryInfo,
       views: item.views,
       singer: item.singerInfo,
+      createdAt: dayjs(item.createdAt).format('DD/MM/YYYY'),
       album: item.albumInfo,
       action: (
         <Flex gap="small" justify="flex-end">
@@ -266,6 +287,38 @@ function AdminSong() {
   const handleSeach = (value) => {
     setSearchValue(value);
   };
+  const onChangeTable = (pagination, filters, sorter, extra) => {
+    if (sorter.order) {
+      setName(sorter.field);
+      setSort(sorter.order === 'ascend' ? 'ASC' : sorter.order === 'descend' ? 'DESC' : undefined);
+    } else {
+      setName('createdAt');
+      setSort('DESC');
+    }
+  };
+  const handleChange = (value) => {
+    setValueChange(value);
+    if (value == 'nationId') {
+      setOptionValue(optionNations);
+      setPlaceholderSelect('Chọn quốc gia');
+      setValue(null);
+    } else if (value == 'categoryId') {
+      setOptionValue(optionCategories);
+      setPlaceholderSelect('Chọn thể loại');
+      setValue(null);
+    } else if (value == 'topicId') {
+      setOptionValue(optionTopics);
+      setPlaceholderSelect('Chọn chủ đề');
+      setValue(null);
+    } else {
+      setOptionValue();
+      setPlaceholderSelect('Chọn điều kiện lọc trước');
+      setValue(null);
+    }
+  };
+  const handleChangeValue = (value) => {
+    setValue(value);
+  };
   useEffect(() => {
     return () => URL.revokeObjectURL(imgUpload);
   }, [imgUpload]);
@@ -276,7 +329,16 @@ function AdminSong() {
     form.setFieldValue('nationId', item?.nationId);
     form.setFieldValue('albumId', item?.albumId);
     form.setFieldValue('singerIds', singerIds);
-  }, [item]);
+  }, [isModalOpen]);
+  useEffect(() => {
+    if (songs.isError || createSong.isError || updateSong.isError || updateTrashSong.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [songs.isError, createSong.isError, updateSong.isError, updateTrashSong.isError]);
   useEffect(() => {
     if (createSong.isSuccess) {
       if (createSong.data?.status === 'SUCCESS') {
@@ -384,7 +446,15 @@ function AdminSong() {
     <>
       <Flex gap="middle" vertical>
         <TitleAdmin
+          select
           search
+          optionName={optionName}
+          optionValue={optionValue}
+          onChange={handleChange}
+          onChangeValue={handleChangeValue}
+          value={value}
+          disabledSelect={valueChange ? false : true}
+          placeholderSelect={placeholderSelect}
           placeholderSearch={'Tìm kiếm bài hát'}
           title={'Quản lý bài hát'}
           icon={<LuListMusic />}
@@ -395,7 +465,7 @@ function AdminSong() {
         />
         <Table
           scroll={{
-            x: 1500,
+            x: 1800,
             y: songs.data?.count > 5 ? 'calc(100vh - 270px)' : null,
           }}
           pagination={{
@@ -407,6 +477,15 @@ function AdminSong() {
           rowSelection={rowSelection}
           columns={columns}
           dataSource={dataSource}
+          showSorterTooltip={{
+            target: 'sorter-icon',
+          }}
+          onChange={onChangeTable}
+          locale={{
+            triggerDesc: 'Sắp xếp giảm dần',
+            triggerAsc: 'Sắp xếp tăng dần',
+            cancelSort: 'Hủy sắp xếp',
+          }}
           loading={songs.isLoading}
         />
       </Flex>
@@ -419,6 +498,7 @@ function AdminSong() {
           form.resetFields();
         }}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createSong.isPending || updateSong.isPending}
       >
         <Form
           labelCol={{
@@ -505,14 +585,18 @@ function AdminSong() {
               <Switch checked={vip} onChange={(value) => setVip(value)} /> <IconBasic premium={vip} />
             </div>
           </Form.Item>
-          <Form.Item label="Hình ảnh">
+          <Form.Item label="Hình ảnh" className="form-image">
             <input type="file" id="file" ref={inputRef} style={{ display: 'none' }} onChange={handleFileSelect} />
-            <div className="flex flex-col gap-[8px]">
-              <Button icon={<UploadOutlined />} onClick={() => inputRef.current.click()}>
+            <div className="flex items-center gap-[18px]">
+              <Button icon={<UploadOutlined />} className="w-1/2" onClick={() => inputRef.current.click()}>
                 Click to Upload
               </Button>
               {checkImage && <p className="text-text-err">Hãy chọn hình ảnh cho bài hát</p>}
-              {imgUpload && <Image src={imgUpload} alt="" height={90} className="w-[40%] object-cover block" />}
+              {imgUpload ? (
+                <Image src={imgUpload} alt="" height={90} width={90} className="object-cover block rounded-[8px]" />
+              ) : (
+                <Avatar shape="square" size={90} icon={<FileImageOutlined />} />
+              )}
             </div>
           </Form.Item>
           <Form.Item label="Bài hát">

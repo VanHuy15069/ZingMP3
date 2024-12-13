@@ -4,7 +4,8 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        logo: "url('http://localhost:5173/src/Image/logo-dark.svg')",
+        'logo-lg': "url('http://localhost:5173/src/Image/MusicStudioLG.png')",
+        logo: "url('http://localhost:5173/src/Image/MAINLOGO.png')",
       },
       colors: {
         'bg-primary': '#170f23',
@@ -18,8 +19,12 @@ export default {
         'text-err': '#ff4d4f',
       },
       padding: {
-        full45: 'calc(100% + 45px)',
+        full45: 'calc(100% + 54px)',
       },
+    },
+    screens: {
+      tablet: '640px',
+      laptop: '1130px',
     },
   },
   plugins: [],

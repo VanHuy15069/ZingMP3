@@ -331,3 +331,80 @@ export const getAllSingerFollow = async (req, res) => {
     });
   }
 };
+
+export const upgradeAccount = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await userService.upgradeAccountService(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const sendToken = async (req, res) => {
+  try {
+    const { username, email } = req.body;
+    if (!username || !email) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await userService.sendTokenService(username, email);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const checkToken = async (req, res) => {
+  try {
+    const token = req.params.token;
+    const response = await userService.checkTokenService(token);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const token = req.params.token;
+    const { password, confirmPassword } = req.body;
+    if (!token || !password || !confirmPassword) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Password incorect!',
+      });
+    }
+    const response = await userService.resetPasswordService(token, password);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};

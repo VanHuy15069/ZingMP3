@@ -8,15 +8,19 @@ import * as userService from '../../service/userService';
 import * as singerService from '../../service/singerService';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { Button, Checkbox } from 'antd';
+import { Button, Checkbox, Form, Input, Modal } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import { useUserStore } from '../../store';
 import { useMutation } from '@tanstack/react-query';
+import { useSendTokenResetPassword } from '../../mutationHook/user';
 
 function LoginPage() {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const { updateUser, updateRole } = useUserStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSinger, setIsSinger] = useState(false);
+  const sendToken = useSendTokenResetPassword();
   const {
     register,
     handleSubmit,
@@ -95,7 +99,41 @@ function LoginPage() {
     if (!isSinger) mutation.mutate(data);
     else singerMutation.mutate(data);
   };
-
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+  const handleSendReq = (data) => {
+    sendToken.mutate({ username: data.username, email: data.email });
+  };
+  useEffect(() => {
+    if (sendToken.isSuccess) {
+      if (sendToken.data?.status == 'SUCCESS') {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Một email đang được gửi đến gmail của bạn, vui lòng làm theo hướng dẫn để cấp lại mật khẩu.',
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK',
+          customClass: 'min-h-[35vh] w-[35vw] text-[14px]',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setIsModalOpen(false);
+            form.resetFields();
+          }
+        });
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Thông tin về tên đăng nhập và email không đúng!',
+          icon: 'error',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK',
+          customClass: 'min-h-[35vh] w-[35vw] text-[14px]',
+        });
+      }
+    }
+  }, [sendToken.isSuccess]);
   return (
     <div className="flex h-screen bg-[#048ec8] bg-gradient-to-r from-[#048ec8] to-fuchsia-500 text-[#333333]">
       <Box>
@@ -125,18 +163,24 @@ function LoginPage() {
               <p className="text-[#ff041d] mt-[4px] text-[10px]">Nhập mật khẩu của bạn vào!</p>
             )}
           </div>
-          <div className="my-[4px]">
+          <div className="my-[4px] flex items-center justify-between">
             <Checkbox
               onChange={handleCheckUser}
               className="text-[13px] text-[#048ec8] cursor-pointer hover:text-[#ff04d1] select-none"
             >
               Tôi là một nghệ sĩ
             </Checkbox>
+            <p
+              onClick={() => setIsModalOpen(true)}
+              className="text-[13px] text-[#048ec8] cursor-pointer hover:text-[#ff04d1] select-none"
+            >
+              Quên mật khẩu?
+            </p>
           </div>
           <div className="flex justify-between text-[13px]">
             <p className="text-[#048ec8] cursor-pointer hover:text-[#ff04d1]" onClick={() => navigate('/')}>
               <span>
-                <FontAwesomeIcon icon={faHome} />{' '}
+                <FontAwesomeIcon icon={faHome} />
               </span>
               Trở về
             </p>
@@ -155,6 +199,37 @@ function LoginPage() {
           </Button>
         </form>
       </Box>
+      <Modal
+        title="Yêu cầu cấp lại mật khẩu"
+        open={isModalOpen}
+        centered
+        onCancel={handleCancel}
+        footer={[
+          <Button loading={sendToken.isPending} key="submit" type="primary" htmlType="submit" form={'send-token'}>
+            Gửi
+          </Button>,
+        ]}
+      >
+        <Form
+          onFinish={handleSendReq}
+          form={form}
+          id="send-token"
+          labelCol={{
+            span: 6,
+          }}
+        >
+          <Form.Item
+            label="Tên đăng nhập"
+            name="username"
+            rules={[{ required: true, message: 'Hãy nhập tên đăng nhập' }]}
+          >
+            <Input type="text" placeholder="Tên đăng nhập" />
+          </Form.Item>
+          <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Hãy nhập thông tin email' }]}>
+            <Input type="email" placeholder="Email" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

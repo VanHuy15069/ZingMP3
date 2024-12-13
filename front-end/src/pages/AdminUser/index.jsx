@@ -28,6 +28,7 @@ function AdminUser() {
     {
       title: 'Hình ảnh',
       dataIndex: 'image',
+      align: 'center',
     },
     // {
     //   title: 'Tên đăng nhập',
@@ -138,6 +139,15 @@ function AdminUser() {
       });
     } else navigate('/dashboard/user/trash');
   };
+  useEffect(() => {
+    if (users.isError || trashUser.isError || updateUser.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [users.isError, trashUser.isError, updateUser.isError]);
   useEffect(() => {
     if (trashUser.isSuccess) {
       setCurrentPage(1);

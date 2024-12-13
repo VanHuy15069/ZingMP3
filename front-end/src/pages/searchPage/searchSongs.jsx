@@ -4,7 +4,7 @@ import { useGetAllSongs } from '../../hook';
 import emptyImg from '../../Image/empty-dark.png';
 
 function SearchSongs({ searchValue }) {
-  const songs = useGetAllSongs(null, null, searchValue, 'createdAt', 'DESC', false);
+  const songs = useGetAllSongs(null, null, searchValue, 'createdAt', 'DESC', false, null, null);
 
   return (
     <>

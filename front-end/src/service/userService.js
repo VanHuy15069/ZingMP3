@@ -196,3 +196,33 @@ export const deleteUser = async (userIds, accessToken) => {
   });
   return res.data;
 };
+
+export const upgradeAccount = async (id, accessToken) => {
+  const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/user/upgrade-account/${id}`, '', {
+    headers: {
+      token: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+export const sendTokenResetPassword = async (username, email) => {
+  const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/user/send-token`, {
+    username: username,
+    email: email,
+  });
+  return res.data;
+};
+
+export const checkTokenResetPassword = async (token) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/user/check-token/${token}`);
+  return res.data;
+};
+
+export const resetPassword = async (token, password, confirmPassword) => {
+  const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/user/reset-password/${token}`, {
+    password: password,
+    confirmPassword: confirmPassword,
+  });
+  return res.data;
+};

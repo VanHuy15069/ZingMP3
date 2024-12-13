@@ -8,16 +8,14 @@ import styles from './audio.module.scss';
 import { Context } from '../../provider/provider';
 import { useCheckFavorite } from '../../hook';
 import { Drawer, Tooltip } from 'antd';
-import './drawer.css';
 import HeartIcon from '../heartIcon/heartIcon';
 import { RxShuffle } from 'react-icons/rx';
 import { FiRepeat } from 'react-icons/fi';
 import SongItemSmall from '../songItemSmall';
-import { PiPlayCircleThin } from 'react-icons/pi';
-import { PiPauseCircleThin } from 'react-icons/pi';
-import { PiPlaylist } from 'react-icons/pi';
+import { PiPlayCircleThin, PiPauseCircleThin, PiPlaylist } from 'react-icons/pi';
 import DownLoadIcon from '../downloadIcon';
 import { useCountViews } from '../../mutationHook/song';
+import './drawer.css';
 const cx = classNames.bind(styles);
 function Audio() {
   const navigate = useNavigate();
@@ -75,7 +73,6 @@ function Audio() {
       setSecond(Math.round(audioDuration % 60));
       setCurrentTime(target.currentTime);
     }
-    //audioRef.current.autoplay = true;
     if (audio.isPlay) audioRef.current.play();
     else audioRef.current.pause();
   };
@@ -186,15 +183,7 @@ function Audio() {
     if (audioRef.current) {
       if (audio.isPlay) {
         if (currentSong.id === audio.songId) audioRef.current.play();
-        // if (audioRef.current.autoplay === false) {
-        //   audioRef.current.autoplay = true;
-        // }
-        // if (!audioRef.current.paused) {
-
-        // }
-        // audioRef.current.play();
       } else {
-        // audioRef.current.autoplay = false;
         audioRef.current.pause();
       }
     }
@@ -304,7 +293,7 @@ function Audio() {
                 className={'mx-[2px] text-[16px]'}
                 songId={currentSong?.id}
               />
-              <DownLoadIcon />
+              <DownLoadIcon song={currentSong} />
             </div>
           </div>
         </div>

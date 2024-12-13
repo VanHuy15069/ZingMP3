@@ -34,7 +34,7 @@ function Header() {
   const [searchValue, setSearchValue] = useState('');
   const [showResult, setShowReult] = useState(false);
   const debounce = useDebounce(searchValue, 500);
-  const songs = useGetAllSongs(5, 0, debounce, 'views', 'DESC');
+  const songs = useGetAllSongs(5, 0, debounce, 'views', 'DESC', false, null, null);
   const singers = useGetAllSingers(5, 0, false, debounce);
   const handleChange = (e) => {
     const value = e.target.value;

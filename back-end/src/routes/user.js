@@ -20,4 +20,8 @@ userRouter.post('/refresh-token', userController.refreshToken);
 userRouter.post('/favorite-album/:id', middleware.authUserMiddleware, userController.userFavoriteAlbum);
 userRouter.get('/check-follow', userController.checkUserFollow);
 userRouter.get('/get-singer-follow/:id', middleware.authUserMiddleware, userController.getAllSingerFollow);
+userRouter.patch('/upgrade-account/:id', middleware.authUserMiddleware, userController.upgradeAccount);
+userRouter.post('/send-token', userController.sendToken);
+userRouter.get('/check-token/:token', userController.checkToken);
+userRouter.patch('/reset-password/:token', userController.resetPassword);
 export default userRouter;

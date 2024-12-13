@@ -39,7 +39,7 @@ function LibraryPlaylistPage() {
         <p className="uppercase py-[15px] mx-[20px]">Tất cả</p>
       </div>
       <div className="flex flex-wrap -mx-[14px]">
-        <div className="px-[14px] w-1/5 ">
+        <div className="px-[14px] mb-[30px] w-1/5 tablet:max-laptop:w-1/4">
           <div className="relative pb-full45">
             <div
               onClick={() => setIsOpen(true)}
@@ -56,7 +56,7 @@ function LibraryPlaylistPage() {
         </div>
         {playlists.data?.data.map((item) => {
           return (
-            <div key={item.id} className="px-[14px] w-1/5">
+            <div key={item.id} className="px-[14px] mb-[30px] w-1/5 tablet:max-laptop:w-1/4">
               <PlaylistItem playlist={item} />
             </div>
           );

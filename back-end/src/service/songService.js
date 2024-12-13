@@ -88,16 +88,22 @@ export const getDetailSongService = (id) =>
     }
   });
 
-export const getAllSongService = (limit, offset, songName, name = 'createdAt', sort = 'DESC', trash = 0) =>
+export const getAllSongService = (limit, offset, songName, name = 'createdAt', sort = 'DESC', key, value, trash = 0) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
+      const filter = {};
       if (limit) obj.limit = Number(limit);
       if (offset) obj.offset = Number(limit) * Number(offset);
+      if (key && value) {
+        filter[key] = value;
+      }
       if (songName) {
         const songs = await db.Song.findAndCountAll({
           where: {
-            [Op.and]: [{ name: { [Op.substring]: songName } }, { trash: trash }],
+            name: { [Op.substring]: songName },
+            trash: trash,
+            ...filter,
           },
           ...obj,
           order: [[name, sort]],
@@ -126,7 +132,7 @@ export const getAllSongService = (limit, offset, songName, name = 'createdAt', s
         });
       } else {
         const songs = await db.Song.findAndCountAll({
-          where: { trash: trash },
+          where: { trash: trash, ...filter },
           ...obj,
           order: [[name, sort]],
           distinct: true,

@@ -27,6 +27,7 @@ import * as songService from '../../service/songService';
 import SongItemLarge from '../../components/songItemLargre/songItemLargre';
 import SingerItem from '../../components/singerItem';
 import avatar from '../../Image/avatar.png';
+import { Bounce, toast } from 'react-toastify';
 const cx = classNames.bind(styles);
 function SingerPage() {
   const navigate = useNavigate();
@@ -45,7 +46,8 @@ function SingerPage() {
   const singleSongs = useGetSingleSong(params.id, 5, 0);
   const albums = useGetAlbumsBySinger(params.id.toString(), 5, 0);
   const songs = useGetSongHaveSingers(params.id, 5);
-  const singers = useGetSongHaveSingers(params.id, null);
+  const singers = useGetSongHaveSingers(params.id, window.innerWidth >= 1130 ? 5 : 4);
+  const list = JSON.parse(localStorage.getItem('listMusic'));
 
   const handleNavigate = () => {
     navigate(`/singer/songs/${params.id}`);
@@ -66,7 +68,7 @@ function SingerPage() {
       else handleSong();
     }
   };
-  const handleSong = () => {
+  const handleSong = (e) => {
     if (newSong.data?.data[0].id === audio.songId && audio.isPlay) {
       updateSongPlay(false);
     } else {
@@ -82,6 +84,28 @@ function SingerPage() {
       updateSongPlay(true);
     }
     setIsReload(!isReload);
+    e.stopPropagation();
+  };
+  const handleAddTolist = (e) => {
+    e.stopPropagation();
+    const songId = newSong.data?.data[0].id;
+    const checkSong = list.find((item) => item.id === songId);
+    if (!checkSong) {
+      list.push(newSong.data?.data[0]);
+      localStorage.setItem('listMusic', JSON.stringify(list));
+      setIsReload(!isReload);
+      toast('Đã thêm bài hát vào danh sách phát!', {
+        toastId: 1,
+        draggable: true,
+        transition: Bounce,
+      });
+    } else {
+      toast('Bài hát đã tồn tại trong danh sách phát!', {
+        toastId: 1,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
   };
   const getSongByAlbumId = async (albumId) => {
     const songs = await songService.getSongByAlbum(albumId);
@@ -106,7 +130,7 @@ function SingerPage() {
       </div>
       <div className="flex">
         {newSong.data?.data[0]?.singerInfo?.length === 1 && (
-          <div className="w-1/3">
+          <div onClick={() => navigate(`/song/${newSong.data?.data[0].id}`)} className="w-1/3 tablet:max-laptop:w-1/2">
             <div className="text-[20px] font-bold mb-[20px]">Mới Phát Hành</div>
             <div className={cx('content', { active: newSong.data?.data[0].id === audio.songId })}>
               <div className="relative rounded-[6px] h-[151px] w-[151px] overflow-hidden">
@@ -128,7 +152,10 @@ function SingerPage() {
                     )}
                   </div>
                   <Tooltip zIndex={10} title={<p className="text-[12px]">Thêm vào danh sách phát</p>}>
-                    <div className="text-[20px] h-[30px] w-[30px] flex items-center justify-center rounded-full hover:bg-overlay-hover">
+                    <div
+                      onClick={handleAddTolist}
+                      className="text-[20px] h-[30px] w-[30px] flex items-center justify-center rounded-full hover:bg-overlay-hover"
+                    >
                       <span className="flex items-center justify-center">
                         <PlusCircleOutlined />
                       </span>
@@ -162,10 +189,10 @@ function SingerPage() {
               </span>
             </div>
           </div>
-          <div className="flex items-center -mx-[14px] flex-wrap">
-            {topSongs.data?.data.slice(0, 6).map((song) => {
+          <div className="flex items-center -mx-[14px] flex-wrap tablet:max-laptop:flex-col tablet:max-laptop:items-start">
+            {topSongs.data?.data.slice(0, window.innerWidth >= 1130 ? 6 : 3).map((song) => {
               return (
-                <div key={song.id} className="w-1/2 px-[14px]">
+                <div key={song.id} className="w-1/2 px-[14px] tablet:max-laptop:w-full">
                   <SongItemSmall hideAlbum song={song} listSongs={listSongs} />
                 </div>
               );
@@ -207,7 +234,7 @@ function SingerPage() {
           <div className="flex items-center flex-wrap -mx-[14px]">
             {singers.data?.singer.map((item) => {
               return (
-                <div key={item.id} className="px-[14px] w-1/5">
+                <div key={item.id} className="px-[14px] w-1/5 tablet:max-laptop:w-1/4">
                   <SingerItem singerId={item.id} />
                 </div>
               );

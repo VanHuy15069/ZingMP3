@@ -29,10 +29,6 @@ export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, upda
             title: 'text-white',
             confirmButton: 'rounded-[100px] bg-[#e5ac1a]',
           },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/login');
-          }
         });
       }
     } else {
@@ -65,10 +61,6 @@ export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, upda
           title: 'text-white',
           confirmButton: 'rounded-[100px] bg-[#e5ac1a]',
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/login');
-        }
       });
     } else {
       const musicNotVip = newList.filter((song) => song.vip === false);
@@ -106,10 +98,6 @@ export const handleAddSongs = (song, listSongs, user, updateSongId, updateAlbumI
             title: 'text-white',
             confirmButton: 'rounded-[100px] bg-[#e5ac1a]',
           },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/login');
-          }
         });
       }
     } else {
@@ -146,10 +134,6 @@ export const handleAddSongs = (song, listSongs, user, updateSongId, updateAlbumI
           title: 'text-white',
           confirmButton: 'rounded-[100px] bg-[#e5ac1a]',
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/login');
-        }
       });
     } else {
       const musicNotVip = newList.filter((song) => song.vip === false);

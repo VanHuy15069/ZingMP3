@@ -60,7 +60,7 @@ function ContactPage() {
           <div className="mb-[25px] text-black">
             <h4 className="font-semibold mb-[20px]">LIÊN HỆ VỚI CHÚNG TÔI</h4>
             <p className="text-[14px]">
-              Chúng tôi luôn ghi nhận các đóng góp ý kiến của bạn để cải tiến và nâng cấp sản phẩm Zing MP3 ngày một
+              Chúng tôi luôn ghi nhận các đóng góp ý kiến của bạn để cải tiến và nâng cấp sản phẩm Music Studio ngày một
               hoàn thiện và hữu ích hơn. Đừng ngại chia sẻ ý tưởng cho chúng tôi.
             </p>
           </div>

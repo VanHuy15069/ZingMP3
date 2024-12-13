@@ -12,15 +12,17 @@ import { Input } from 'antd';
 import { useCreatePlaylist } from '../../mutationHook/playlist';
 import { Bounce, toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { PiMusicNotesPlus } from 'react-icons/pi';
-import { RiFolderMusicLine } from 'react-icons/ri';
+import { PiMusicNotesPlus, PiPlaylistLight } from 'react-icons/pi';
+import { RiFolderMusicLine, RiUserHeartLine } from 'react-icons/ri';
 import { jwtDecode } from 'jwt-decode';
 import { RxDashboard } from 'react-icons/rx';
+import { useGetDetailUser } from '../../hook';
 const cx = classNames.bind(style);
 function Sidebar() {
   const accessToken = JSON.parse(localStorage.getItem('accessToken'));
   const navigate = useNavigate();
   const { user } = useUserStore();
+  const detailUser = useGetDetailUser(user.id, user.accessToken);
   const audio = useAudioStore((state) => state.audio);
   const playlistMutation = useCreatePlaylist(user?.id);
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +75,8 @@ function Sidebar() {
     <>
       <div className="pr-[25px] pl-7 flex h-[70px] justify-center items-center">
         <Link to={'/'}>
-          <div className="w-[120px] h-[40px] bg-logo bg-contain bg-no-repeat"></div>
+          <div className="w-[240px] h-[70px] bg-logo-lg bg-contain bg-no-repeat tablet:max-laptop:hidden"></div>
+          <div className="w-[70px] h-[70px] bg-logo bg-contain bg-no-repeat hidden tablet:max-laptop:block"></div>
         </Link>
       </div>
       <div>
@@ -82,7 +85,7 @@ function Sidebar() {
             <span className={'mr-3 text-[2.05rem]'}>
               <FontAwesomeIcon icon={faCircleDot} />
             </span>
-            <p className={cx('text')}>Khám Phá</p>
+            <p className={'tablet:max-laptop:hidden'}>Khám Phá</p>
           </div>
         </NavLink>
         <NavLink to={'/my-music'} end className={(nav) => cx({ active: nav.isActive })}>
@@ -90,7 +93,7 @@ function Sidebar() {
             <span className={'mr-3 text-[24px]'}>
               <RiFolderMusicLine />
             </span>
-            <p className={cx('text')}>Thư Viện</p>
+            <p className={'tablet:max-laptop:hidden'}>Thư Viện</p>
           </div>
         </NavLink>
         <NavLink to={'/new-songs'} end className={(nav) => cx({ active: nav.isActive })}>
@@ -98,7 +101,7 @@ function Sidebar() {
             <span className={'mr-3 text-[24px]'}>
               <PiMusicNotesPlus />
             </span>
-            <p className={cx('text')}>BXH Nhạc Mới</p>
+            <p className={'tablet:max-laptop:hidden'}>BXH Nhạc Mới</p>
           </div>
         </NavLink>
         <NavLink to={'/hub'} end className={(nav) => cx({ active: nav.isActive })}>
@@ -106,7 +109,7 @@ function Sidebar() {
             <span className={'mr-3 text-[2.05rem]'}>
               <FontAwesomeIcon icon={faIcons} />
             </span>
-            <p className={cx('text')}>Chủ Đề & Thể Loại </p>
+            <p className={'tablet:max-laptop:hidden'}>Chủ Đề & Thể Loại </p>
           </div>
         </NavLink>
         {handleDecoded().isAdmin && (
@@ -115,12 +118,48 @@ function Sidebar() {
               <span className={'mr-3 text-[2.05rem]'}>
                 <RxDashboard />
               </span>
-              <p className={cx('text')}>Quản trị hệ thống</p>
+              <p className={'tablet:max-laptop:hidden'}>Quản trị hệ thống</p>
             </div>
           </NavLink>
         )}
+        <div className="border-t-[1px] border-border-primary mx-[25px] mt-[15px]"></div>
+        {user?.accessToken && !detailUser.data?.data.vip && (
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-[15px] px-[8px] my-[10px] mx-[20px] rounded-[8px] text-center tablet:max-laptop:hidden">
+            <p className="mb-[10px] text-[12px] font-bold">Nâng cấp tài khoản để tận hưởng kho nhạc premium</p>
+            <Button
+              onClick={() => navigate('/upgrade-account')}
+              bgColor={'bg-[#ffdb00]'}
+              border="border-none"
+              py={'py-[6px]'}
+              className={'h-[32px] w-full text-[13px] text-[#000]'}
+            >
+              Nâng cấp tài khoản
+            </Button>
+          </div>
+        )}
+        {user.accessToken && (
+          <div className="pt-[15px]">
+            <Link to={'/my-music/singers'}>
+              <div className={'py-[12px] px-[21px] flex items-center cursor-pointer text-[#dadada] hover:text-white'}>
+                <span className={'mr-3 p-[2px] rounded-[4px] text-[16px] bg-blue-400 text-white'}>
+                  <RiUserHeartLine />
+                </span>
+                <p className={'text-[14px] tablet:max-laptop:hidden'}>Nghệ sĩ yêu thích</p>
+              </div>
+            </Link>
+            <Link to={'/my-music/playlists'}>
+              <div className={'py-[12px] px-[21px] flex items-center cursor-pointer text-[#dadada] hover:text-white'}>
+                <span className={'mr-3 p-[2px] rounded-[4px] text-[16px] bg-red-400 text-white'}>
+                  <PiPlaylistLight />
+                </span>
+                <p className={'text-[14px] tablet:max-laptop:hidden'}>Playlist của tôi</p>
+              </div>
+            </Link>
+          </div>
+        )}
+
         {!user.accessToken && (
-          <div className="bg-purple-primary py-[15px] px-[8px] my-[10px] mx-[20px] rounded-[8px] text-center">
+          <div className="bg-purple-primary py-[15px] px-[8px] my-[10px] mx-[20px] rounded-[8px] text-center tablet:max-laptop:hidden">
             <p className="mb-[10px] text-[12px] font-bold">Đăng nhập để khám phá playlist dành riêng cho bạn</p>
             <Button
               py={'py-[6px]'}
@@ -141,12 +180,12 @@ function Sidebar() {
           onClick={handleOpenModal}
           className={`fixed ${
             audio.songId ? 'bottom-[90px]' : 'bottom-0'
-          } cursor-pointer left-0 border-t border-border-primary flex h-[54px] w-[240px] px-[24px] items-center`}
+          } cursor-pointer left-0 border-t border-border-primary flex h-[54px] w-[240px] px-[24px] items-center tablet:max-laptop:w-[70px]`}
         >
           <span className="mr-[12px]">
             <FontAwesomeIcon icon={faPlus} />
           </span>
-          <p className="text-[14px]">Tạo playlist mới</p>
+          <p className="text-[14px] tablet:max-laptop:hidden">Tạo playlist mới</p>
         </div>
         <ModalPlaylist
           title={'Tạo playlist mới'}

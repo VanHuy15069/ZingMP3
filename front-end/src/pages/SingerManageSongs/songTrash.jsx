@@ -3,27 +3,72 @@ import { MdOutlineReplay } from 'react-icons/md';
 import { useUserStore } from '../../store';
 import TitleAdmin from '../../components/titleAdmin';
 import { useEffect, useState } from 'react';
-import { useGetAllSongBySinger } from '../../hook';
+import { useGetAllCategory, useGetAllNation, useGetAllSongBySinger, useGetAllTopic } from '../../hook';
 import { GoTrash } from 'react-icons/go';
 import { Bounce, toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useDeleteSong, useUpdateTrashSong } from '../../mutationHook/song';
 import { LuListMusic } from 'react-icons/lu';
+import dayjs from 'dayjs';
 
 function SingerSongTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const nations = useGetAllNation(null, null, false, null);
+  const categories = useGetAllCategory(null, null, false, null);
+  const topics = useGetAllTopic(null, null, false, null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState('');
-  const songs = useGetAllSongBySinger(user.id, 10, currentPage - 1, searchValue, 1, user.accessToken);
+  const [valueChange, setValueChange] = useState(null);
+  const [placeholderSelect, setPlaceholderSelect] = useState('Chọn điều kiện lọc trước');
+  const [optionValue, setOptionValue] = useState([]);
+  const [value, setValue] = useState(null);
+  const [name, setName] = useState('createdAt');
+  const [sort, setSort] = useState('DESC');
+  const songs = useGetAllSongBySinger(
+    user.id,
+    10,
+    currentPage - 1,
+    searchValue,
+    1,
+    user.accessToken,
+    valueChange,
+    value,
+    name,
+    sort,
+  );
   const updateTrashSong = useUpdateTrashSong();
   const deleteSong = useDeleteSong();
+  const optionNations = nations.data?.data.rows.map((nation) => {
+    return {
+      value: nation.id,
+      label: nation.name,
+    };
+  });
+  const optionCategories = categories.data?.data.rows.map((category) => {
+    return {
+      value: category.id,
+      label: category.name,
+    };
+  });
+  const optionTopics = topics.data?.data.rows.map((topic) => {
+    return {
+      value: topic.id,
+      label: topic.name,
+    };
+  });
+  const optionName = [
+    { label: 'Quốc gia', value: 'nationId' },
+    { label: 'Thể loại', value: 'categoryId' },
+    { label: 'Chủ đề', value: 'topicId' },
+  ];
   const columns = [
     {
       title: 'Tên bài hát',
       dataIndex: 'name',
       width: 200,
       fixed: 'left',
+      sorter: true,
     },
     {
       title: 'Hình ảnh',
@@ -71,6 +116,12 @@ function SingerSongTrash() {
       },
     },
     {
+      title: 'Ngày phát hành',
+      dataIndex: 'createdAt',
+      align: 'center',
+      sorter: true,
+    },
+    {
       title: 'Album',
       dataIndex: 'album',
       render: (album) => `${album ? album.name : ''}`,
@@ -79,6 +130,7 @@ function SingerSongTrash() {
       title: 'Lượt nghe',
       dataIndex: 'views',
       align: 'center',
+      sorter: true,
     },
     {
       title: 'Thao tác',
@@ -105,6 +157,7 @@ function SingerSongTrash() {
       category: item.categoryInfo,
       views: item.views,
       singer: item.singerInfo,
+      createdAt: dayjs(item.createdAt).format('DD/MM/YYYY'),
       album: item.albumInfo,
       action: (
         <Flex gap="small">
@@ -120,6 +173,29 @@ function SingerSongTrash() {
   });
   const handleSeach = (value) => {
     setSearchValue(value);
+  };
+  const handleChange = (value) => {
+    setValueChange(value);
+    if (value == 'nationId') {
+      setOptionValue(optionNations);
+      setPlaceholderSelect('Chọn quốc gia');
+      setValue(null);
+    } else if (value == 'categoryId') {
+      setOptionValue(optionCategories);
+      setPlaceholderSelect('Chọn thể loại');
+      setValue(null);
+    } else if (value == 'topicId') {
+      setOptionValue(optionTopics);
+      setPlaceholderSelect('Chọn chủ đề');
+      setValue(null);
+    } else {
+      setOptionValue();
+      setPlaceholderSelect('Chọn điều kiện lọc trước');
+      setValue(null);
+    }
+  };
+  const handleChangeValue = (value) => {
+    setValue(value);
   };
   const handleRestore = (song) => {
     Swal.fire({
@@ -179,6 +255,15 @@ function SingerSongTrash() {
     });
   };
   useEffect(() => {
+    if (songs.isError || deleteSong.isError || updateTrashSong.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 3,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [songs.isError, deleteSong.isError, updateTrashSong.isError]);
+  useEffect(() => {
     if (updateTrashSong.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);
@@ -207,12 +292,29 @@ function SingerSongTrash() {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+  const onChangeTable = (pagination, filters, sorter, extra) => {
+    if (sorter.order) {
+      setName(sorter.field);
+      setSort(sorter.order === 'ascend' ? 'ASC' : sorter.order === 'descend' ? 'DESC' : undefined);
+    } else {
+      setName('createdAt');
+      setSort('DESC');
+    }
+  };
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
   };
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        select
+        optionName={optionName}
+        optionValue={optionValue}
+        onChange={handleChange}
+        onChangeValue={handleChangeValue}
+        value={value}
+        disabledSelect={valueChange ? false : true}
+        placeholderSelect={placeholderSelect}
         search
         placeholderSearch={'Tìm kiếm bài hát'}
         trash
@@ -225,7 +327,7 @@ function SingerSongTrash() {
       />
       <Table
         scroll={{
-          x: 1500,
+          x: 1800,
           y: songs.data?.count > 5 ? 'calc(100vh - 270px)' : null,
         }}
         pagination={{
@@ -237,6 +339,15 @@ function SingerSongTrash() {
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
+        onChange={onChangeTable}
+        showSorterTooltip={{
+          target: 'sorter-icon',
+        }}
+        locale={{
+          triggerDesc: 'Sắp xếp giảm dần',
+          triggerAsc: 'Sắp xếp tăng dần',
+          cancelSort: 'Hủy sắp xếp',
+        }}
         loading={songs.isLoading}
       />
     </Flex>

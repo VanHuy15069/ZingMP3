@@ -120,6 +120,15 @@ function SliderTrash() {
     });
   };
   useEffect(() => {
+    if (slider.isError || updateTrashSlider.isError || deleteSlider.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [slider.isError, deleteSlider.isError, updateTrashSlider.isError]);
+  useEffect(() => {
     if (updateTrashSlider.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);

@@ -9,6 +9,7 @@ import * as topicService from '../service/topicService';
 import * as categoryService from '../service/categoryService';
 import * as nationService from '../service/nationService';
 import * as contactService from '../service/contactService';
+import * as paymentService from '../service/paymentService';
 
 export const useGetDetailUser = (id, accessToken) => {
   return useQuery({
@@ -41,10 +42,10 @@ export const useGetSongsByNation = (nation, limit) => {
   });
 };
 
-export const useGetAllSongs = (limit, offset, songName, name, sort, trash) => {
+export const useGetAllSongs = (limit, offset, songName, name, sort, trash, key, value) => {
   return useQuery({
-    queryKey: ['get-all-songs', limit, offset, songName, name, sort, trash],
-    queryFn: () => songService.getAllSongService(limit, offset, songName, name, sort, trash),
+    queryKey: ['get-all-songs', limit, offset, songName, name, sort, trash, value],
+    queryFn: () => songService.getAllSongService(limit, offset, songName, name, sort, trash, key, value),
   });
 };
 
@@ -200,10 +201,10 @@ export const useGetPlaylistById = (plalistId) => {
   });
 };
 
-export const useGetAllSingers = (limit, offset, trash, singerName) => {
+export const useGetAllSingers = (limit, offset, trash, singerName, name, sort) => {
   return useQuery({
-    queryKey: ['get-all-singers', limit, offset, trash, singerName],
-    queryFn: () => singerService.getAllSingers(limit, offset, trash, singerName),
+    queryKey: ['get-all-singers', limit, offset, trash, singerName, name, sort],
+    queryFn: () => singerService.getAllSingers(limit, offset, trash, singerName, name, sort),
   });
 };
 
@@ -315,10 +316,11 @@ export const useGetTopSongs = (limit, accessToken) => {
   });
 };
 
-export const useGetAllSongBySinger = (id, limit, offset, name, trash, accessToken) => {
+export const useGetAllSongBySinger = (id, limit, offset, name, trash, accessToken, key, value, nameSort, sort) => {
   return useQuery({
-    queryKey: ['all-song-by-singer', id, limit, offset, name, trash],
-    queryFn: () => singerService.getAllSongBySinger(id, limit, offset, name, trash, accessToken),
+    queryKey: ['all-song-by-singer', id, limit, offset, name, trash, value, nameSort, sort],
+    queryFn: () =>
+      singerService.getAllSongBySinger(id, limit, offset, name, trash, accessToken, key, value, nameSort, sort),
     enabled: !!accessToken,
   });
 };
@@ -328,5 +330,24 @@ export const useGetAllAlbumBySingerId = (id, limit, offset, name, trash, accessT
     queryKey: ['get-all-album-by-singerId', id, limit, offset, name, trash],
     queryFn: () => albumService.getAllAlbumBySingerId(id, limit, offset, name, trash, accessToken),
     enabled: !!accessToken,
+  });
+};
+
+export const useCheckTokenResetPassword = (token) => {
+  try {
+    return useQuery({
+      queryKey: ['check-token', token],
+      queryFn: () => userService.checkTokenResetPassword(token),
+      enabled: !!token,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const useGetVNPayReturn = (data) => {
+  return useQuery({
+    queryKey: ['get-vnpay', data],
+    queryFn: () => paymentService.getVNPayReturn(data),
   });
 };

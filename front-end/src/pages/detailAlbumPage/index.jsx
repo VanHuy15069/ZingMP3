@@ -7,6 +7,7 @@ import SingerItem from '../../components/singerItem';
 import { handleAddSongs } from '../../golobalFn';
 import { useContext } from 'react';
 import { Context } from '../../provider/provider';
+import dayjs from 'dayjs';
 
 function DetailAlbumPage() {
   const [isReload, setIsReload] = useContext(Context);
@@ -24,6 +25,7 @@ function DetailAlbumPage() {
     }
     setIsReload(!isReload);
   };
+
   return (
     <div className="mt-[50px] flex flex-col">
       <div className="mb-[30px]">
@@ -46,6 +48,17 @@ function DetailAlbumPage() {
           {album.data?.data.songInfo.map((item) => {
             return <SongItemSmall key={item.id} song={item} listSongs={album.data?.data.songInfo} />;
           })}
+          <div className="text-[14px] leading-[20px] mb-[8px] mt-[20px]">Thông tin</div>
+          <div className="flex">
+            <div className="flex flex-col gap-[8px] text-alpha text-[13px] mr-[16px]">
+              <p>Số bài hát</p>
+              <p>Ngày phát hành</p>
+            </div>
+            <div className="flex flex-col gap-[8px] text-[13px]">
+              <p>{album.data?.data.songInfo.length}</p>
+              <p>{dayjs(album.data?.data.createdAt).format('DD/MM/YYYY')}</p>
+            </div>
+          </div>
         </div>
       </div>
       <div className="mt-[48px]">

@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Input } from 'antd';
+import { Button, Flex, Input, Select } from 'antd';
+import { useState } from 'react';
 import { GoTrash } from 'react-icons/go';
 import { MdOutlineReplay } from 'react-icons/md';
 
@@ -14,6 +15,14 @@ function TitleAdmin({
   search = false,
   onSearch,
   placeholderSearch,
+  select = false,
+  optionName,
+  optionValue,
+  onChange,
+  onChangeValue,
+  disabledSelect = false,
+  placeholderSelect = false,
+  value,
 }) {
   const { Search } = Input;
   return (
@@ -22,8 +31,32 @@ function TitleAdmin({
         <span>{icon}</span>
         <h3>{title}</h3>
       </div>
-      <Flex gap="small">
-        {search && <Search size="large" placeholder={placeholderSearch} onSearch={onSearch} enterButton />}
+      <Flex gap="small" wrap justify="flex-end">
+        {select && (
+          <Select
+            onChange={onChange}
+            size="large"
+            style={{ minWidth: 180 }}
+            allowClear
+            options={optionName}
+            placeholder="Chọn điều kiện lọc"
+          />
+        )}
+        {select && (
+          <Select
+            disabled={disabledSelect}
+            onChange={onChangeValue}
+            size="large"
+            style={{ minWidth: 210 }}
+            allowClear
+            options={optionValue}
+            value={value}
+            placeholder={placeholderSelect}
+          />
+        )}
+        {search && (
+          <Search size="large" style={{ width: 210 }} placeholder={placeholderSearch} onSearch={onSearch} enterButton />
+        )}
         <Button
           disabled={disabled}
           type="primary"

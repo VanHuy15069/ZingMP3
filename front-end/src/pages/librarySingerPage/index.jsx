@@ -14,7 +14,7 @@ function LibrarySingerPage() {
       <div className="flex flex-wrap -mx-[14px]">
         {singers.data?.data.map((item) => {
           return (
-            <div key={item.singerId} className="px-[14px] w-1/5">
+            <div key={item.singerId} className="px-[14px] mb-[30px] w-1/5 tablet:max-laptop:w-1/4">
               <SingerItem singerId={item.singerId} />
             </div>
           );

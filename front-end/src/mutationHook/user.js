@@ -195,3 +195,35 @@ export const useDeleteUser = () => {
     },
   });
 };
+
+export const useUpgradeAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, accessToken }) => {
+      if (id && accessToken) {
+        return userService.upgradeAccount(id, accessToken);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+};
+
+export const useSendTokenResetPassword = () => {
+  return useMutation({
+    mutationFn: async ({ username, email }) => {
+      if (username && email) {
+        return userService.sendTokenResetPassword(username, email);
+      }
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: async ({ token, password, confirmPassword }) => {
+      return userService.resetPassword(token, password, confirmPassword);
+    },
+  });
+};

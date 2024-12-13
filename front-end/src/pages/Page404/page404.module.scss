@@ -1,0 +1,27 @@
+.wrapper {
+  display: flex;
+  background-color: var(--primary);
+  height: 100vh;
+  width: 100vw;
+}
+.err {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  & h1 {
+    font-size: 16rem;
+    font-weight: 600;
+    margin: 8px 0;
+    line-height: normal;
+    background: -webkit-linear-gradient(#ff009d, #000000);
+    background-clip: text;
+    color: transparent;
+  }
+  & p {
+    font-size: 6rem;
+    background: linear-gradient(to right, #3643f7, #e800a2);
+    background-clip: text;
+    color: transparent;
+  }
+}

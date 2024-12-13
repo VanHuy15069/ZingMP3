@@ -140,6 +140,15 @@ function AdminNation() {
     } else navigate('/dashboard/nation/trash');
   };
   useEffect(() => {
+    if (nation.isError || createNation.isError || updateNation.isError || updateTrashNation.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [nation.isError, createNation.isError, updateNation.isError, updateTrashNation.isError]);
+  useEffect(() => {
     if (createNation.isSuccess) {
       if (createNation.data?.status === 'SUCCESS') {
         setIsModalOpen(false);
@@ -245,6 +254,7 @@ function AdminNation() {
         isModalOpen={isModalOpen}
         formId={'nation'}
         btnText={option === 1 ? 'Thêm mới' : 'Cập nhật'}
+        loading={createNation.isPending || updateNation.isPending}
       >
         <Form
           form={form}

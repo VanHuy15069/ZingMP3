@@ -14,7 +14,8 @@ function AlbumTrash() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const albums = useGetAllAlbums(10, currentPage - 1, null, 1, 'createdAt', 'DESC');
+  const [searchValue, setSearchValue] = useState('');
+  const albums = useGetAllAlbums(10, currentPage - 1, searchValue, 1, 'createdAt', 'DESC');
   const updateTrashAlbum = useUpdateTrashAlbum();
   const deleteAlbum = useDeleteAlbum();
   const columns = [
@@ -120,6 +121,15 @@ function AlbumTrash() {
     });
   };
   useEffect(() => {
+    if (albums.isError) {
+      toast.error(`500! Servier Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [albums.isError]);
+  useEffect(() => {
     if (updateTrashAlbum.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);
@@ -128,8 +138,14 @@ function AlbumTrash() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (updateTrashAlbum.isError) {
+      toast.error(`500! Servier Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [updateTrashAlbum.isSuccess]);
+  }, [updateTrashAlbum.isSuccess, updateTrashAlbum.isError]);
   useEffect(() => {
     if (deleteAlbum.isSuccess) {
       setCurrentPage(1);
@@ -139,8 +155,14 @@ function AlbumTrash() {
         draggable: true,
         transition: Bounce,
       });
+    } else if (deleteAlbum.isError) {
+      toast.error(`500! Servier Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
     }
-  }, [deleteAlbum.isSuccess]);
+  }, [deleteAlbum.isSuccess, updateTrashAlbum.isError]);
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -151,15 +173,22 @@ function AlbumTrash() {
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
   };
+  const handleSearch = (value) => {
+    setCurrentPage(1);
+    setSearchValue(value);
+  };
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
+        search
+        placeholderSearch={'Tìm kiếm album'}
         trash
         disabled={selectedRowKeys.length === 0}
         title={'Quản lý album (Thùng rác)'}
         icon={<BsJournalAlbum />}
         onCreate={handleRestoreMany}
         onDelete={handleDeleteMany}
+        onSearch={handleSearch}
       />
       <Table
         scroll={{

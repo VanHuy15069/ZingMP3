@@ -3,6 +3,7 @@ import Header from '../components/header';
 import Audio from '../components/audio';
 import { useAudioStore } from '../store';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/ReactToastify.min.css';
 
 function DefaultLayout({ children }) {
   const audio = useAudioStore((state) => state.audio);
@@ -12,12 +13,12 @@ function DefaultLayout({ children }) {
         <div
           className={`fixed top-0 left-0 w-[240px] h-screen ${
             audio.songId && 'pb-[90px]'
-          } overflow-hidden bg-[#221a2d]`}
+          } overflow-hidden bg-[#221a2d] tablet:max-laptop:w-[70px]`}
         >
           <Sidebar />
         </div>
-        <div className="px-[59px] ml-[240px]">
-          <div className="fixed top-0 right-0 left-[240px] min-w-[640px] z-30">
+        <div className="px-[59px] ml-[240px] tablet:max-laptop:ml-[70px]">
+          <div className="fixed top-0 right-0 left-[240px] min-w-[640px] z-30 tablet:max-laptop:left-[70px]">
             <Header />
           </div>
           <div
@@ -42,6 +43,8 @@ function DefaultLayout({ children }) {
         hideProgressBar
         autoClose={3000}
         draggable
+        newestOnTop
+        stacked
       />
     </div>
   );

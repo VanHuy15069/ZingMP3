@@ -119,6 +119,15 @@ function SingerAlbumTrash() {
     });
   };
   useEffect(() => {
+    if (albums.isError || deleteAlbum.isError || updateTrashAlbum.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 3,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [albums.isError, deleteAlbum.isError, updateTrashAlbum.isError]);
+  useEffect(() => {
     if (updateTrashAlbum.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);

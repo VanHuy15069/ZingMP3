@@ -1,19 +1,17 @@
 import { Button, Flex, Image, Table } from 'antd';
-import { GoLock, GoTrash, GoUnlock } from 'react-icons/go';
+import { GoTrash } from 'react-icons/go';
 import { UserOutlined } from '@ant-design/icons';
-import { useGetAllUser, useGetAllUserIntoTrash } from '../../hook';
+import { useGetAllUserIntoTrash } from '../../hook';
 import { useEffect, useState } from 'react';
 import { useUserStore } from '../../store';
 import { Bounce, toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
 import avatar from '../../Image/avatar.png';
-import { useDeleteUser, useMoveUserToTrash, useRestoreUser, usesUpdatePrivateUser } from '../../mutationHook/user';
+import { useDeleteUser, useRestoreUser } from '../../mutationHook/user';
 import { MdOutlineReplay } from 'react-icons/md';
 import TitleAdmin from '../../components/titleAdmin';
 
 function UserTrash() {
-  const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,6 +124,15 @@ function UserTrash() {
       }
     });
   };
+  useEffect(() => {
+    if (users.isError || restoreUser.isError || deleteUser.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [users.isError, restoreUser.isError, deleteUser.isError]);
   useEffect(() => {
     if (restoreUser.isSuccess) {
       setSelectedRowKeys([]);

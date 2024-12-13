@@ -118,6 +118,15 @@ function TopicTrash() {
     });
   };
   useEffect(() => {
+    if (topic.isError || updateTrashTopic.isError || deleteTopic.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [topic.isError, updateTrashTopic.isError, deleteTopic.isError]);
+  useEffect(() => {
     if (updateTrashTopic.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);

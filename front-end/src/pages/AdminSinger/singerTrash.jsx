@@ -16,7 +16,9 @@ function SingerTrash() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState('');
-  const singers = useGetAllSingers(10, currentPage - 1, 1, searchValue);
+  const [name, setName] = useState('createdAt');
+  const [sort, setSort] = useState('DESC');
+  const singers = useGetAllSingers(10, currentPage - 1, 1, searchValue, name, sort);
   const updateTrashSinger = useUpdateTrashSinger();
   const deleteSinger = useDeleteSinger();
   const columns = [
@@ -24,6 +26,7 @@ function SingerTrash() {
       title: 'Tên nghệ sĩ',
       dataIndex: 'name',
       width: '15%',
+      sorter: true,
     },
     {
       title: 'Hình ảnh',
@@ -150,6 +153,15 @@ function SingerTrash() {
     });
   };
   useEffect(() => {
+    if (singers.isError || updateTrashSinger.isError || deleteSinger.isError) {
+      toast.error(`505! Server Error!`, {
+        toastId: 2,
+        draggable: true,
+        transition: Bounce,
+      });
+    }
+  }, [singers.isError, updateTrashSinger.isError, deleteSinger.isError]);
+  useEffect(() => {
     if (updateTrashSinger.isSuccess) {
       setCurrentPage(1);
       setSelectedRowKeys([]);
@@ -181,6 +193,15 @@ function SingerTrash() {
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
   };
+  const onChangeTable = (pagination, filters, sorter, extra) => {
+    if (sorter.order) {
+      setName(sorter.field);
+      setSort(sorter.order === 'ascend' ? 'ASC' : sorter.order === 'descend' ? 'DESC' : undefined);
+    } else {
+      setName('createdAt');
+      setSort('DESC');
+    }
+  };
   return (
     <Flex gap="middle" vertical>
       <TitleAdmin
@@ -206,6 +227,15 @@ function SingerTrash() {
         }}
         rowSelection={rowSelection}
         columns={columns}
+        showSorterTooltip={{
+          target: 'sorter-icon',
+        }}
+        onChange={onChangeTable}
+        locale={{
+          triggerDesc: 'Sắp xếp giảm dần',
+          triggerAsc: 'Sắp xếp tăng dần',
+          cancelSort: 'Hủy sắp xếp',
+        }}
         dataSource={dataSource}
         loading={singers.isLoading}
       />
