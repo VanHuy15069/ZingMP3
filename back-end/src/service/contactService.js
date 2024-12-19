@@ -45,12 +45,12 @@ export const feedbackContactService = (feedback, id, token) =>
           port: 587,
           secure: false,
           auth: {
-            user: 'vanhuy15069@gmail.com',
-            pass: 'xvvj mygu uxbs iqvw',
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD,
           },
         });
         const email = {
-          from: '"Van Huy" <vanhuy15069@gmail.com>',
+          from: `"Music Studio" <${process.env.EMAIL}>`,
           to: `${contact.email}`,
           subject: 'Email phản hồi',
           text: `${feedback}`,

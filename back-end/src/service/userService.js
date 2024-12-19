@@ -493,12 +493,12 @@ export const sendTokenService = (username, email) =>
         port: 587,
         secure: false,
         auth: {
-          user: 'vanhuy15069@gmail.com',
-          pass: 'xvvj mygu uxbs iqvw',
+          user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD,
         },
       });
       const emailDetail = {
-        from: '"Van Huy" <vanhuy15069@gmail.com>',
+        from: `"Music Studio" <${process.env.EMAIL}>`,
         to: `${user.email}`,
         subject: 'Yêu cầu cấp lại mật khẩu',
         text: `Nhấp vào đường dẫn sau để thực hiện việc cấp lại mật khẩu, thời gian tồn tại của của đường dẫn là 15 phút tính từ thời điểm email này được gửi đến: ${process.env.FE_URL}/reset-password/${token}`,
