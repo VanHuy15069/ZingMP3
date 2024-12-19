@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import logoLg from './src/Image/MusicStudioLG.png';
+import logoIcon from './src/Image/MAINLOGO.png';
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -6,8 +8,8 @@ export default {
       backgroundImage: {
         // 'logo-lg': "url('http://localhost:5173/src/Image/MusicStudioLG.png')",
         // logo: "url('http://localhost:5173/src/Image/MAINLOGO.png')",
-        'logo-lg': "url('https://zing-mp-3-murex.vercel.app/assets/Image/MusicStudioLG.png')",
-        logo: "url('https://zing-mp-3-murex.vercel.app/assets/Image/MAINLOGO.png')",
+        'logo-lg': `url('${logoLg}')`,
+        logo: `url('${logoIcon}')`,
       },
       colors: {
         'bg-primary': '#170f23',
