@@ -4,8 +4,10 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'logo-lg': "url('http://localhost:5173/src/Image/MusicStudioLG.png')",
-        logo: "url('http://localhost:5173/src/Image/MAINLOGO.png')",
+        // 'logo-lg': "url('http://localhost:5173/src/Image/MusicStudioLG.png')",
+        // logo: "url('http://localhost:5173/src/Image/MAINLOGO.png')",
+        'logo-lg': "url('https://zing-mp-3-murex.vercel.app/src/Image/MusicStudioLG.png')",
+        logo: "url('https://zing-mp-3-murex.vercel.app/src/Image/MAINLOGO.png')",
       },
       colors: {
         'bg-primary': '#170f23',
