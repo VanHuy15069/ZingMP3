@@ -4,7 +4,7 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { clearFile } from '../middleware/uploadFile';
-import { Op, where } from 'sequelize';
+import { Op } from 'sequelize';
 dotenv.config();
 
 export const createAlbumService = (name, image, singerId) =>
