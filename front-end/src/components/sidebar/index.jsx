@@ -17,6 +17,8 @@ import { RiFolderMusicLine, RiUserHeartLine } from 'react-icons/ri';
 import { jwtDecode } from 'jwt-decode';
 import { RxDashboard } from 'react-icons/rx';
 import { useGetDetailUser } from '../../hook';
+import logoLg from '../../Image/MusicStudioLG.png';
+import logoIcon from '../../Image/MAINLOGO.png';
 const cx = classNames.bind(style);
 function Sidebar() {
   const accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -74,8 +76,14 @@ function Sidebar() {
     <>
       <div className="pr-[25px] pl-7 flex h-[70px] justify-center items-center">
         <Link to={'/'}>
-          <div className="w-[240px] h-[70px] bg-logo-lg bg-contain bg-no-repeat tablet:max-laptop:hidden"></div>
-          <div className="w-[70px] h-[70px] bg-logo bg-contain bg-no-repeat hidden tablet:max-laptop:block"></div>
+          <div
+            style={{ backgroundImage: `url(${logoLg})` }}
+            className="w-[240px] h-[70px] bg-contain bg-no-repeat tablet:max-laptop:hidden"
+          ></div>
+          <div
+            style={{ backgroundImage: `url(${logoIcon})` }}
+            className="w-[70px] h-[70px] bg-contain bg-no-repeat hidden tablet:max-laptop:block"
+          ></div>
         </Link>
       </div>
       <div>
