@@ -1,23 +1,23 @@
 {
   "development": {
-    "username": "ur2bvlekvqcsc1fa",
-    "password": "FrJ7AEOHuyqCQDVdGJ4v",
-    "database": "bxgihexpfmw1ljejqxcq",
-    "host": "bxgihexpfmw1ljejqxcq-mysql.services.clever-cloud.com",
+    "username": "root",
+    "password": null,
+    "database": "music",
+    "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
     "password": null,
-    "database": "database_test",
+    "database": "music_test",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "ur2bvlekvqcsc1fa",
+    "password": "FrJ7AEOHuyqCQDVdGJ4v",
+    "database": "bxgihexpfmw1ljejqxcq",
+    "host": "bxgihexpfmw1ljejqxcq-mysql.services.clever-cloud.com",
     "dialect": "mysql"
   }
 }
