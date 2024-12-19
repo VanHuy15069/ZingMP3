@@ -100,6 +100,7 @@ function AdminTopic() {
   };
   const handleSearch = (value) => {
     setSearchValue(value);
+    setCurrentPage(1);
   };
   const onChange = (currentPage) => {
     setCurrentPage(currentPage);
@@ -137,7 +138,6 @@ function AdminTopic() {
   useEffect(() => {
     if (topic.isError || createTopic.isError || updateTopic.isError || updateTrashTopic.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -150,14 +150,12 @@ function AdminTopic() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới chủ đề thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setIsModalOpen(false);
         toast.error(`Chủ đề đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -170,7 +168,6 @@ function AdminTopic() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật chủ đề thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -181,7 +178,6 @@ function AdminTopic() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

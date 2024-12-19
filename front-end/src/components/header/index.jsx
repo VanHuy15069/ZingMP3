@@ -17,6 +17,8 @@ import classNames from 'classnames/bind';
 import styles from './header.module.scss';
 import SongItem from '../songItem/songItem';
 import SearchSingerItem from '../searchSingerItem';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 const cx = classNames.bind(styles);
 
 function Header() {
@@ -112,28 +114,34 @@ function Header() {
               {...attrs}
               className="w-[30vw] max-w-[440px] rounded-[12px] bg-alpha-primary overflow-hidden py-[13px] px-[10px]"
             >
-              <div className={cx('box-result')}>
-                {songs.data?.data.length > 0 && (
-                  <p className="text-alpha text-[14px] font-semibold select-none">Bài hát</p>
-                )}
-                {songs.data?.data.map((item) => {
-                  return <SongItem key={item.id} song={item} listSongs={songs.data?.data} isItemSearch />;
-                })}
-                {songs.data?.data.length > 0 && singers.data?.data.length > 0 && (
-                  <p className="w-full border-b border-b-border-primary my-[10px]"></p>
-                )}
-                {singers.data?.data.length > 0 && (
-                  <p className="text-alpha text-[14px] font-semibold select-none">Nghệ sĩ</p>
-                )}
-                {singers.data?.data.map((item) => {
-                  return <SearchSingerItem key={item.id} singer={item} />;
-                })}
-                {songs.data?.data.length === 0 && singers.data?.data.length === 0 && (
-                  <p className="text-alpha text-center py-[30px] text-[14px] font-semibold select-none">
-                    Không tìm thấy kết quả
-                  </p>
-                )}
-              </div>
+              {songs.isLoading || singers.isLoading ? (
+                <div className="text-center">
+                  <Spin className="text-alpha" size="large" indicator={<LoadingOutlined spin />} />
+                </div>
+              ) : (
+                <div className={cx('box-result')}>
+                  {songs.data?.data.length > 0 && (
+                    <p className="text-alpha text-[14px] font-semibold select-none">Bài hát</p>
+                  )}
+                  {songs.data?.data.map((item) => {
+                    return <SongItem key={item.id} song={item} listSongs={songs.data?.data} isItemSearch />;
+                  })}
+                  {songs.data?.data.length > 0 && singers.data?.data.length > 0 && (
+                    <p className="w-full border-b border-b-border-primary my-[10px]"></p>
+                  )}
+                  {singers.data?.data.length > 0 && (
+                    <p className="text-alpha text-[14px] font-semibold select-none">Nghệ sĩ</p>
+                  )}
+                  {singers.data?.data.map((item) => {
+                    return <SearchSingerItem key={item.id} singer={item} />;
+                  })}
+                  {songs.data?.data.length === 0 && singers.data?.data.length === 0 && (
+                    <p className="text-alpha text-center py-[30px] text-[14px] font-semibold select-none">
+                      Không tìm thấy kết quả
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
         >

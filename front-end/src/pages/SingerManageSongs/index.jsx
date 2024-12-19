@@ -349,7 +349,6 @@ function SingerManageSongs() {
   useEffect(() => {
     if (songs.isError || updateSong.isError || updateTrashSong.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 3,
         draggable: true,
         transition: Bounce,
       });
@@ -363,14 +362,12 @@ function SingerManageSongs() {
         setImgUpload();
         setSongName();
         toast.success(`Thêm mới bài hát thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setIsModalOpen(false);
         toast.error(`Bài hát đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -386,7 +383,6 @@ function SingerManageSongs() {
         setSongName();
         setVip(false);
         toast.success(`Cập nhật bài hát thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -397,7 +393,6 @@ function SingerManageSongs() {
         setSongName();
         setVip(false);
         toast.error(`Cập nhật bài hát không thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -410,14 +405,12 @@ function SingerManageSongs() {
         setCurrentPage(1);
         setSelectedRowKeys([]);
         toast.success(`Đã chuyển vào thùng rác!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setSelectedRowKeys([]);
         toast.error(`Chuyển vào thùng rác thất bại!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });

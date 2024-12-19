@@ -71,13 +71,11 @@ function SongItemLarge({ song, onClick, time = false }) {
         localStorage.setItem('listMusic', JSON.stringify(list));
         setIsReload(!isReload);
         toast('Đã thêm bài hát vào danh sách phát!', {
-          toastId: 1,
           draggable: true,
           transition: Bounce,
         });
       } else {
         toast('Bài hát đã tồn tại trong danh sách phát!', {
-          toastId: 1,
           draggable: true,
           transition: Bounce,
         });
@@ -96,13 +94,11 @@ function SongItemLarge({ song, onClick, time = false }) {
         localStorage.setItem('listMusic', JSON.stringify(list));
         setIsReload(!isReload);
         toast(`Đã thêm ${count} bài hát vào danh sách phát!`, {
-          toastId: 1,
           draggable: true,
           transition: Bounce,
         });
       } else {
         toast('Bài hát đã tồn tại trong danh sách phát!', {
-          toastId: 1,
           draggable: true,
           transition: Bounce,
         });

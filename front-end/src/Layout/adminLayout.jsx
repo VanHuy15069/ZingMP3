@@ -16,6 +16,7 @@ import { useUserStore } from '../store';
 import { useGetDetailUser } from '../hook';
 import avatar from '../Image/avatar.png';
 import { VscFeedback } from 'react-icons/vsc';
+import 'react-toastify/dist/ReactToastify.css';
 const { Header, Sider, Content } = Layout;
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -42,7 +43,6 @@ const AdminLayout = ({ children }) => {
   useEffect(() => {
     if (detailUser.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -178,7 +178,7 @@ const AdminLayout = ({ children }) => {
           {children}
         </Content>
       </Layout>
-      <ToastContainer position="top-right" containerId={2} theme="light" autoClose={3000} draggable stacked />
+      <ToastContainer position="top-right" theme="light" autoClose={3000} draggable closeOnClick />
     </Layout>
   );
 };

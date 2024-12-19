@@ -122,7 +122,6 @@ function SliderTrash() {
   useEffect(() => {
     if (slider.isError || updateTrashSlider.isError || deleteSlider.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -133,7 +132,6 @@ function SliderTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Slider đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -144,7 +142,6 @@ function SliderTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

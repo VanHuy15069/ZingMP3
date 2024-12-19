@@ -60,6 +60,7 @@ function CategoryTrash() {
     };
   });
   const handleSearch = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
   const handleRestore = (item) => {
@@ -92,7 +93,6 @@ function CategoryTrash() {
   useEffect(() => {
     if (category.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -103,13 +103,11 @@ function CategoryTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã khôi phục lại thể loại nhạc!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (updateTrashCategory.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -120,13 +118,11 @@ function CategoryTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (deleteCategory.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

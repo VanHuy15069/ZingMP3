@@ -14,14 +14,12 @@ function HeartIcon({ isFavorite, className, songId, isAlbum = false, overlay = f
     if (favoriteMutation.isSuccess && favoriteMutation.data) {
       if (!isFavorite) {
         toast('Đã thêm bài hát vào thư viện!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
         });
       } else {
         toast('Đã xóa bài hát khỏi thư viện!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
@@ -34,14 +32,12 @@ function HeartIcon({ isFavorite, className, songId, isAlbum = false, overlay = f
     if (favoriteAlbumMutation.isSuccess && favoriteAlbumMutation.data) {
       if (!isFavorite) {
         toast('Đã thêm album vào thư viện!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
         });
       } else {
         toast('Đã xóa album khỏi thư viện!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,

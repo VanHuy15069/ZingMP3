@@ -64,7 +64,7 @@ function SearchItem({ song, listSongs }) {
         </div>
         <div className={cx('action')}>
           <HeartIcon songId={song.id} isFavorite={checkFavorite.data?.data} className={'text-[16px]'} />
-          <div className="p-[6px] w-[38px] h-[38px] text-[14px] rounded-full hover:bg-border-primary cursor-pointer flex items-center justify-center">
+          <div className="w-[38px] h-[38px] text-[14px] rounded-full hover:bg-border-primary cursor-pointer flex items-center justify-center">
             <EllipsisIcon
               song={song}
               isFavorite={checkFavorite.data?.data}

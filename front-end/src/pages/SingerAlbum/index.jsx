@@ -137,7 +137,6 @@ function SingerAlbum() {
   useEffect(() => {
     if (albums.isError || createAlbum.isError || updateAlbum.isError || updateTrashAlbum.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 3,
         draggable: true,
         transition: Bounce,
       });
@@ -150,14 +149,12 @@ function SingerAlbum() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới album thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setIsModalOpen(false);
         toast.error(`album đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -170,7 +167,6 @@ function SingerAlbum() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật album thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -181,7 +177,6 @@ function SingerAlbum() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

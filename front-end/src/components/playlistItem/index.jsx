@@ -51,7 +51,6 @@ function PlaylistItem({ playlist }) {
   useEffect(() => {
     if (updateMutation.isSuccess && updateMutation.data?.status === 'SUCCESS') {
       toast(`Cập nhật playlist thành công!`, {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
@@ -62,7 +61,6 @@ function PlaylistItem({ playlist }) {
   useEffect(() => {
     if (deleteMutation.isSuccess && deleteMutation.data?.status === 'SUCCESS') {
       toast(`Xóa playlist thành công!`, {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
@@ -146,6 +144,7 @@ function PlaylistItem({ playlist }) {
         isOpen={isOpen}
         onCancel={handleCancle}
         isUpdate
+        loading={updateMutation.isPending}
       >
         <Input
           value={value}

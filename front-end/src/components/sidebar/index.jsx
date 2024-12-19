@@ -37,7 +37,6 @@ function Sidebar() {
   useEffect(() => {
     if (playlistMutation.isSuccess && playlistMutation.data) {
       toast(`Tạo playlist "${value}" thành công!`, {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
@@ -193,6 +192,7 @@ function Sidebar() {
           disabled={!value}
           isOpen={isOpen}
           onCancel={handleCancle}
+          loading={playlistMutation.isPending}
         >
           <Input
             value={value}

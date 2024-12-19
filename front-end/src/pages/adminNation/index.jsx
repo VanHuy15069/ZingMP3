@@ -73,6 +73,7 @@ function AdminNation() {
     };
   });
   const handleSearch = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
   const onSelectChange = (newSelectedRowKeys) => {
@@ -142,7 +143,6 @@ function AdminNation() {
   useEffect(() => {
     if (nation.isError || createNation.isError || updateNation.isError || updateTrashNation.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -155,14 +155,12 @@ function AdminNation() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới quốc thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setIsModalOpen(false);
         toast.error(`Quốc gia đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -175,7 +173,6 @@ function AdminNation() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật quốc gia thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -186,7 +183,6 @@ function AdminNation() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

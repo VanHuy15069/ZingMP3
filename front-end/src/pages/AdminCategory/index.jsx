@@ -74,6 +74,7 @@ function AdminCategory() {
     };
   });
   const handleSearch = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
   const handleCreate = () => {
@@ -113,7 +114,6 @@ function AdminCategory() {
   useEffect(() => {
     if (category.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -126,20 +126,17 @@ function AdminCategory() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới thể loại thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         toast.error(`Thể loại nhạc đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       }
     } else if (createCategory.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -151,13 +148,11 @@ function AdminCategory() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật thể loại thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (updateCategory.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -168,13 +163,11 @@ function AdminCategory() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (updateTrashCategory.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

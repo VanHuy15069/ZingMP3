@@ -60,6 +60,7 @@ function NationTrash() {
     };
   });
   const handleSearch = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
   const handleRestore = (nation) => {
@@ -122,7 +123,6 @@ function NationTrash() {
   useEffect(() => {
     if (nation.isError || updateTrashNation.isError || deleteNation.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -133,7 +133,6 @@ function NationTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Quốc gia đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -144,7 +143,6 @@ function NationTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

@@ -21,6 +21,7 @@ function SingerTrash() {
   const singers = useGetAllSingers(10, currentPage - 1, 1, searchValue, name, sort);
   const updateTrashSinger = useUpdateTrashSinger();
   const deleteSinger = useDeleteSinger();
+
   const columns = [
     {
       title: 'Tên nghệ sĩ',
@@ -94,6 +95,7 @@ function SingerTrash() {
   });
   const handleSearch = (value) => {
     setSearchValue(value);
+    setCurrentPage(1);
   };
   const handleRestore = (singer) => {
     Swal.fire({
@@ -155,7 +157,6 @@ function SingerTrash() {
   useEffect(() => {
     if (singers.isError || updateTrashSinger.isError || deleteSinger.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -166,7 +167,6 @@ function SingerTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Nghệ sĩ đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -177,7 +177,6 @@ function SingerTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

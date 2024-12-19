@@ -3,7 +3,7 @@ import Header from '../components/header';
 import Audio from '../components/audio';
 import { useAudioStore } from '../store';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/ReactToastify.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DefaultLayout({ children }) {
   const audio = useAudioStore((state) => state.audio);
@@ -37,14 +37,17 @@ function DefaultLayout({ children }) {
       )}
       <ToastContainer
         position="bottom-right"
-        containerId={1}
-        toastStyle={{ backgroundColor: '#34224f', color: 'white', fontSize: '14px' }}
+        closeOnClick
+        toastStyle={{
+          backgroundColor: '#34224f',
+          color: 'white',
+          fontSize: '14px',
+        }}
         theme="custom"
         hideProgressBar
         autoClose={3000}
         draggable
         newestOnTop
-        stacked
       />
     </div>
   );

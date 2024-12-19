@@ -9,6 +9,7 @@ function ModalPlaylist({
   title,
   isAddSong = false,
   isUpdate = false,
+  loading = false,
 }) {
   return (
     <ConfigProvider
@@ -39,6 +40,7 @@ function ModalPlaylist({
             : [
                 <div className="text-center">
                   <Button
+                    loading={loading}
                     onClick={onOk}
                     disabled={disabled}
                     key="submit"

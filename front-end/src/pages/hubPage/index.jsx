@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useGetAllCategory, useGetAllNation, useGetAllTopic } from '../../hook';
 import { Link } from 'react-router-dom';
 import Card from '../../components/cart';
 import newSong from '../../Image/newSong.jpg';
 import TopicItem from '../../components/topicItem';
 import ListSongs from '../../components/listSongs/listSongs';
+import { maxBy } from 'lodash';
 
 function HubPage() {
   const [randomImage, setRanDomImage] = useState({});
@@ -26,12 +27,19 @@ function HubPage() {
     }
   }, [allTopics.isSuccess]);
 
+  const topCategoryFn = useMemo(() => {
+    if (allCatgory.isSuccess) {
+      return maxBy(allCatgory.data?.data.rows, 'songInfo.length');
+    }
+    return null;
+  }, [allCatgory.data?.data.rows]);
   useEffect(() => {
     if (allCatgory.isSuccess) {
-      const top = allCatgory.data.data.rows.reduce((max, current) => {
-        return current.songInfo.length > max.songInfo.length ? current : max;
-      });
-      setTopCategory(top);
+      // const top = allCatgory.data.data.rows.reduce((max, current) => {
+      //   return current.songInfo.length > max.songInfo.length ? current : max;
+      // });
+      // setTopCategory(top);
+      setTopCategory(topCategoryFn);
     }
   }, [allCatgory.isSuccess]);
 

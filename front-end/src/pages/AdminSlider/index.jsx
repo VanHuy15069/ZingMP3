@@ -146,7 +146,6 @@ function AdminSlider() {
   useEffect(() => {
     if (slider.isError || createSlider.isError || updateSlider.isError || updateTrashSlider.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -159,7 +158,6 @@ function AdminSlider() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới slider thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -172,7 +170,6 @@ function AdminSlider() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật slider thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -183,7 +180,6 @@ function AdminSlider() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

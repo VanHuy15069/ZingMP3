@@ -149,7 +149,7 @@ function SongItemSmall({
         <div className={cx('action')}>
           {!hideHeard && <HeartIcon isFavorite={checkFavorite.data?.data} className={'text-[16px]'} songId={song.id} />}
           <div className="w-[46px]">
-            <div className="p-[6px] w-[32px] h-[32px] text-[14px] rounded-full hover:bg-border-primary cursor-pointer flex items-center justify-center">
+            <div className="w-[32px] h-[32px] text-[14px] rounded-full hover:bg-border-primary cursor-pointer flex items-center justify-center">
               <EllipsisIcon
                 song={song}
                 isFavorite={checkFavorite.data?.data}

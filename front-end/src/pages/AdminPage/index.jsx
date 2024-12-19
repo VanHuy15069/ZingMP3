@@ -38,7 +38,6 @@ function AdminPage() {
       statical.isError
     ) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

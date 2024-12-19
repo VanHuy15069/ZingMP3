@@ -80,6 +80,7 @@ export const getAllCategoryService = (limit, offset, trash = 0, name) =>
         ],
         distinct: true,
         order: [
+          ['createdAt', 'DESC'],
           [
             {
               model: db.Song,
@@ -88,7 +89,6 @@ export const getAllCategoryService = (limit, offset, trash = 0, name) =>
             'createdAt',
             'DESC',
           ],
-          ['createdAt', 'DESC'],
         ],
       });
       resolve({

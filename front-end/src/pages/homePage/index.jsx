@@ -200,7 +200,7 @@ function HomePage() {
           </SwiperSlide>
         </Swiper>
       </div>
-      {user.accessToken && (
+      {user.accessToken && singerFollow.isSuccess && (
         <div className="mt-[48px]">
           <div className="flex items-center mb-[20px]">
             <div

@@ -150,7 +150,6 @@ function AdminAlbum() {
   useEffect(() => {
     if (albums.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -163,20 +162,17 @@ function AdminAlbum() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới album thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         toast.error(`album đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       }
     } else if (createAlbum.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -188,13 +184,11 @@ function AdminAlbum() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật album thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (updateAlbum.isError) {
       toast.error(`505! Server Error`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -205,13 +199,11 @@ function AdminAlbum() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (updateTrashAlbum.isError) {
       toast.error(`505! Server Error`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

@@ -121,7 +121,6 @@ function SingerAlbumTrash() {
   useEffect(() => {
     if (albums.isError || deleteAlbum.isError || updateTrashAlbum.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 3,
         draggable: true,
         transition: Bounce,
       });
@@ -132,7 +131,6 @@ function SingerAlbumTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`album đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -143,7 +141,6 @@ function SingerAlbumTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

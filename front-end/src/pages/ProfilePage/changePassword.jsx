@@ -18,7 +18,6 @@ function ChangePassword({ tab }) {
     if (changePassword.isSuccess) {
       if (changePassword.data.status === 'SUCCESS') {
         toast('Mật khẩu được thay đổi thành công!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
@@ -26,7 +25,6 @@ function ChangePassword({ tab }) {
         form.resetFields();
       } else {
         toast(changePassword.data.msg, {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
@@ -104,7 +102,12 @@ function ChangePassword({ tab }) {
             span: 20,
           }}
         >
-          <Button className="bg-purple-primary text-white hover:bg-purple-hover" type="noType" htmlType="submit">
+          <Button
+            className="bg-purple-primary text-white hover:bg-purple-hover"
+            type="noType"
+            htmlType="submit"
+            loading={changePassword.isPending}
+          >
             Lưu thay đổi
           </Button>
         </Form.Item>

@@ -127,7 +127,6 @@ function UserTrash() {
   useEffect(() => {
     if (users.isError || restoreUser.isError || deleteUser.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -137,7 +136,6 @@ function UserTrash() {
     if (restoreUser.isSuccess) {
       setSelectedRowKeys([]);
       toast.success('Đã khôi phục thành công tài khoản người dùng!', {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -147,7 +145,6 @@ function UserTrash() {
     if (deleteUser.isSuccess) {
       setSelectedRowKeys([]);
       toast.success('Đã xóa thành công tài khoản người dùng!', {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

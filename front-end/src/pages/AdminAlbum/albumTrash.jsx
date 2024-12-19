@@ -123,7 +123,6 @@ function AlbumTrash() {
   useEffect(() => {
     if (albums.isError) {
       toast.error(`500! Servier Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -134,13 +133,11 @@ function AlbumTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`album đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (updateTrashAlbum.isError) {
       toast.error(`500! Servier Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -151,13 +148,11 @@ function AlbumTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
     } else if (deleteAlbum.isError) {
       toast.error(`500! Servier Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

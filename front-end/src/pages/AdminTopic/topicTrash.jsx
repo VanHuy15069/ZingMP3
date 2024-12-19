@@ -59,6 +59,7 @@ function TopicTrash() {
   });
   const handleSearch = (value) => {
     setSearchValue(value);
+    setCurrentPage(1);
   };
   const handleRestore = (topic) => {
     Swal.fire({
@@ -120,7 +121,6 @@ function TopicTrash() {
   useEffect(() => {
     if (topic.isError || updateTrashTopic.isError || deleteTopic.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -131,7 +131,6 @@ function TopicTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Chủ đề đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -142,7 +141,6 @@ function TopicTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

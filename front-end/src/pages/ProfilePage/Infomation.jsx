@@ -47,7 +47,6 @@ function Infomation({ user, accessToken }) {
     if (updateUserMutation.isSuccess) {
       const user = updateUserMutation.data?.data;
       toast('Thông tin đã được cập nhật!', {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
@@ -117,6 +116,7 @@ function Infomation({ user, accessToken }) {
             className="bg-purple-primary text-white hover:bg-purple-hover disabled:opacity-[0.5] disabled:cursor-default"
             type="noType"
             htmlType="submit"
+            loading={updateUserMutation.isPending}
           >
             Lưu thay đổi
           </Button>

@@ -326,7 +326,6 @@ export const getAlbumHotService = (limit = 5) =>
         attributes: ['id', 'albumId', [Sequelize.fn('SUM', Sequelize.col('views')), 'sum']],
         group: ['albumId'],
         order: [['sum', 'DESC']],
-        limit: Number(limit),
         include: [
           {
             model: db.Album,
@@ -347,6 +346,7 @@ export const getAlbumHotService = (limit = 5) =>
         where: {
           id: { [Op.in]: listIds },
         },
+        limit: Number(limit),
         include: [
           {
             model: db.Song,

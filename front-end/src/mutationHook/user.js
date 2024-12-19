@@ -201,7 +201,7 @@ export const useUpgradeAccount = () => {
   return useMutation({
     mutationFn: async ({ id, accessToken }) => {
       if (id && accessToken) {
-        return userService.upgradeAccount(id, accessToken);
+        return await userService.upgradeAccount(id, accessToken);
       }
     },
     onSuccess: () => {
@@ -214,7 +214,7 @@ export const useSendTokenResetPassword = () => {
   return useMutation({
     mutationFn: async ({ username, email }) => {
       if (username && email) {
-        return userService.sendTokenResetPassword(username, email);
+        return await userService.sendTokenResetPassword(username, email);
       }
     },
   });
@@ -223,7 +223,7 @@ export const useSendTokenResetPassword = () => {
 export const useResetPassword = () => {
   return useMutation({
     mutationFn: async ({ token, password, confirmPassword }) => {
-      return userService.resetPassword(token, password, confirmPassword);
+      return await userService.resetPassword(token, password, confirmPassword);
     },
   });
 };

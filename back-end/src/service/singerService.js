@@ -343,15 +343,10 @@ export const getAllSingerService = (limit, offset = 0, trash = 0, singerName, na
       }
       const singerFollows = [];
       for (const item of singers.rows) {
-        const singerFollow = await db.Singer.findByPk(item.id, {
-          include: [
-            {
-              model: db.User,
-              as: 'followInfo',
-            },
-          ],
+        const singerFollow = await db.Follow.findAndCountAll({
+          where: { singerId: item.id },
         });
-        singerFollows.push({ ...item.dataValues, follows: singerFollow.followInfo.length });
+        singerFollows.push({ ...item.dataValues, follows: singerFollow.count });
       }
       resolve({
         ststus: 'SUCCESS',

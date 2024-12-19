@@ -56,7 +56,6 @@ function SingerDetailPage() {
   useEffect(() => {
     if (singerDetail.isError || updateSinger.isError || updateAccount.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 3,
         draggable: true,
         transition: Bounce,
       });
@@ -67,7 +66,6 @@ function SingerDetailPage() {
       setIsModalOpen(false);
       setImgUpload();
       toast.success(`Cập nhật thông tin thành công!`, {
-        toastId: 3,
         draggable: true,
         transition: Bounce,
       });

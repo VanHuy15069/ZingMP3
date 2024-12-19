@@ -43,7 +43,7 @@ function AdminSinger() {
   const updateTrashSinger = useUpdateTrashSinger();
   const createAccountSinger = useCreateAccountSinger();
   const deleteAccountSinger = useDeleteAccountSinger();
-
+  console.log(singers.data);
   const columns = [
     {
       title: 'Tên nghệ sĩ',
@@ -232,7 +232,6 @@ function AdminSinger() {
   useEffect(() => {
     if (singers.isError || createSinger.isError || updateSinger.isError || updateTrashSinger.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -245,14 +244,12 @@ function AdminSinger() {
         form.resetFields();
         setImgUpload();
         toast.success(`Thêm mới nghệ sĩ thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setIsModalOpen(false);
         toast.error(`Nghệ sĩ đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -265,7 +262,6 @@ function AdminSinger() {
       form.resetFields();
       setImgUpload();
       toast.success(`Cập nhật nghệ sĩ thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -276,7 +272,6 @@ function AdminSinger() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -286,7 +281,6 @@ function AdminSinger() {
     if (createAccountSinger.isSuccess) {
       setIsModalOpen(false);
       toast.success(`Tài khoản nghệ sĩ tạo thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -296,7 +290,6 @@ function AdminSinger() {
   useEffect(() => {
     if (deleteAccountSinger.isSuccess) {
       toast.success(`Đã xóa tài khoản của nghệ sĩ!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

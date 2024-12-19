@@ -257,7 +257,6 @@ function SingerSongTrash() {
   useEffect(() => {
     if (songs.isError || deleteSong.isError || updateTrashSong.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 3,
         draggable: true,
         transition: Bounce,
       });
@@ -268,7 +267,6 @@ function SingerSongTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`bài hát đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -279,7 +277,6 @@ function SingerSongTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

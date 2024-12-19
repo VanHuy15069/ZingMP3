@@ -11,6 +11,7 @@ import { useUserStore } from '../store';
 import { useGetDeatailSinger } from '../hook';
 import { IoLogOutOutline } from 'react-icons/io5';
 import avatar from '../Image/avatar.png';
+import 'react-toastify/dist/ReactToastify.css';
 const { Header, Sider, Content } = Layout;
 const SingerLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -34,7 +35,6 @@ const SingerLayout = ({ children }) => {
   useEffect(() => {
     if (detailSinger.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -123,7 +123,7 @@ const SingerLayout = ({ children }) => {
           {children}
         </Content>
       </Layout>
-      <ToastContainer position="top-right" containerId={3} theme="light" autoClose={3000} draggable stacked />
+      <ToastContainer position="top-right" theme="light" autoClose={3000} draggable closeOnClick />
     </Layout>
   );
 };

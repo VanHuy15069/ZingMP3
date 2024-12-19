@@ -161,6 +161,7 @@ function SongTrash() {
     };
   });
   const handleSeach = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
   const handleRestore = (song) => {
@@ -223,7 +224,6 @@ function SongTrash() {
   useEffect(() => {
     if (songs.isError || updateTrashSong.isError || deleteSong.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -234,7 +234,6 @@ function SongTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`bài hát đã được khôi phục!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -245,7 +244,6 @@ function SongTrash() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã xóa thành công!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -291,6 +289,7 @@ function SongTrash() {
     }
   };
   const handleChangeValue = (value) => {
+    setCurrentPage(1);
     setValue(value);
   };
   return (

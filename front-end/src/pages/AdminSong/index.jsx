@@ -285,6 +285,7 @@ function AdminSong() {
     setCurrentPage(currentPage);
   };
   const handleSeach = (value) => {
+    setCurrentPage(1);
     setSearchValue(value);
   };
   const onChangeTable = (pagination, filters, sorter, extra) => {
@@ -317,6 +318,7 @@ function AdminSong() {
     }
   };
   const handleChangeValue = (value) => {
+    setCurrentPage(1);
     setValue(value);
   };
   useEffect(() => {
@@ -333,7 +335,6 @@ function AdminSong() {
   useEffect(() => {
     if (songs.isError || createSong.isError || updateSong.isError || updateTrashSong.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -347,14 +348,12 @@ function AdminSong() {
         setImgUpload();
         setSongName();
         toast.success(`Thêm mới bài hát thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setIsModalOpen(false);
         toast.error(`Bài hát đã tồn tại trên hệ thống!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -370,7 +369,6 @@ function AdminSong() {
         setSongName();
         setVip(false);
         toast.success(`Cập nhật bài hát thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -381,7 +379,6 @@ function AdminSong() {
         setSongName();
         setVip(false);
         toast.error(`Cập nhật bài hát không thành công!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
@@ -394,14 +391,12 @@ function AdminSong() {
         setCurrentPage(1);
         setSelectedRowKeys([]);
         toast.success(`Đã chuyển vào thùng rác!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });
       } else {
         setSelectedRowKeys([]);
         toast.error(`Chuyển vào thùng rác thất bại!`, {
-          toastId: 2,
           draggable: true,
           transition: Bounce,
         });

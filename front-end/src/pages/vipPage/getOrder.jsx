@@ -1,9 +1,10 @@
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetVNPayReturn } from '../../hook';
 import { useEffect } from 'react';
 import { useUpgradeAccount } from '../../mutationHook/user';
 import { useUserStore } from '../../store';
+import { LoadingOutlined } from '@ant-design/icons';
 
 function GetOrder() {
   const navigate = useNavigate();
@@ -26,20 +27,32 @@ function GetOrder() {
   const getOrder = useGetVNPayReturn(queries);
   const upgradeAccount = useUpgradeAccount();
   useEffect(() => {
-    if (getOrder.isSuccess && getOrder.data?.status === 'SUCCESS' && getOrder.data?.code === '00') {
+    if (
+      getOrder.isSuccess &&
+      getOrder.data?.status === 'SUCCESS' &&
+      getOrder.data?.code === '00' &&
+      user.id &&
+      user.accessToken
+    ) {
+      console.log(123);
       upgradeAccount.mutate({ id: user.id, accessToken: user.accessToken });
     }
-  }, [getOrder.isSuccess]);
+  }, [getOrder.isSuccess, user.accessToken]);
 
   return (
     <div className="min-h-screen bg-white text-[#333] flex">
       <div className="m-auto text-center">
-        <p className="text-[20px] mb-[12px]">
-          {getOrder.isSuccess && getOrder.data?.status === 'SUCCESS' && getOrder.data?.code === '00'
-            ? 'Tài khoản của quý khách đã được nâng cấp'
-            : 'Giao dịch thất bại'}
-        </p>
-        <Button onClick={() => navigate('/upgrade-account')}>Quay về</Button>
+        {(upgradeAccount.isPending || !user.accessToken) && <Spin size="large" indicator={<LoadingOutlined spin />} />}
+        {upgradeAccount.isSuccess && (
+          <div>
+            <p className="text-[20px] mb-[12px]">
+              {getOrder.isSuccess && getOrder.data?.status === 'SUCCESS' && getOrder.data?.code === '00'
+                ? 'Tài khoản của quý khách đã được nâng cấp'
+                : 'Giao dịch thất bại'}
+            </p>
+            <Button onClick={() => navigate('/')}>Quay về</Button>
+          </div>
+        )}
       </div>
     </div>
   );

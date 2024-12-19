@@ -95,7 +95,6 @@ function AdminUser() {
   useEffect(() => {
     if (updateUser.isSuccess) {
       toast.success(updateUser.data?.data.status ? 'Tài khoản đã được mở khóa' : 'Tài khoản đã khóa', {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -142,7 +141,6 @@ function AdminUser() {
   useEffect(() => {
     if (users.isError || trashUser.isError || updateUser.isError) {
       toast.error(`505! Server Error!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });
@@ -153,7 +151,6 @@ function AdminUser() {
       setCurrentPage(1);
       setSelectedRowKeys([]);
       toast.success(`Đã chuyển vào thùng rác!`, {
-        toastId: 2,
         draggable: true,
         transition: Bounce,
       });

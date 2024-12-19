@@ -62,14 +62,12 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
     if (favoriteMutation.isSuccess && favoriteMutation.data) {
       if (!isFavorite) {
         toast('Đã thêm bài hát vào thư viện!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
         });
       } else {
         toast('Đã xóa bài hát khỏi thư viện!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
@@ -81,14 +79,12 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
     if (addSongPlaylistMutation.isSuccess && addSongPlaylistMutation.data) {
       if (addSongPlaylistMutation.data?.status === 'DEFINED') {
         toast(`Bài hát "${song.name}" đã tồn tại trong playlist "${playlistName}"`, {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
         });
       } else if (addSongPlaylistMutation.data?.status === 'SUCCESS') {
         toast(`Đã thêm bài hát "${song.name}" vào playlist "${playlistName}"`, {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
@@ -111,14 +107,12 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
       localStorage.setItem('listMusic', JSON.stringify(list));
       setIsReload(!isReload);
       toast('Đã thêm bài hát vào danh sách phát!', {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
       });
     } else {
       toast('Bài hát đã tồn tại trong danh sách phát!', {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
@@ -134,14 +128,12 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
         localStorage.setItem('listMusic', JSON.stringify(list));
         setIsReload(!isReload);
         toast('Bài hát sẽ được phát tiếp theo!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
         });
       } else {
         toast('Bài hát đang được phát!', {
-          toastId: 1,
           draggable: true,
           hideProgressBar: true,
           transition: Bounce,
@@ -152,7 +144,6 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
       localStorage.setItem('listMusic', JSON.stringify(list));
       setIsReload(!isReload);
       toast('Bài hát sẽ được phát tiếp theo!', {
-        toastId: 1,
         draggable: true,
         hideProgressBar: true,
         transition: Bounce,
@@ -186,7 +177,6 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
   useEffect(() => {
     if (playlistMutation.isSuccess && playlistMutation.data) {
       toast(`Đã xóa bài hát ${song.name} khỏi playlist!`, {
-        toastId: 1,
         draggable: true,
         transition: Bounce,
       });
@@ -197,6 +187,7 @@ function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }
   };
   return (
     <div
+      className="p-[6px]"
       ref={boxRef}
       onClick={() => {
         setIsOpenPopover(!isOpenPopover);
