@@ -12,10 +12,12 @@ function UserBox({ user }) {
   const detailUser = useGetDetailUser(user.id, user.accessToken);
   const handleLogout = () => {
     const list = JSON.parse(localStorage.getItem('listMusic'));
-    const songNotVips = list?.filter((item) => item.vip === false);
+    if (list) {
+      const songNotVips = list.filter((item) => item.vip === false);
+      localStorage.setItem('listMusic', JSON.stringify(songNotVips));
+    }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    localStorage.setItem('listMusic', JSON.stringify(songNotVips));
     window.location.reload();
     navigate('/');
   };
