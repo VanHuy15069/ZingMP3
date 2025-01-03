@@ -20,8 +20,15 @@ function DetailAlbumPage() {
     if (Number(albumId.id) === audio.albumId && audio.isPlay) {
       updateSongPlay(false);
     } else {
-      handleAddSongs(album.data?.data.songInfo[0], album.data?.data.songInfo, user, updateSongId, updateSongAlbum);
       updateSongPlay(true);
+      handleAddSongs(
+        album.data?.data.songInfo[0],
+        album.data?.data.songInfo,
+        user,
+        updateSongId,
+        updateSongAlbum,
+        updateSongPlay,
+      );
     }
     setIsReload(!isReload);
   };

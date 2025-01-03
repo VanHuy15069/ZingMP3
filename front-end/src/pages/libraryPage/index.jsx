@@ -71,8 +71,8 @@ function LibraryPage() {
   const handlePlaySong = () => {
     const list = [...songFavorites.data?.data];
     list.sort(() => Math.random() - 0.5);
-    handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum);
     updateSongPlay(true);
+    handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum, updateSongPlay);
   };
   useEffect(() => {
     if (playlistMutation.isSuccess && playlistMutation.data) {

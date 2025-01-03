@@ -20,7 +20,7 @@ function SearchItem({ song, listSongs }) {
     if (song.id === audio.songId && audio.isPlay) {
       updateSongPlay(false);
     } else {
-      handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum);
+      handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum, updateSongPlay);
       updateSongPlay(true);
     }
   };

@@ -32,7 +32,7 @@ function SongItem({ song, listSongs, isItemSearch = false }) {
       updateSongPlay(false);
     } else {
       updateSongPlay(true);
-      handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum);
+      handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum, updateSongPlay);
     }
   };
   useEffect(() => {
@@ -93,9 +93,11 @@ function SongItem({ song, listSongs, isItemSearch = false }) {
               let isNotLastElement = true;
               if (index === song.singerInfo.length - 1) isNotLastElement = false;
               return (
-                <div key={item.id} className="flex  text-alpha">
+                <div key={item.id} className="flex text-alpha">
                   <Link to={`/singer/${item.id}`}>
-                    <p className="cursor-pointer text-alpha hover:text-purple-hover hover:underline">{item.name}</p>
+                    <p className="cursor-pointer text-alpha text-ellipsis overflow-hidden line-clamp-1 hover:text-purple-hover hover:underline">
+                      {item.name}
+                    </p>
                   </Link>
                   {isNotLastElement && (
                     <p className="tracking-normal ml-[1px]" style={{ wordSpacing: '0.1px' }}>

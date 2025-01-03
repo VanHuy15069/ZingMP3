@@ -343,7 +343,7 @@ function Audio() {
             <Tooltip title={<p className="text-[12px]">{isLoop ? 'Tắt phát lại' : 'Bật phát lại'}</p>}>
               <span
                 onClick={handleLoop}
-                className={`p-[3px] flex items-center justify-center mx-[7px] text-[16px] cursor-pointer ${
+                className={`p-[3px] h-[40px] w-[40px] flex items-center justify-center mx-[7px] text-[16px] cursor-pointer ${
                   isLoop && 'text-purple-hover'
                 } hover:bg-border-primary rounded-full`}
               >

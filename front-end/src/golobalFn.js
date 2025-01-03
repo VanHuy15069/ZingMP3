@@ -8,7 +8,7 @@ export const isJsonString = (data) => {
   return true;
 };
 
-export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, updateAlbumId) => {
+export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, updateAlbumId, updateSongPlay) => {
   const newList = [...listSongs];
   if (user?.id) {
     if (song.vip) {
@@ -21,6 +21,7 @@ export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, upda
         updateSongId(song.id);
         if (song.albumId) updateAlbumId(song.albumId);
       } else {
+        updateSongPlay(false);
         Swal.fire({
           title: 'Cần tài khoản premium để nghe bài hát này!',
           confirmButtonText: 'Nâng cấp tài khoản',
@@ -53,6 +54,7 @@ export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, upda
     }
   } else {
     if (song.vip) {
+      updateSongPlay(false);
       Swal.fire({
         title: 'Cần tài khoản premium để nghe bài hát này!',
         confirmButtonText: 'Nâng cấp tài khoản',
@@ -75,7 +77,7 @@ export const handleAddSongsPlaylist = (song, listSongs, user, updateSongId, upda
   }
 };
 
-export const handleAddSongs = (song, listSongs, user, updateSongId, updateAlbumId) => {
+export const handleAddSongs = (song, listSongs, user, updateSongId, updateAlbumId, updateSongPlay) => {
   const newList = [...listSongs];
   if (user?.id) {
     if (song.vip) {
@@ -90,6 +92,7 @@ export const handleAddSongs = (song, listSongs, user, updateSongId, updateAlbumI
         else updateAlbumId(undefined);
         localStorage.removeItem('playlistId');
       } else {
+        updateSongPlay(false);
         Swal.fire({
           title: 'Cần tài khoản premium để nghe bài hát này!',
           confirmButtonText: 'Nâng cấp tài khoản',
@@ -126,6 +129,7 @@ export const handleAddSongs = (song, listSongs, user, updateSongId, updateAlbumI
     }
   } else {
     if (song.vip) {
+      updateSongPlay(false);
       Swal.fire({
         title: 'Cần tài khoản premium để nghe bài hát này!',
         confirmButtonText: 'Nâng cấp tài khoản',

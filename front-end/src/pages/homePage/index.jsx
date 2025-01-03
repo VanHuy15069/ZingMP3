@@ -33,7 +33,7 @@ function HomePage() {
     qt: false,
   });
   const user = useUserStore((state) => state.user);
-  const { updateSongId, updateSongAlbum } = useAudioStore();
+  const { updateSongId, updateSongAlbum, updateSongPlay } = useAudioStore();
   const sliders = useGetSlider(9, 0, false, 1);
   const newSongs = useGetSongsByNation(null, 12);
   const newSongsVN = useGetSongsByNation('Việt Nam', 12);
@@ -230,7 +230,9 @@ function HomePage() {
                 <div key={item.id} className="px-[14px] w-1/5 tablet:max-laptop:w-1/4">
                   <SongItemLarge
                     song={item}
-                    onClick={() => handleAddSongs(item, singerFollow.data?.song, user, updateSongId, updateSongAlbum)}
+                    onClick={() =>
+                      handleAddSongs(item, singerFollow.data?.song, user, updateSongId, updateSongAlbum, updateSongPlay)
+                    }
                   />
                 </div>
               );

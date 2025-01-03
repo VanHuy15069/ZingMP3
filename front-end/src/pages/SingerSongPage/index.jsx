@@ -57,10 +57,17 @@ function SingerSongPage() {
     if (audio.isPlay) {
       updateSongPlay(false);
     } else {
-      if (!currentList) {
-        handleAddSongs(topSongs.data?.data[0], topSongs.data?.data, user, updateSongId, updateSongAlbum);
-      }
       updateSongPlay(true);
+      if (!currentList) {
+        handleAddSongs(
+          topSongs.data?.data[0],
+          topSongs.data?.data,
+          user,
+          updateSongId,
+          updateSongAlbum,
+          updateSongPlay,
+        );
+      }
     }
   };
   return (

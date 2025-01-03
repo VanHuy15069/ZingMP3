@@ -62,11 +62,11 @@ function SongItemSmall({
     if (song.id === audio.songId && audio.isPlay) {
       updateSongPlay(false);
     } else {
+      updateSongPlay(true);
       if (playlistId) {
         localStorage.setItem('playlistId', JSON.stringify(playlistId));
-        handleAddSongsPlaylist(song, listSongs, user, updateSongId, updateSongAlbum);
-      } else handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum);
-      updateSongPlay(true);
+        handleAddSongsPlaylist(song, listSongs, user, updateSongId, updateSongAlbum, updateSongPlay);
+      } else handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum, updateSongPlay);
     }
     setIsReload(!isReload);
   };
@@ -123,7 +123,9 @@ function SongItemSmall({
               return (
                 <div key={item.id} className="flex text-alpha">
                   <Link to={`/singer/${item.id}`}>
-                    <p className="text-second-text hover:text-purple-hover hover:underline">{item.name}</p>
+                    <p className="text-second-text text-ellipsis overflow-hidden line-clamp-1 hover:text-purple-hover hover:underline">
+                      {item.name}
+                    </p>
                   </Link>
                   {isNotLastElement && (
                     <p className="tracking-normal ml-[1px]" style={{ wordSpacing: '0.1px' }}>

@@ -6,7 +6,7 @@ import { useAudioStore, useUserStore } from '../../store';
 
 function SinglePage() {
   const user = useUserStore((state) => state.user);
-  const { updateSongId, updateSongAlbum } = useAudioStore();
+  const { updateSongId, updateSongAlbum, updateSongPlay } = useAudioStore();
   const params = useParams();
   const singer = useGetDeatailSinger(params.id);
   const singleSong = useGetSingleSong(params.id, null, null);
@@ -19,7 +19,9 @@ function SinglePage() {
             <div key={song.id} className="px-[14px] w-1/5 block cursor-pointer">
               <SongItemLarge
                 song={song}
-                onClick={() => handleAddSongs(song, singleSong.data?.data, user, updateSongId, updateSongAlbum)}
+                onClick={() =>
+                  handleAddSongs(song, singleSong.data?.data, user, updateSongId, updateSongAlbum, updateSongPlay)
+                }
               />
             </div>
           );

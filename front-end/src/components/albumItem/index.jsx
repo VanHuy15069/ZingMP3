@@ -26,7 +26,7 @@ function AlbumItem({ album }) {
       updateSongPlay(false);
     } else {
       updateSongPlay(true);
-      handleAddSongs(album.songInfo[0], album.songInfo, user, updateSongId, updateSongAlbum);
+      handleAddSongs(album.songInfo[0], album.songInfo, user, updateSongId, updateSongAlbum, updateSongPlay);
     }
     e.stopPropagation();
   };

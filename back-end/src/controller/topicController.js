@@ -101,7 +101,7 @@ export const updateTrashTopics = async (req, res) => {
 
 export const getDetailTopic = async (req, res) => {
   try {
-    const { limit, name, sort } = req.body;
+    const { limit, name, sort } = req.query;
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({

@@ -19,6 +19,7 @@ function DetailPlaylistPage() {
       if (localPlaylistId === playlistId.id && audio.isPlay) {
         updateSongPlay(false);
       } else {
+        updateSongPlay(true);
         localStorage.setItem('playlistId', JSON.stringify(playlistId.id));
         handleAddSongsPlaylist(
           playlist.data?.data.songInfo[0],
@@ -26,8 +27,8 @@ function DetailPlaylistPage() {
           user,
           updateSongId,
           updateSongAlbum,
+          updateSongPlay,
         );
-        updateSongPlay(true);
       }
     }
   };

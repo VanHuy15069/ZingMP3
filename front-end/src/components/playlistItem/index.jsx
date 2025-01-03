@@ -34,7 +34,14 @@ function PlaylistItem({ playlist }) {
       if (playlist.songInfo.length > 0) {
         localStorage.setItem('playlistId', JSON.stringify(playlist.id));
         updateSongPlay(true);
-        handleAddSongsPlaylist(playlist.songInfo[0], playlist.songInfo, user, updateSongId, updateSongAlbum);
+        handleAddSongsPlaylist(
+          playlist.songInfo[0],
+          playlist.songInfo,
+          user,
+          updateSongId,
+          updateSongAlbum,
+          updateSongPlay,
+        );
       }
     }
     e.stopPropagation();

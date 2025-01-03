@@ -8,8 +8,15 @@ function NewSongPage() {
   const { updateSongPlay, updateSongId, updateSongAlbum } = useAudioStore();
   const topNewSongs = useGetTopNewSongs(100);
   const handleList = () => {
-    handleAddSongs(topNewSongs.data?.data[0], topNewSongs.data?.data, user, updateSongId, updateSongAlbum);
     updateSongPlay(true);
+    handleAddSongs(
+      topNewSongs.data?.data[0],
+      topNewSongs.data?.data,
+      user,
+      updateSongId,
+      updateSongAlbum,
+      updateSongPlay,
+    );
   };
   return (
     <div className="pt-[40px]">

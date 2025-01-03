@@ -34,7 +34,6 @@ function GetOrder() {
       user.id &&
       user.accessToken
     ) {
-      console.log(123);
       upgradeAccount.mutate({ id: user.id, accessToken: user.accessToken });
     }
   }, [getOrder.isSuccess, user.accessToken]);
@@ -43,16 +42,18 @@ function GetOrder() {
     <div className="min-h-screen bg-white text-[#333] flex">
       <div className="m-auto text-center">
         {(upgradeAccount.isPending || !user.accessToken) && <Spin size="large" indicator={<LoadingOutlined spin />} />}
-        {upgradeAccount.isSuccess && (
+        {upgradeAccount.isSuccess ? (
           <div>
             <p className="text-[20px] mb-[12px]">
               {getOrder.isSuccess && getOrder.data?.status === 'SUCCESS' && getOrder.data?.code === '00'
                 ? 'Tài khoản của quý khách đã được nâng cấp'
                 : 'Giao dịch thất bại'}
             </p>
-            <Button onClick={() => navigate('/')}>Quay về</Button>
           </div>
+        ) : (
+          <p className="text-[20px] mb-[12px]">Giao dịch thất bại</p>
         )}
+        <Button onClick={() => navigate('/')}>Quay về</Button>
       </div>
     </div>
   );

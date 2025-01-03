@@ -100,7 +100,7 @@ export const updateTrashCategories = async (req, res) => {
 };
 
 export const getDetailCategory = async (req, res) => {
-  const { limit, name, sort } = req.body;
+  const { limit, name, sort } = req.query;
   const id = req.params.id;
   try {
     if (!id) {

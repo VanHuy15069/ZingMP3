@@ -39,8 +39,8 @@ function NewReleasePage() {
   const handlePlaySong = () => {
     const list = [...songs.data?.data];
     list.sort(() => Math.random() - 0.5);
-    handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum);
     updateSongPlay(true);
+    handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum, updateSongPlay);
   };
   return (
     <div className="pt-[40px] pb-[50px]">

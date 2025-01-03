@@ -13,8 +13,8 @@ function SingerItemSmall({ singer }) {
   if (singer.image) avatarImg = `${import.meta.env.VITE_API_FILE_URL}/${singer.image}`;
   const handlePlaySong = (e) => {
     const list = songs.data?.data.sort(() => Math.random() - 0.5);
-    handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum);
     updateSongPlay(true);
+    handleAddSongs(list[0], list, user, updateSongId, updateSongAlbum, updateSongPlay);
     e.stopPropagation();
   };
   return (

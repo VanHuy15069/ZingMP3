@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 function ListSongs({ navigate = true, title, songs, time = false, link }) {
   const user = useUserStore((state) => state.user);
-  const { updateSongId, updateSongAlbum } = useAudioStore();
+  const { updateSongId, updateSongAlbum, updateSongPlay } = useAudioStore();
   return (
     <>
       <div className="flex items-center justify-between mb-[20px] text-[20px]">
@@ -29,7 +29,7 @@ function ListSongs({ navigate = true, title, songs, time = false, link }) {
               <SongItemLarge
                 time={time}
                 song={item}
-                onClick={() => handleAddSongs(item, songs, user, updateSongId, updateSongAlbum)}
+                onClick={() => handleAddSongs(item, songs, user, updateSongId, updateSongAlbum, updateSongPlay)}
               />
             </div>
           );

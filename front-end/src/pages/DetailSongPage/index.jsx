@@ -19,8 +19,15 @@ function DetailSongPage() {
     if (Number(songId.id) === audio.songId && audio.isPlay) {
       updateSongPlay(false);
     } else {
-      handleAddSongs(listSongs.data?.data[0], listSongs.data?.data, user, updateSongId, updateSongAlbum);
       updateSongPlay(true);
+      handleAddSongs(
+        listSongs.data?.data[0],
+        listSongs.data?.data,
+        user,
+        updateSongId,
+        updateSongAlbum,
+        updateSongPlay,
+      );
     }
   };
 

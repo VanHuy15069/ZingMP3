@@ -15,8 +15,10 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { PiPlaylist } from 'react-icons/pi';
 import Swal from 'sweetalert2';
 import { useAddSongPlaylist, useRemoveSongPlaylist } from '../../mutationHook/playlist';
+import { useNavigate } from 'react-router-dom';
 
 function EllipsisIcon({ song, isFavorite, checkOpenPopover, playlistId = false }) {
+  const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
   const boxRef = useRef();
   const [isOpenPopover, setIsOpenPopover] = useState(false);

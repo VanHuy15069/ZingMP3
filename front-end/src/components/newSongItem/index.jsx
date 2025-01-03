@@ -19,8 +19,8 @@ function NewSongItem({ song, index, listSongs }) {
   const date = moment(song.createdAt);
   const fomatedDate = date.format('DD.MM.YYYY');
   const handlePLaySong = (e) => {
-    handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum);
     updateSongPlay(true);
+    handleAddSongs(song, listSongs, user, updateSongId, updateSongAlbum, updateSongPlay);
     setIsReload(!isReload);
     e.stopPropagation();
   };

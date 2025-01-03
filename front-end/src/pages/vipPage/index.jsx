@@ -98,13 +98,13 @@ function VipPage() {
                 <div className="flex items-center justify-between mt-[12px]">
                   {/* <p>Zing MP3 Premium</p> */}
                   <p>Tài khoản premium</p>
-                  <p className="font-bold">499.000đ</p>
+                  <p className="font-bold">{payment === 'paypal' ? '19.67 USD' : '499.000đ'}</p>
                 </div>
                 <p className="text-[#476285] text-[13px] mt-[4px]">Thời gian hiệu lưc vĩnh viễn</p>
                 <div className="pt-[16px] mt-[12px] border-t-[1px] border-bg-[#dfe2e7] flex justify-between">
                   <h2 className="text-[18px] font-semibold">Tổng tiền</h2>
                   <div className="text-right text-[24px]">
-                    <p className="font-bold ">499.000đ</p>
+                    <p className="font-bold ">{payment === 'paypal' ? '19.67 USD' : '499.000đ'}</p>
                     <p className="text-[#476285] text-[13px]">Đã bao gồm VAT và phí liên quan</p>
                   </div>
                 </div>

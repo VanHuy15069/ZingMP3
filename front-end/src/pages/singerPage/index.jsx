@@ -80,8 +80,8 @@ function SingerPage() {
       } else {
         list.splice(0, 0, newSong.data?.data[0]);
       }
-      handleAddSongs(newSong.data?.data[0], list, user, updateSongId, updateSongAlbum);
       updateSongPlay(true);
+      handleAddSongs(newSong.data?.data[0], list, user, updateSongId, updateSongAlbum, updateSongPlay);
     }
     setIsReload(!isReload);
     e.stopPropagation();
@@ -111,7 +111,7 @@ function SingerPage() {
   };
   const handleAlbums = async (albumId) => {
     const songs = await getSongByAlbumId(albumId);
-    if (songs) handleAddSongs(songs[0], songs, user, updateSongId, updateSongAlbum);
+    if (songs) handleAddSongs(songs[0], songs, user, updateSongId, updateSongAlbum, updateSongPlay);
     setIsReload(!isReload);
   };
   return (
