@@ -19,7 +19,7 @@ function VipPage() {
   const payMent = useCreatePayment();
   const [payment, setPayment] = useState('paypal');
   const initialOptions = {
-    'client-id': `${import.meta.env.CLIENT_PAYPAL_ID}`,
+    'client-id': `${import.meta.env.VITE_PAYPAL_CLIEND_URL}`,
     currency: 'USD',
     intent: 'capture',
   };
