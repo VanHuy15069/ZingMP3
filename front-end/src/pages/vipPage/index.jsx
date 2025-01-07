@@ -33,7 +33,8 @@ function VipPage() {
   };
   useEffect(() => {
     if (payMent.isSuccess) {
-      window.location.href = payMent.data?.path;
+    //  window.location.href = payMent.data?.path;
+    navigate(`${payMent.data?.path}`)
     }
   }, [payMent.isSuccess]);
   return (
