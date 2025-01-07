@@ -19,7 +19,7 @@ function VipPage() {
   const payMent = useCreatePayment();
   const [payment, setPayment] = useState('paypal');
   const initialOptions = {
-    'client-id': 'AdKx6DdHuGm2W8unKXOzMVOK56POhzKHqUUeVKww5IAKXxFPo3tJJHqBsY8pVC9P-imCxTHg7V-gObyq',
+    'client-id': `${import.meta.env.CLIENT_PAYPAL_ID}`,
     currency: 'USD',
     intent: 'capture',
   };
@@ -33,8 +33,7 @@ function VipPage() {
   };
   useEffect(() => {
     if (payMent.isSuccess) {
-    //  window.location.href = payMent.data?.path;
-    navigate(`${payMent.data?.path}`)
+      window.location.href = payMent.data?.path;
     }
   }, [payMent.isSuccess]);
   return (
