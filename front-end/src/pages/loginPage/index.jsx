@@ -224,9 +224,10 @@ function LoginPage() {
           </Button>
           {!isSinger && (
             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIEND_URL}>
-              <div>
+              <div className="flex flex-col">
                 <h2 className="text-center font-bold text-[#048ec8] mb-[8px]">OR</h2>
                 <GoogleLogin
+                  ren
                   onSuccess={responseGoogle}
                   onError={() => {
                     console.log('Login Failed');
