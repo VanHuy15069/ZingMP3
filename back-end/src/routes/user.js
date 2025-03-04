@@ -5,6 +5,7 @@ import * as upload from '../middleware/uploadFile';
 const userRouter = express.Router();
 userRouter.post('/register', userController.addUser);
 userRouter.post('/login', userController.loginUser);
+userRouter.post('/google-login', userController.loginGoogle);
 userRouter.patch('/update-password/:id', middleware.authUserMiddleware, userController.updatePassword);
 userRouter.get('/get-detail/:id', middleware.authUserMiddleware, userController.getDetailUser);
 userRouter.get('/getAll', middleware.authMiddleware, userController.getAllUser);

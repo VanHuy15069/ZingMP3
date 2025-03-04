@@ -12,6 +12,11 @@ export const login = async (data) => {
   return res.data;
 };
 
+export const loginGoogle = async (data) => {
+  const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/user/google-login`, data);
+  return res.data;
+};
+
 export const getDetailUser = async (id, accessToken) => {
   const res = await axiosJWT.get(`${import.meta.env.VITE_API_BASE_URL}/user/get-detail/${id}`, {
     headers: {

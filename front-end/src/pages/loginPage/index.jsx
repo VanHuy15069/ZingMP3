@@ -13,6 +13,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useUserStore } from '../../store';
 import { useMutation } from '@tanstack/react-query';
 import { useSendTokenResetPassword } from '../../mutationHook/user';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 function LoginPage() {
   const [form] = Form.useForm();
@@ -34,10 +35,16 @@ function LoginPage() {
     mutationFn: async (data) => await singerService.loginSinger(data),
   });
 
+  const googleLoginMution = useMutation({
+    mutationFn: async (data) => await userService.loginGoogle(data),
+  });
+
   const handleCheckUser = (e) => {
     setIsSinger(e.target.checked);
   };
-
+  const responseGoogle = (response) => {
+    googleLoginMution.mutate({ tokenId: response.credential });
+  };
   const handleGetDetailUser = async (id, accessToken) => {
     const user = await userService.getDetailUser(id, accessToken);
     updateUser(id, user.data.fullName, user.data.username, user.data.vip, user.data.image, accessToken);
@@ -49,13 +56,31 @@ function LoginPage() {
       navigate('/');
     }
   };
-
   const handleGetDetailSinger = async (id, accessToken) => {
     const singer = await singerService.getDetailSinger(id);
     updateUser(id, singer.data.name, singer.data.username, singer.data.vip, singer.data.image, accessToken);
     updateRole('singer');
     navigate('/dashboard/singer/detail');
   };
+  useEffect(() => {
+    if (googleLoginMution.isSuccess) {
+      if (googleLoginMution.data?.accessToken) {
+        localStorage.setItem('accessToken', JSON.stringify(googleLoginMution.data.accessToken));
+        localStorage.setItem('refreshToken', JSON.stringify(googleLoginMution.data.refreshToken));
+        const decoded = jwtDecode(googleLoginMution.data.accessToken);
+        if (decoded?.id) {
+          handleGetDetailUser(decoded.id, googleLoginMution.data.accessToken);
+        }
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: 'Đã xảy ra lỗi!',
+          icon: 'error',
+          customClass: 'min-h-[35vh] w-[35vw] text-[14px]',
+        });
+      }
+    }
+  }, [googleLoginMution.isSuccess]);
   useEffect(() => {
     if (mutation.isSuccess) {
       if (mutation.data?.accessToken && !isSinger) {
@@ -193,10 +218,23 @@ function LoginPage() {
             type="noThing"
             loading={isSinger ? singerMutation.isPending : mutation.isPending}
             htmlType="submit"
-            className="my-[32px] py-[12px] w-full rounded-[20px] border-none text-white font-bold bg-[#048ec8] bg-gradient-to-r from-[#048ec8] to-fuchsia-500"
+            className="mt-[42px] mb-[8px] py-[12px] w-full rounded-[20px] border-none text-white font-bold bg-[#048ec8] bg-gradient-to-r from-[#048ec8] to-fuchsia-500"
           >
             ĐĂNG NHẬP
           </Button>
+          {!isSinger && (
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIEND_URL}>
+              <div>
+                <h2 className="text-center font-bold text-[#048ec8] mb-[8px]">OR</h2>
+                <GoogleLogin
+                  onSuccess={responseGoogle}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                />
+              </div>
+            </GoogleOAuthProvider>
+          )}
         </form>
       </Box>
       <Modal

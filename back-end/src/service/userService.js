@@ -7,9 +7,9 @@ import fs from 'fs';
 import nodemailer from 'nodemailer';
 import jsonwebtoken from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { OAuth2Client } from 'google-auth-library';
 dotenv.config();
-
-const hashPassword = (password) => bcryptjs.hashSync(password, bcryptjs.genSaltSync(10));
+const client = new OAuth2Client(process.env.GOOGLE_CLIEND_ID);
 
 export const addUserService = ({ fullName, username, passWord, email, image }) =>
   new Promise(async (resolve, reject) => {
@@ -87,6 +87,41 @@ export const loginUserService = (userLogin) =>
           });
         }
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const loginGoogleService = (tokenId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const auth = await client.verifyIdToken({
+        idToken: tokenId,
+        audience: process.env.GOOGLE_CLIEND_ID,
+      });
+      const payload = auth.getPayload();
+      const [checkUser] = await db.User.findOrCreate({
+        where: { username: payload.sub },
+        defaults: {
+          fullName: payload.name,
+          email: payload.email,
+        },
+      });
+      const accessToken = jwt.renderAccessToken({
+        id: checkUser.id,
+        isAdmin: false,
+        isSinger: false,
+      });
+      const refreshToken = jwt.renderRefreshToken({
+        id: checkUser.id,
+        isAdmin: false,
+        isSinger: false,
+      });
+      resolve({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        status: 'SUCCESS',
+      });
     } catch (error) {
       reject(error);
     }
@@ -494,7 +529,7 @@ export const sendTokenService = (username, email) =>
         secure: false,
         auth: {
           user: process.env.EMAIL,
-            pass: process.env.EMAIL_PASSWORD,
+          pass: process.env.EMAIL_PASSWORD,
         },
       });
       const emailDetail = {

@@ -17,6 +17,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@paypal/react-paypal-js": "^8.7.0",
+    "@react-oauth/google": "^0.12.1",
     "@tanstack/react-query": "^5.51.15",
     "@tippyjs/react": "^4.2.6",
     "@uidotdev/usehooks": "^2.4.1",

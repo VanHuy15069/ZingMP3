@@ -46,6 +46,25 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const loginGoogle = async (req, res) => {
+  try {
+    const tokenId = req.body.tokenId;
+    if (!tokenId) {
+      return res.status(400).json({
+        status: 'ERROR',
+        msg: 'Full information is required',
+      });
+    }
+    const response = await userService.loginGoogleService(tokenId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'failure ' + error,
+    });
+  }
+};
+
 export const getDetailUser = async (req, res) => {
   const userId = req.params.id;
   try {
