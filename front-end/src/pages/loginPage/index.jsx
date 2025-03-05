@@ -223,18 +223,19 @@ function LoginPage() {
             ĐĂNG NHẬP
           </Button>
           {!isSinger && (
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIEND_URL}>
-              <div className="flex flex-col items-center">
-                <h2 className="text-center font-bold text-[#048ec8] mb-[8px]">OR</h2>
-                <GoogleLogin
-                  ren
-                  onSuccess={responseGoogle}
-                  onError={() => {
-                    console.log('Login Failed');
-                  }}
-                />
-              </div>
-            </GoogleOAuthProvider>
+            <div>
+              <h2 className="text-center font-bold text-[#048ec8] mb-[8px]">OR</h2>
+              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIEND_URL}>
+                <div className="flex flex-col items-center">
+                  <GoogleLogin
+                    onSuccess={responseGoogle}
+                    onError={() => {
+                      console.log('Login Failed');
+                    }}
+                  />
+                </div>
+              </GoogleOAuthProvider>
+            </div>
           )}
         </form>
       </Box>

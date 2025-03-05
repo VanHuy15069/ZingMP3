@@ -10,7 +10,7 @@ import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
 dotenv.config();
 const client = new OAuth2Client(process.env.GOOGLE_CLIEND_ID);
-
+const hashPassword = (password) => bcryptjs.hashSync(password, bcryptjs.genSaltSync(10));
 export const addUserService = ({ fullName, username, passWord, email, image }) =>
   new Promise(async (resolve, reject) => {
     try {
