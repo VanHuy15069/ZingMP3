@@ -8,12 +8,13 @@ import * as userService from '../../service/userService';
 import * as singerService from '../../service/singerService';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { Button, Checkbox, Form, Input, Modal } from 'antd';
+import { Button, Checkbox, Form, Input, Modal, Spin } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import { useUserStore } from '../../store';
 import { useMutation } from '@tanstack/react-query';
 import { useSendTokenResetPassword } from '../../mutationHook/user';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { LoadingOutlined } from '@ant-design/icons';
 
 function LoginPage() {
   const [form] = Form.useForm();
@@ -223,18 +224,22 @@ function LoginPage() {
             ĐĂNG NHẬP
           </Button>
           {!isSinger && (
-            <div>
-              <h2 className="text-center font-bold text-[#048ec8] mb-[8px]">OR</h2>
-              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIEND_URL}>
-                <div className="flex flex-col items-center">
-                  <GoogleLogin
-                    onSuccess={responseGoogle}
-                    onError={() => {
-                      console.log('Login Failed');
-                    }}
-                  />
-                </div>
-              </GoogleOAuthProvider>
+            <div className="text-center">
+              {googleLoginMution.isPending ? (
+                <Spin indicator={<LoadingOutlined spin />} size="large" />
+              ) : (
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIEND_URL}>
+                  <div className="flex flex-col items-center">
+                    <h2 className="text-center font-bold text-[#048ec8] mb-[8px]">OR</h2>
+                    <GoogleLogin
+                      onSuccess={responseGoogle}
+                      onError={() => {
+                        console.log('Login Failed');
+                      }}
+                    />
+                  </div>
+                </GoogleOAuthProvider>
+              )}
             </div>
           )}
         </form>
