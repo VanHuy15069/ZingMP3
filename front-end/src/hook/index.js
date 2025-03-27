@@ -268,10 +268,10 @@ export const useGetSingerFollow = (id, accessToken) => {
   });
 };
 
-export const useGetAllUser = (limit, offset, accessToken) => {
+export const useGetAllUser = (limit, offset, status, accessToken) => {
   return useQuery({
-    queryKey: ['get-all-user', limit, offset],
-    queryFn: () => userService.getAllUser(limit, offset, accessToken),
+    queryKey: ['get-all-user', limit, offset, status],
+    queryFn: () => userService.getAllUser(limit, offset, status, accessToken),
     enabled: !!accessToken,
   });
 };
@@ -284,10 +284,10 @@ export const useGetAllUserIntoTrash = (limit, offset, accessToken) => {
   });
 };
 
-export const useGetAllContact = (limit, offset, status, accessToken) => {
+export const useGetAllContact = (limit, offset, status, problem, accessToken) => {
   return useQuery({
-    queryKey: ['get-all-contact', limit, offset, status],
-    queryFn: () => contactService.getAllContact(limit, offset, status, accessToken),
+    queryKey: ['get-all-contact', limit, offset, status, problem],
+    queryFn: () => contactService.getAllContact(limit, offset, status, problem, accessToken),
     enabled: !!accessToken,
   });
 };

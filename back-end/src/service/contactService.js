@@ -91,11 +91,12 @@ export const feedbackContactService = (feedback, id, token) =>
     }
   });
 
-export const getAllContactService = (limit = 10, offset = 0, status) =>
+export const getAllContactService = (limit = 10, offset = 0, status, problem) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
       if (status) obj.where = { status: status };
+      if (problem) obj.where = { problem: problem };
       const contacts = await db.Contact.findAndCountAll({
         ...obj,
         limit: Number(limit),

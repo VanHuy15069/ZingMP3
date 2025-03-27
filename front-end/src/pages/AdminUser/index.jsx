@@ -1,4 +1,4 @@
-import { Button, Flex, Image, Table } from 'antd';
+import { Button, Flex, Image, Select, Table, Tag } from 'antd';
 import { GoLock, GoTrash, GoUnlock } from 'react-icons/go';
 import { UserOutlined } from '@ant-design/icons';
 import { useGetAllUser, useGetAllUserIntoTrash } from '../../hook';
@@ -15,11 +15,21 @@ function AdminUser() {
   const user = useUserStore((state) => state.user);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const users = useGetAllUser(10, currentPage - 1, user.accessToken);
+  const [status, setStatus] = useState();
+  const users = useGetAllUser(10, currentPage - 1, status, user.accessToken);
   const usersTrash = useGetAllUserIntoTrash(null, null, user.accessToken);
   const updateUser = usesUpdatePrivateUser();
   const trashUser = useMoveUserToTrash();
-
+  const optionStatus = [
+    {
+      value: 1,
+      label: 'Hoạt động',
+    },
+    {
+      value: false,
+      label: 'Đã khóa',
+    },
+  ];
   const columns = [
     {
       title: 'Tên người dùng',
@@ -30,10 +40,6 @@ function AdminUser() {
       dataIndex: 'image',
       align: 'center',
     },
-    // {
-    //   title: 'Tên đăng nhập',
-    //   dataIndex: 'username',
-    // },
     {
       title: 'Email',
       dataIndex: 'email',
@@ -44,13 +50,21 @@ function AdminUser() {
       align: 'center',
       render: (status) =>
         status ? (
-          <p className="p-3 m-auto leading-none bg-green-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="success"
+          >
             Hoạt động
-          </p>
+          </Tag>
         ) : (
-          <p className="p-3 m-auto leading-none bg-red-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="error"
+          >
             Đã khóa
-          </p>
+          </Tag>
         ),
     },
     {
@@ -89,6 +103,10 @@ function AdminUser() {
       ),
     };
   });
+  const onOptionChange = (value) => {
+    setStatus(value);
+    setCurrentPage(1);
+  };
   const handleUpdate = (item) => {
     updateUser.mutate({ status: !item.status, vip: null, id: item.id, accessToken: user.accessToken });
   };
@@ -166,9 +184,19 @@ function AdminUser() {
             </span>
             <h3>Quản lý tài khoản</h3>
           </div>
-          <Button onClick={handleTrashMany} type="primary" size="large" danger icon={<GoTrash />}>
-            {`Thùng rác ${usersTrash.data?.data.count > 0 ? `(${usersTrash.data?.data.count})` : ''}`}
-          </Button>
+          <div className="flex items-center gap-6">
+            <Select
+              size="large"
+              style={{ width: 180 }}
+              placeholder="Trạng thái"
+              options={optionStatus}
+              onChange={onOptionChange}
+              allowClear
+            />
+            <Button onClick={handleTrashMany} type="primary" size="large" danger icon={<GoTrash />}>
+              {`Thùng rác ${usersTrash.data?.data.count > 0 ? `(${usersTrash.data?.data.count})` : ''}`}
+            </Button>
+          </div>
         </div>
         <Table
           scroll={{

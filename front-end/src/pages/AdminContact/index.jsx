@@ -1,4 +1,4 @@
-import { Button, Flex, Form, Input, Modal, Select, Table } from 'antd';
+import { Button, DatePicker, Flex, Form, Input, Modal, Select, Table, Tag } from 'antd';
 import { GoTrash } from 'react-icons/go';
 import { VscFeedback } from 'react-icons/vsc';
 import { useGetAllContact } from '../../hook';
@@ -12,9 +12,11 @@ import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 function AdminContact() {
   const [form] = Form.useForm();
+  // const { RangePicker } = DatePicker;
   const user = useUserStore((state) => state.user);
+  const [problem, setProblem] = useState();
   const [status, setStatus] = useState();
-  const contacts = useGetAllContact(10, 0, status, user.accessToken);
+  const contacts = useGetAllContact(10, 0, status, problem, user.accessToken);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [showFullText, setShowFullText] = useState(0);
@@ -22,11 +24,37 @@ function AdminContact() {
   const [contact, setContact] = useState({});
   const feedback = useFeedbackContact();
   const deleteContacts = useDeleteContacts();
-  const options = [
+  const problems = [
     {
-      value: '',
-      label: 'Tất cả',
+      value: 'Báo lỗi',
+      label: 'Báo lỗi',
     },
+    {
+      value: 'Góp ý sản phẩm',
+      label: 'Góp ý sản phẩm',
+    },
+    {
+      value: 'Nâng cấp tài khoản premium',
+      label: 'Nâng cấp tài khoản premium',
+    },
+    {
+      value: 'Phát hành nội dung',
+      label: 'Phát hành nội dung',
+    },
+    {
+      value: 'Hợp tác nội dung',
+      label: 'Hợp tác nội dung',
+    },
+    {
+      value: 'Tài khoản người dùng',
+      label: 'Tài khoản người dùng',
+    },
+    {
+      value: 'Vấn đề khác',
+      label: 'Vấn đề khác',
+    },
+  ];
+  const options = [
     {
       value: 1,
       label: 'Đã phản hồi',
@@ -48,11 +76,12 @@ function AdminContact() {
     {
       title: 'email',
       dataIndex: 'email',
-      width: 240,
+      width: 220,
     },
     {
       title: 'Vấn đề',
       dataIndex: 'problem',
+      width: 220,
     },
     {
       title: 'Thời gian',
@@ -105,13 +134,21 @@ function AdminContact() {
       align: 'center',
       render: (status) =>
         status ? (
-          <p className="p-3 m-auto leading-none bg-green-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="success"
+          >
             Đã phản hồi
-          </p>
+          </Tag>
         ) : (
-          <p className="p-3 m-auto leading-none bg-red-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="error"
+          >
             Chưa phản hồi
-          </p>
+          </Tag>
         ),
     },
     {
@@ -172,8 +209,15 @@ function AdminContact() {
     setShowModal(true);
     setContact(contact);
   };
+  // const handleChangeDate = (date, dateString) => {
+  //   console.log(new Date(dateString[0]));
+  // };
   const handFeedback = (data) => {
     feedback.mutate({ id: contact.id, feedback: data.feedback, accessToken: user.accessToken });
+  };
+  const onOptionProblemChange = (value) => {
+    setCurrentPage(1);
+    setProblem(value);
   };
   const onOptionChange = (value) => {
     setCurrentPage(1);
@@ -256,12 +300,22 @@ function AdminContact() {
             <h3>Phản hồi khách hàng</h3>
           </div>
           <div className="flex items-center gap-6">
+            {/* <RangePicker size="large" onChange={handleChangeDate} /> */}
             <Select
               size="large"
-              style={{ width: 200 }}
-              defaultValue={options[0]}
+              style={{ width: 250 }}
+              placeholder="Vấn đề"
+              options={problems}
+              onChange={onOptionProblemChange}
+              allowClear
+            />
+            <Select
+              size="large"
+              style={{ width: 180 }}
+              placeholder="Trạng thái"
               options={options}
               onChange={onOptionChange}
+              allowClear
             />
             <Button
               onClick={handleDeleteMany}

@@ -146,11 +146,13 @@ export const getDetailUserService = (userId) =>
     }
   });
 
-export const getAllUserService = (limit = 10, offset = 0) =>
+export const getAllUserService = (limit = 10, offset = 0, status) =>
   new Promise(async (resolve, reject) => {
     try {
+      const obj = {};
+      if (status) obj.status = status;
       const users = await db.User.findAndCountAll({
-        where: { trash: false, isAdmin: false },
+        where: { trash: false, isAdmin: false, ...obj },
         limit: Number(limit),
         offset: Number(offset * limit),
         order: [['createdAt', 'DESC']],

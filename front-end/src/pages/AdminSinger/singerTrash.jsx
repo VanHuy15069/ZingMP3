@@ -45,13 +45,21 @@ function SingerTrash() {
       align: 'center',
       render: (status) =>
         status ? (
-          <p className="p-3 m-auto leading-none bg-green-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="success"
+          >
             Hoạt động
-          </p>
+          </Tag>
         ) : (
-          <p className="p-3 m-auto leading-none bg-red-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="error"
+          >
             Đã khóa
-          </p>
+          </Tag>
         ),
     },
     {

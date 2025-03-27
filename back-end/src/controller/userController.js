@@ -85,9 +85,9 @@ export const getDetailUser = async (req, res) => {
 };
 
 export const getAllUser = async (req, res) => {
-  const { limit, offset } = req.query;
+  const { limit, offset, status } = req.query;
   try {
-    const response = await userService.getAllUserService(limit, offset);
+    const response = await userService.getAllUserService(limit, offset, status);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGetAllSingers } from '../../hook';
-import { Avatar, Button, Flex, Form, Image, Input, Switch, Table } from 'antd';
+import { Avatar, Button, Flex, Form, Image, Input, Switch, Table, Tag } from 'antd';
 import TitleAdmin from '../../components/titleAdmin';
 import { RiUserStarLine } from 'react-icons/ri';
 import { EditOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
@@ -43,7 +43,6 @@ function AdminSinger() {
   const updateTrashSinger = useUpdateTrashSinger();
   const createAccountSinger = useCreateAccountSinger();
   const deleteAccountSinger = useDeleteAccountSinger();
-  console.log(singers.data);
   const columns = [
     {
       title: 'Tên nghệ sĩ',
@@ -88,13 +87,21 @@ function AdminSinger() {
       align: 'center',
       render: (status) =>
         status ? (
-          <p className="p-3 m-auto leading-none bg-green-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="success"
+          >
             Hoạt động
-          </p>
+          </Tag>
         ) : (
-          <p className="p-3 m-auto leading-none bg-red-500 w-fit rounded-lg text-white text-[12px] font-semibold">
+          <Tag
+            bordered={true}
+            style={{ padding: '2px 12px', margin: 'auto', minWidth: '100px', textAlign: 'center' }}
+            color="error"
+          >
             Đã khóa
-          </p>
+          </Tag>
         ),
     },
     {

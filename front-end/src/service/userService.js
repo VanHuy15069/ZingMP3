@@ -120,11 +120,12 @@ export const changePassword = async (data, header) => {
   return res.data;
 };
 
-export const getAllUser = async (limit, offset, accessToken) => {
+export const getAllUser = async (limit, offset, status, accessToken) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/user/getAll`, {
     params: {
       limit: limit,
       offset: offset,
+      status: status,
     },
     headers: {
       token: `Bearer ${accessToken}`,
