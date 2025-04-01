@@ -18,7 +18,7 @@ import DateRange from '../../components/rangePicker';
 
 function AdminPage() {
   const user = useUserStore((state) => state.user);
-  const users = useGetAllUser(1, 0, user.accessToken);
+  const users = useGetAllUser(1, 0, 1, user.accessToken);
   const singers = useGetAllSingers(1, 0, false, null);
   const songs = useGetAllSongs(1, 0, null, null, null, false, null, null);
   const [date, setDate] = useState([dayjs().startOf('month').toISOString(), dayjs().endOf('month').toISOString()]);
@@ -51,7 +51,7 @@ function AdminPage() {
       <div className="-mx-[14px] flex items-center">
         <div className="w-1/3 px-[14px] ">
           <div className="bg-green-500 text-white text-[22px] font-bold h-[100px] w-full flex items-center justify-center rounded-[6px]">
-            {users.data?.data.count} nguời dùng
+            {users.data?.data.count} tài khoản
           </div>
         </div>
         <div className="w-1/3 px-[14px] ">

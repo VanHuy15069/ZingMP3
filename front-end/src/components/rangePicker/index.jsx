@@ -16,6 +16,7 @@ function DateRange({ getDate, defaultValue = [] }) {
   ];
   return (
     <RangePicker
+      placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
       defaultValue={defaultValue}
       format={'DD/MM/YYYY'}
       size="large"
