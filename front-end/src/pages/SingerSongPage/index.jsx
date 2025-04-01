@@ -51,7 +51,6 @@ function SingerSongPage() {
     else setCurrentList(false);
     if (checkPlay && audio.isPlay) setPlay(true);
     else setPlay(false);
-    console.log(123);
   });
   const handlePlaySong = () => {
     if (audio.isPlay) {

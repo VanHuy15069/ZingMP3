@@ -1,4 +1,4 @@
-import { Button, DatePicker, Flex, Form, Input, Modal, Select, Table, Tag } from 'antd';
+import { Button, Flex, Form, Input, Modal, Select, Table, Tag } from 'antd';
 import { GoTrash } from 'react-icons/go';
 import { VscFeedback } from 'react-icons/vsc';
 import { useGetAllContact } from '../../hook';
@@ -10,13 +10,14 @@ import { useDeleteContacts, useFeedbackContact } from '../../mutationHook/contac
 import { Bounce, toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
+import DateRange from '../../components/rangePicker';
 function AdminContact() {
   const [form] = Form.useForm();
-  // const { RangePicker } = DatePicker;
   const user = useUserStore((state) => state.user);
   const [problem, setProblem] = useState();
   const [status, setStatus] = useState();
-  const contacts = useGetAllContact(10, 0, status, problem, user.accessToken);
+  const [date, setDate] = useState([null, null]);
+  const contacts = useGetAllContact(10, 0, status, problem, date[0], date[1], user.accessToken);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [showFullText, setShowFullText] = useState(0);
@@ -209,9 +210,12 @@ function AdminContact() {
     setShowModal(true);
     setContact(contact);
   };
-  // const handleChangeDate = (date, dateString) => {
-  //   console.log(new Date(dateString[0]));
-  // };
+  const handleGetDate = (dateString) => {
+    if (dateString.length === 2) {
+      setDate(dateString);
+      setCurrentPage(1);
+    }
+  };
   const handFeedback = (data) => {
     feedback.mutate({ id: contact.id, feedback: data.feedback, accessToken: user.accessToken });
   };
@@ -300,7 +304,7 @@ function AdminContact() {
             <h3>Phản hồi khách hàng</h3>
           </div>
           <div className="flex items-center gap-6">
-            {/* <RangePicker size="large" onChange={handleChangeDate} /> */}
+            <DateRange getDate={(dateString) => handleGetDate(dateString)} />
             <Select
               size="large"
               style={{ width: 250 }}

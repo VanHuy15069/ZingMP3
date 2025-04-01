@@ -284,18 +284,18 @@ export const useGetAllUserIntoTrash = (limit, offset, accessToken) => {
   });
 };
 
-export const useGetAllContact = (limit, offset, status, problem, accessToken) => {
+export const useGetAllContact = (limit, offset, status, problem, startDate, endDate, accessToken) => {
   return useQuery({
-    queryKey: ['get-all-contact', limit, offset, status, problem],
-    queryFn: () => contactService.getAllContact(limit, offset, status, problem, accessToken),
+    queryKey: ['get-all-contact', limit, offset, status, problem, startDate, endDate],
+    queryFn: () => contactService.getAllContact(limit, offset, status, problem, startDate, endDate, accessToken),
     enabled: !!accessToken,
   });
 };
 
-export const useStaticalSongs = (month, limit, accessToken) => {
+export const useStaticalSongs = (startDate, endDate, limit, accessToken) => {
   return useQuery({
-    queryKey: ['statical', month, limit],
-    queryFn: () => songService.staticalSongs(month, limit, accessToken),
+    queryKey: ['statical', startDate, endDate, limit],
+    queryFn: () => songService.staticalSongs(startDate, endDate, limit, accessToken),
     enabled: !!accessToken,
   });
 };

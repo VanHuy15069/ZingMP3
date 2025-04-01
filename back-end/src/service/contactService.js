@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { Op } from 'sequelize';
+import moment from 'moment';
 dotenv.config();
 
 export const createContactService = (fullName, problem, phone, email, content) =>
@@ -91,12 +92,19 @@ export const feedbackContactService = (feedback, id, token) =>
     }
   });
 
-export const getAllContactService = (limit = 10, offset = 0, status, problem) =>
+export const getAllContactService = (limit = 10, offset = 0, status, problem, startDate, endDate) =>
   new Promise(async (resolve, reject) => {
     try {
       const obj = {};
       if (status) obj.where = { status: status };
       if (problem) obj.where = { problem: problem };
+      if (startDate && endDate) {
+        const date1 = moment(startDate, 'DD/MM/YYYY');
+        const date2 = moment(endDate, 'DD/MM/YYYY');
+        obj.where = {
+          createdAt: { [Op.between]: [date1, date2] },
+        };
+      }
       const contacts = await db.Contact.findAndCountAll({
         ...obj,
         limit: Number(limit),

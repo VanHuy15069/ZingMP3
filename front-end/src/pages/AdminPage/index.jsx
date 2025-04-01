@@ -14,19 +14,22 @@ import dayjs from 'dayjs';
 import ChartCicle from '../../components/PieChart';
 import { PiHeadphonesLight, PiHeart } from 'react-icons/pi';
 import { Bounce, toast } from 'react-toastify';
+import DateRange from '../../components/rangePicker';
 
 function AdminPage() {
   const user = useUserStore((state) => state.user);
   const users = useGetAllUser(1, 0, user.accessToken);
   const singers = useGetAllSingers(1, 0, false, null);
   const songs = useGetAllSongs(1, 0, null, null, null, false, null, null);
-  const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState([dayjs().startOf('month').toISOString(), dayjs().endOf('month').toISOString()]);
   const [lable, setLable] = useState('nations');
-  const statical = useStaticalSongs(date?.month() + 1, 10, user.accessToken);
+  const statical = useStaticalSongs(date[0], date[1], 10, user.accessToken);
   const countStatical = useCountStatical(lable, user.accessToken);
   const topSongs = useGetTopSongs(5, user.accessToken);
-  const onChange = (date) => {
-    setDate(date);
+  const handleGetDate = (dateString) => {
+    if (dateString.length === 2) {
+      setDate(dateString);
+    }
   };
   useEffect(() => {
     if (
@@ -64,16 +67,9 @@ function AdminPage() {
       </div>
       <div className="flex gap-8 my-4 items-center">
         <h2 className="text-[18px] font-semibold text-[#333]">Thống kê theo tháng</h2>
-        <DatePicker
-          allowClear={false}
-          defaultValue={date}
-          format={'MM-YYYY'}
-          size="large"
-          onChange={onChange}
-          picker="month"
-          placeholder="MM-YYYY"
-          minDate={dayjs().startOf('year')}
-          maxDate={dayjs().endOf('month')}
+        <DateRange
+          getDate={(dateString) => handleGetDate(dateString)}
+          defaultValue={[dayjs().startOf('month'), dayjs().endOf('month')]}
         />
       </div>
       <Chart data={statical.data?.data} />

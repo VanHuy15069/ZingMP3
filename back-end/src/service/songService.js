@@ -588,15 +588,12 @@ export const getSameSongService = (songId, limit = 10) =>
     }
   });
 
-export const statisticalSongService = (month, limit = 10) =>
+export const statisticalSongService = (startDate, endDate, limit = 10) =>
   new Promise(async (resolve, reject) => {
     try {
-      const currentYear = moment().year();
-      const startOfMonth = new Date(currentYear, month - 1, 1);
-      const endOfMonth = new Date(currentYear, month, 0, 23, 59, 59, 999);
       const topSong = await db.Song.findAll({
         where: {
-          createdAt: { [Op.between]: [startOfMonth, endOfMonth] },
+          createdAt: { [Op.between]: [moment(startDate, 'DD/MM/YYYY'), moment(endDate, 'DD/MM/YYYY')] },
         },
         order: [['createdAt', 'DESC']],
         limit: Number(limit),

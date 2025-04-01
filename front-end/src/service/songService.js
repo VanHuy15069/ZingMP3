@@ -174,10 +174,11 @@ export const countViews = async (id) => {
   return res.data;
 };
 
-export const staticalSongs = async (month, limit, accessToken) => {
+export const staticalSongs = async (startDate, endDate, limit, accessToken) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/song/statical`, {
     params: {
-      month: month,
+      startDate: startDate,
+      endDate: endDate,
       limit: limit,
     },
     headers: {

@@ -43,8 +43,8 @@ export const feedbackContact = async (req, res) => {
 
 export const getAllContact = async (req, res) => {
   try {
-    const { limit, offset, status, problem } = req.query;
-    const response = await contactService.getAllContactService(limit, offset, status, problem);
+    const { limit, offset, status, problem, startDate, endDate } = req.query;
+    const response = await contactService.getAllContactService(limit, offset, status, problem, startDate, endDate);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({

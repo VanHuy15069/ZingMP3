@@ -274,14 +274,14 @@ export const getSameSongs = async (req, res) => {
 
 export const statisticalSongs = async (req, res) => {
   try {
-    const { month, limit } = req.query;
-    if (!month) {
+    const { startDate, endDate, limit } = req.query;
+    if (!startDate || !endDate) {
       return res.status(400).json({
         status: 'ERROR',
         msg: 'Full information is required',
       });
     }
-    const response = await songService.statisticalSongService(month, limit);
+    const response = await songService.statisticalSongService(startDate, endDate, limit);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
@@ -294,8 +294,6 @@ export const statisticalSongs = async (req, res) => {
 export const countStatical = async (req, res) => {
   try {
     const data = req.query.data.toString();
-    console.log(data);
-
     if (!data) {
       return res.status(400).json({
         status: 'ERROR',

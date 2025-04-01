@@ -5,13 +5,15 @@ export const createContact = async (data) => {
   return res.data;
 };
 
-export const getAllContact = async (limit, offset, status, problem, accessToken) => {
+export const getAllContact = async (limit, offset, status, problem, startDate, endDate, accessToken) => {
   const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/contact/get-all`, {
     params: {
       limit: limit,
       offset: offset,
       status: status,
       problem: problem,
+      startDate: startDate,
+      endDate: endDate,
     },
     headers: {
       token: `Bearer ${accessToken}`,

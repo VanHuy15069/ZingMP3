@@ -13,24 +13,6 @@ import slideRouter from './slider';
 import payRouter from './vnpayOrder';
 const router = express.Router();
 const initRouters = (app) => {
-  // app.use(
-  //   '/api/order',
-  //   createProxyMiddleware({
-  //     target: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html', // Thay thế bằng địa chỉ gateway thanh toán
-  //     changeOrigin: true, // Cho phép thay đổi gốc
-  //     pathRewrite: {
-  //       '^/api/order': '', // Xóa prefix '/api/order' khi chuyển tiếp
-  //     },
-  //     onProxyReq: (proxyReq, req, res) => {
-  //       // Thêm header tùy chỉnh nếu cần
-  //       proxyReq.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-  //       console.log('Request:', proxyReq.method, proxyReq.path);
-  //     },
-  //     onProxyRes: (proxyRes, req, res) => {
-  //       console.log('Response:', proxyRes.statusCode);
-  //     },
-  //   }),
-  // );
   app.use('/api/user', userRouter);
   app.use('/api/singer', singerRouter);
   app.use('/api/nation', nationRouter);
